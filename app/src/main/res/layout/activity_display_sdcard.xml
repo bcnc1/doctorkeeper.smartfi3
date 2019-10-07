@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.thinoo.drcamlink2.view.sdcard.DisplaySDCardActivity">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/storage_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_above="@+id/dslr_description"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                app:layout_constraintBottom_toTopOf="@+id/dslr_description"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0">
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/upload_Notice"
+                android:layout_width="103dp"
+                android:layout_height="89dp"
+                android:text="Reading Image..."
+                android:textSize="30sp"
+                android:visibility="gone" />
+
+            <!--<ImageView-->
+                <!--android:id="@+id/read_Image"-->
+                <!--android:layout_width="300dp"-->
+                <!--android:layout_height="200dp"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginStart="8dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:visibility="gone"-->
+                <!--app:layout_constraintBottom_toTopOf="@+id/dslr_description"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toEndOf="@+id/storage_container"-->
+                <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+            <TextView
+                android:id="@+id/sdcard_description"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_above="@+id/btn_usb_linked"
+                android:layout_gravity="center_vertical|center_horizontal|center"
+                android:layout_marginBottom="36dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:text="DSLR Card 내용을 조회합니다"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toTopOf="@+id/btn_usb_linked"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!--<Button-->
+                <!--android:id="@+id/btn_display_Storage"-->
+                <!--android:layout_width="100dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignLeft="@+id/dslr_description"-->
+                <!--android:layout_below="@+id/dslr_description"-->
+                <!--android:layout_marginStart="24dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:text="Read"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/dslr_description" />-->
+
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/dslr_description"
+                android:layout_below="@+id/dslr_description"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="8dp"
+                android:text="Back"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dslr_description" />
+
+            <ImageView
+                android:id="@+id/btn_usb_linked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/disconnected"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

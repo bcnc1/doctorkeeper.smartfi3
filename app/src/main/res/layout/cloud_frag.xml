@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+  <FrameLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+      <android.support.constraint.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent">
+
+          <LinearLayout
+              android:id="@+id/top_layout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="4dp"
+              android:layout_marginEnd="8dp"
+              android:layout_marginStart="8dp"
+              android:layout_marginTop="4dp"
+              android:orientation="horizontal"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0.0">
+
+              <RelativeLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+                  <Button
+                      android:id="@+id/btn_options"
+                      android:layout_width="80dp"
+                      android:layout_height="32dp"
+                      android:layout_alignParentLeft="true"
+                      android:text="기타설정"
+                      android:textSize="10sp" />
+
+                  <Button
+                      android:id="@+id/btn_logout"
+                      android:layout_width="80dp"
+                      android:layout_height="32dp"
+                      android:layout_alignParentRight="true"
+                      android:text="로그아웃"
+                      android:textSize="10sp"/>
+              </RelativeLayout>
+
+          </LinearLayout>
+
+          <LinearLayout
+              android:id="@+id/cloud_detail_container"
+              android:layout_width="match_parent"
+              android:layout_height="0dp"
+              android:layout_marginTop="8dp"
+              android:orientation="vertical"
+              app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+              app:layout_constraintTop_toBottomOf="@+id/top_layout">
+
+          </LinearLayout>
+
+          <LinearLayout
+              android:id="@+id/linearLayout"
+              android:layout_width="match_parent"
+              android:layout_height="80dp"
+              android:layout_below="@+id/cloud_detail_container"
+              android:layout_marginBottom="8dp"
+              android:layout_marginEnd="8dp"
+              android:layout_marginStart="8dp"
+              android:orientation="vertical"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent">
+
+              <TextView
+                  android:id="@+id/cloud_description"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_above="@+id/btn_back"
+                  android:layout_gravity="center_vertical|center_horizontal|center"
+                  android:layout_marginBottom="10dp"
+                  android:gravity="center"
+                  android:text="클라우드에 업로드된 파일을 확인합니다"
+                  android:textAlignment="center" />
+
+              <Button
+                  android:id="@+id/btn_back"
+                  android:layout_width="100dp"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  android:layout_alignRight="@+id/cloud_detail_container"
+                  android:layout_gravity="right"
+                  android:layout_marginBottom="10dp"
+                  android:text="Back" />
+
+          </LinearLayout>
+
+      </android.support.constraint.ConstraintLayout>
+
+      <!--<RelativeLayout-->
+          <!--android:layout_width="match_parent"-->
+          <!--android:layout_height="match_parent">-->
+
+      <!--</RelativeLayout>-->
+  </FrameLayout>
+
+</LinearLayout>

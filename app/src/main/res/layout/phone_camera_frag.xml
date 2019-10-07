@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.wonderkiln.camerakit.CameraView
+        xmlns:camerakit="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        camerakit:ckFocus="tap"
+        camerakit:ckJpegQuality="100"
+        />
+
+    <RelativeLayout
+        android:id="@+id/cameraLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        tools:visibility="visible">
+
+
+        <RelativeLayout
+            android:id="@+id/photo_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:paddingTop="10dp">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listview_photo"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="bottom|right"
+                android:scrollbars="horizontal" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_hide_listview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/photo_container"
+            android:background="@android:color/transparent"
+            android:text="LIST"
+            android:textAlignment="textEnd"
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_launch_cameraApp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/btn_hide_listview"
+            android:background="@android:color/transparent"
+            android:text="CAMERA"
+            android:textAlignment="textEnd"
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"/>
+
+        <ImageButton
+            android:id="@+id/button_sdcard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/record_panel"
+            android:layout_alignParentLeft="true"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="17dp"
+            android:background="@null"
+            android:src="@drawable/btn_sdcard"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/doctor_name"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_doctor"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="0dp"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+        <ImageButton
+            android:id="@+id/button_doctor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/record_panel"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|left"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="120dp"
+            android:background="@null"
+            android:src="@drawable/btn_doctor" />
+
+        <TextView
+            android:id="@+id/patient_name"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_sdcard"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            android:text="" />
+
+        <ImageButton
+            android:id="@+id/button_patient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/record_panel"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|left"
+            android:layout_marginBottom="17dp"
+            android:layout_marginRight="30dp"
+            android:background="@null"
+            android:src="@drawable/btn_patient" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/textview_patient_name"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_below="@+id/button_sdcard"-->
+            <!--android:layout_marginEnd="39dp"-->
+            <!--android:layout_marginTop="-17dp"-->
+            <!--android:text="SEOUL"-->
+            <!--android:textColor="@android:color/background_light"-->
+            <!--android:textSize="8sp"-->
+            <!--android:visibility="visible" />-->
+
+        <RelativeLayout
+            android:id="@+id/record_panel"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/button_dslr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="bottom|left"
+                android:layout_marginLeft="30dp"
+                android:background="@null"
+                android:src="@drawable/btn_camera"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/button_capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:src="@drawable/camera_shot_btn"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/button_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/button_capture"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="7dp"
+                android:background="@null"
+                android:src="@drawable/btn_grid"
+                android:visibility="visible" />
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/phone_picture_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</FrameLayout>

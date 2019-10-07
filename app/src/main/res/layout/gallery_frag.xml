@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <Spinner
+      android:id="@+id/storage_spinner"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:minWidth="50dp"/>
+
+    <CheckBox
+      android:id="@+id/reverve_order_checkbox"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/gallery_reverse_sort_order"/>
+  </LinearLayout>
+
+  <FrameLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <GridView
+          android:id="@android:id/list"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:columnWidth="@dimen/gallery_column_width"
+          android:gravity="center"
+          android:horizontalSpacing="@dimen/gallery_spacing"
+          android:numColumns="auto_fit"
+          android:stretchMode="columnWidth"
+          android:verticalSpacing="@dimen/gallery_spacing"
+          android:layout_margin="10dp"
+          android:layout_above="@+id/dslr_description">
+      </GridView>
+
+    </RelativeLayout>
+
+    <TextView
+      android:id="@+id/empty_textview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/multi_image_uploading_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="@string/multi_image_upload_message"
+        android:lineSpacingExtra="10dp"
+        android:textSize="18dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/multi_image_uploading_progressbar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:progressDrawable="@drawable/custom_progressbar"
+        android:progress="20" />
+
+  </FrameLayout>
+
+</LinearLayout>
