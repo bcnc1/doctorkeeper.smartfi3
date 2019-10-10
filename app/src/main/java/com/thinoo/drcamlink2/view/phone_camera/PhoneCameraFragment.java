@@ -107,8 +107,8 @@ public class PhoneCameraFragment extends BaseFragment {
     @BindView(R.id.button_sdcard)
     ImageButton btnSDCard;
 
-    @BindView(R.id.btn_hide_listview)
-    Button btnHideListview;
+//    @BindView(R.id.btn_hide_listview)
+//    Button btnHideListview;
 
     @BindView(R.id.btn_launch_cameraApp)
     Button btnLaunchCameraApp;
@@ -178,6 +178,7 @@ public class PhoneCameraFragment extends BaseFragment {
         listviewPhoto = (RecyclerView)view.findViewById(R.id.listview_photo);
 
         photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
+        photo_container.setVisibility(View.INVISIBLE);
 
         btnDslr.setVisibility(View.INVISIBLE);
         btnSDCard.setVisibility(View.INVISIBLE);
@@ -280,17 +281,22 @@ public class PhoneCameraFragment extends BaseFragment {
         if(selectedDoctor!=null){
             doctor_name.setText(selectedDoctor.get("name"));
         }
+        MadamfiveAPI.read_ShootingImageDisplayExtraOption();
+        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
+        if(MadamfiveAPI.shootingImageDisplayExtraOption){
+            photo_container.setVisibility(View.VISIBLE);
+        }
 
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
         MadamfiveAPI.getContext().registerReceiver(usbOnReciever,on);
         MadamfiveAPI.getContext().registerReceiver(usbOffReciever,off);
 
-        if(MadamfiveAPI.isListViewOnPhoneCamera){
-            photo_container.setVisibility(View.VISIBLE);
-        }else{
-            photo_container.setVisibility(View.INVISIBLE);
-        }
+//        if(MadamfiveAPI.isListViewOnPhoneCamera){
+//            photo_container.setVisibility(View.VISIBLE);
+//        }else{
+//            photo_container.setVisibility(View.INVISIBLE);
+//        }
 
         return view;
     }
@@ -446,27 +452,27 @@ public class PhoneCameraFragment extends BaseFragment {
         ft.commit();
     }
 
-    @OnClick(R.id.btn_hide_listview)
-    public void onHideListview(View view){
-
-//        photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
-
-//        Log.i(TAG,"HIDE BTN clicked");
-        if(MadamfiveAPI.isListViewOnPhoneCamera){
-            photo_container.setVisibility(View.INVISIBLE);
-            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
-        }else{
-            photo_container.setVisibility(View.VISIBLE);
-            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
-        }
-//        if(listviewFlag){
+//    @OnClick(R.id.btn_hide_listview)
+//    public void onHideListview(View view){
+//
+////        photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
+//
+////        Log.i(TAG,"HIDE BTN clicked");
+//        if(MadamfiveAPI.isListViewOnPhoneCamera){
 //            photo_container.setVisibility(View.INVISIBLE);
-//            listviewFlag = false;
+//            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
 //        }else{
 //            photo_container.setVisibility(View.VISIBLE);
-//            listviewFlag = true;
+//            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
 //        }
-    }
+////        if(listviewFlag){
+////            photo_container.setVisibility(View.INVISIBLE);
+////            listviewFlag = false;
+////        }else{
+////            photo_container.setVisibility(View.VISIBLE);
+////            listviewFlag = true;
+////        }
+//    }
 
 
     private class OrientationListener extends OrientationEventListener {

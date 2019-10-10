@@ -74,6 +74,7 @@ public class MadamfiveAPI {
     public static Boolean patientSearchDisplayExtraOption = false;
     public static Boolean patientInsertExtraOption = false;
     public static Boolean doctorSelectExtraOption = false;
+    public static Boolean shootingImageDisplayExtraOption = false;
 
     public static boolean isCameraOn = false;
 
@@ -429,7 +430,7 @@ public class MadamfiveAPI {
         mAcccessToken = getAccessToken();
         boardId = getBoardId();
 
-        String relativeURL = "https://dashboard.doctorkeeper.com/v1/boards/SVCBoard_371113691246594/my/posts?accessToken="+URLEncoder.encode(mAcccessToken);
+        String relativeURL = "https://dashboard.doctorkeeper.com/v1/boards/SVCBoard_371113691246594/my/posts?limit=200&accessToken="+URLEncoder.encode(mAcccessToken);
 //        Log.i("URL=====", relativeURL.toString());
 
         SSLConnect ssl = new SSLConnect();
@@ -699,6 +700,32 @@ public class MadamfiveAPI {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option3.txt", Context.MODE_PRIVATE));
             outputStream.writeObject(doctorSelectExtraOption);
+            outputStream.close();
+        } catch (Exception e) {
+        }
+
+    }
+
+    public static void read_ShootingImageDisplayExtraOption(){
+        File file = getActivity().getFileStreamPath("option4.txt");
+        if(file.exists()) {
+            try {
+                FileInputStream input = getActivity().openFileInput("option4.txt");
+                ObjectInputStream ois = new ObjectInputStream(input);
+                shootingImageDisplayExtraOption = (Boolean) ois.readObject();
+                ois.close();
+            } catch (Exception e) {
+            }
+        }else{
+            patientInsertExtraOption = false;
+        }
+
+    }
+
+    public static void write_ShootingImageDisplayExtraOption(){
+        try {
+            ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option4.txt", Context.MODE_PRIVATE));
+            outputStream.writeObject(shootingImageDisplayExtraOption);
             outputStream.close();
         } catch (Exception e) {
         }
