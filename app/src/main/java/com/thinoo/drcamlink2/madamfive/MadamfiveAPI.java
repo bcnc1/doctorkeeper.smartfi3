@@ -212,7 +212,7 @@ public class MadamfiveAPI {
         final Map<String, String> params = new HashMap<String, String>();
 
         String chartNumber = selectedPatientInfo.get("chartNumber");
-        chartNumber = chartNumber.replace("++++++","");
+        chartNumber = chartNumber.replace("++++++",""); //환자 차트 번호
         chartNumber.trim();
 
         params.put("title", cameraKind);

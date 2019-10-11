@@ -569,7 +569,7 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private void uploadImage(String filename){
-        Log.i("Upload Image","Started");
+        Log.i(TAG,"uploadImage => Started");
 //        String imagePath = Environment.getExternalStorageDirectory() + "/drcam/" + filename;
         File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 
@@ -590,7 +590,7 @@ public class PhoneCameraFragment extends BaseFragment {
         }catch(Exception e){
             Log.i(TAG,e.toString());
         }
-        Log.i("Upload Image","Read Bitmap");
+        Log.i(TAG,"uploadImage => Read Bitmap");
 
         MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
             @Override
@@ -611,7 +611,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
             }
         });
-        Log.i("Upload Image","Finished");
+        Log.i(TAG,"uploadImage => Finished");
     }
 
 

@@ -633,7 +633,7 @@ public class LiveViewFragment extends SessionFragment implements
     }
 
     private void uploadImage(String filename){
-        Log.i("Upload Image","Started");
+        Log.i(TAG,"uploadImage => Started");
 //        String imagePath = Environment.getExternalStorageDirectory() + "/drcam/" + filename;
 
         File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
@@ -653,7 +653,7 @@ public class LiveViewFragment extends SessionFragment implements
         }catch(Exception e){
             Log.i(TAG,e.toString());
         }
-        Log.i("Upload Image","Read Bitmap");
+        Log.i(TAG,"uploadImage =>  Read Bitmap");
 
         MadamfiveAPI.createPost(bytes, "DSLR", new JsonHttpResponseHandler() {
             @Override
@@ -674,7 +674,7 @@ public class LiveViewFragment extends SessionFragment implements
                 Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
             }
         });
-        Log.i("Upload Image","Finished");
+        Log.i(TAG,"uploadImage => Finished");
     }
 
     private void displayPhoto(int objectHandle,Bitmap currentBitmap){
