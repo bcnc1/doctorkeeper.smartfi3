@@ -31,9 +31,12 @@ import com.thinoo.drcamlink2.R;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.doctorSelectExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_ShootingImageDisplayExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_doctorSelectExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.shootingImageDisplayExtraOption;
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_ShootingImageDisplayExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_doctorSelectExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_patientSearchDisplayExtraOption;
@@ -45,6 +48,8 @@ public class OptionsDialogFragment extends DialogFragment {
     private Switch switch_options_patient_info;
     private Switch switch_options_patient_insert_activate;
     private Switch switch_options_doctor_insert_activate;
+    private Switch switch_options_shooting_image_display;
+
     public static OptionsDialogFragment newInstance() {
         Bundle args = new Bundle();
 
@@ -133,6 +138,29 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
+        /// optins4
+        switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
+        switch_options_shooting_image_display.setChecked(false);
+
+        read_ShootingImageDisplayExtraOption();
+        if(shootingImageDisplayExtraOption){
+            switch_options_shooting_image_display.setChecked(true);
+        }
+
+        switch_options_shooting_image_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(shootingImageDisplayExtraOption){
+                    shootingImageDisplayExtraOption = false;
+                    switch_options_shooting_image_display.setChecked(false);
+                }else {
+                    shootingImageDisplayExtraOption = true;
+                    switch_options_shooting_image_display.setChecked(true);
+                }
+                write_ShootingImageDisplayExtraOption();
+            }
+        });
 
         return view;
     }

@@ -117,6 +117,7 @@ public class PatientDialogFragment extends DialogFragment {
 
                 nameTextView.clearFocus();
                 chartNumberTextView.clearFocus();
+                final String loginCheck = keyword;
 
                 MadamfiveAPI.searchPatient(keyword, searchName, new JsonHttpResponseHandler() {
                     @Override
@@ -221,9 +222,15 @@ public class PatientDialogFragment extends DialogFragment {
                                     alert.show();
 
                                 }else{
-                                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
-                                    toast.setGravity(Gravity.CENTER, 0, -100);
-                                    toast.show();
+                                    if (loginCheck == null || loginCheck.length() == 0) {
+                                        Toast toast = Toast.makeText(getActivity(), "다시 로그인 해주세요", Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER, 0, -100);
+                                        toast.show();
+                                    }else {
+                                        Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                                        toast.setGravity(Gravity.CENTER, 0, -100);
+                                        toast.show();
+                                    }
                                 }
 
                             } else {
