@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thinoo.drcamlink2.activities.AppSettingsActivity;
+import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.ptp.Camera;
 import com.thinoo.drcamlink2.ptp.Camera.CameraListener;
 import com.thinoo.drcamlink2.ptp.PtpService;
@@ -122,7 +123,9 @@ public class MainActivity extends SessionActivity implements CameraListener {
 
         setContentView(R.layout.main);
 
+        //kimcy 일단 추가
         MadamfiveAPI.setContext(this, getApplicationContext());
+        BlabAPI.setContext(this, getApplicationContext());
 
         settings = new AppSettings(this);
 

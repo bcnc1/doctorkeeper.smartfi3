@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
-import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.services.PhotoModelService;
 
@@ -72,6 +72,7 @@ public class LaunchCameraActivity extends Activity {
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
 //                    imageToUploadUri = Uri.fromFile(f);
                     imageToUploadUri = FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f);
+                    Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
                     startActivityForResult(cameraIntent, CAMERA_REQUEST);
 //                }
 //            }
@@ -110,6 +111,7 @@ public class LaunchCameraActivity extends Activity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        Log.i(TAG,"onActivityResult 카매라에서돌아옴");
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
 
             try {
@@ -131,11 +133,11 @@ public class LaunchCameraActivity extends Activity {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     srcBmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
 //            photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                    byte[] imageData = bos.toByteArray();
+                    byte[] imageData = bos.toByteArray();  //이미지데이터가 바이트로 직렬화
 
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                     String filename = "DRCAM_" + timeStamp + "_";
-                    Log.i("CAMERA", "===:" + filename);
+                    Log.i(TAG, "카메라 파일명 ===:" + filename);
 
 
                     savePhoto(imageData, "phone", filename);
@@ -147,7 +149,7 @@ public class LaunchCameraActivity extends Activity {
                     startActivity(intent);
                 }
             }catch (Exception e){
-                Log.i("INSIDE___",e.toString());
+                Log.e("INSIDE___",e.toString());
             }
 //                }
 //            });
@@ -157,6 +159,7 @@ public class LaunchCameraActivity extends Activity {
 
     private void savePhoto(byte[] bytes, String cameraKind, String filePath) {
 
+        Log.i(TAG,"savePhoto => filepath = "+filePath);
         // 화일 저장
         int filePathLength = filePath.length();
         String filename = filePath.substring(0,filePathLength-2);
@@ -166,24 +169,50 @@ public class LaunchCameraActivity extends Activity {
         // 화일 업로드
 //        Log.i("Upload Image","Started");
 
-        MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("AsyncTask", "Uploading");
-            }
+//        MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                Log.i("AsyncTask", "Uploading");
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+//                Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+//                // If the response is JSONObject instead of expected JSONArray
+//                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
+//            }
+//        });
 
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-            }
 
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-            }
-        });
-        Log.i("Upload Image","Finished");
+            Log.d(TAG, "카메라업로드시작:" );
+            BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", new JsonHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    Log.i("AsyncTask", "Uploading");
+                }
+
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                    Log.d("AsyncTask", "이미지 업로드 완료:" + statusCode + responseString);
+                    LaunchCameraActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
+                }
+            });
+
+        Log.i(TAG,"Finished");
     }
 
     private void deleteGalleryFile(){

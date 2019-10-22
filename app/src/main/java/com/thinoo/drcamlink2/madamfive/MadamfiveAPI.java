@@ -173,6 +173,14 @@ public class MadamfiveAPI {
 
     }
 
+    /**
+     * 파일 패스 기반의 업로드
+     * @param fileName
+     * @param cameraKind
+     * @param responseHandler
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void createPost(String fileName, String cameraKind, JsonHttpResponseHandler responseHandler) throws FileNotFoundException,
             IOException {
 
@@ -203,6 +211,12 @@ public class MadamfiveAPI {
         createPost(imageBytes, cameraKind, responseHandler);
     }
 
+    /**
+     * 버퍼기간의 업로드
+     * @param imageBytes
+     * @param cameraKind
+     * @param responseHandler
+     */
     // savePhoto()에서 사용되는 Method =====================================================================================
     public static void createPost(final byte[] imageBytes, final String cameraKind, final JsonHttpResponseHandler responseHandler) {
 
@@ -292,6 +306,7 @@ public class MadamfiveAPI {
                 // file name could found file base or direct access from real path
                 // for now just get bitmap data from ImageView
                 Log.i(TAG, "imageBytes.length : " + imageBytes.length);
+                Log.i(TAG, "fileName : " + fileName);
                 ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));
 
                 return ImageParams;

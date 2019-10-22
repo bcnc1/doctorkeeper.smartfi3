@@ -37,7 +37,10 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
     }
 
-
+    /**
+     * 리스트업시 사용하려고??
+     * @return
+     */
     public String getFullpath() {
         return fullpath;
     }

@@ -18,6 +18,7 @@ package com.thinoo.drcamlink2.view.cloud;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -78,6 +79,9 @@ public class CloudPictureFragment extends BaseFragment
 //        objectHandle = getArguments().getInt("handle");
         imageUrl = getArguments().getString("imageUrl");
         imageGuid = getArguments().getString("imageGuid");
+
+        Log.i(TAG, "imageUrl = "+imageUrl);
+        Log.i(TAG, "imageGuid = "+imageGuid);
 
         View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
 //        pictureView = (PictureView) view.findViewById(R.id.cloud_image);

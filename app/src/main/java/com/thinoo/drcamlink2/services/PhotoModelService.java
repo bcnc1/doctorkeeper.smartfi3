@@ -21,6 +21,7 @@ import android.util.Log;
 
 import com.orm.query.Select;
 import com.thinoo.drcamlink2.models.PhotoModel;
+import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +35,8 @@ import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getActivity;
 
 
 public class PhotoModelService {
+
+    private final static String TAG = PhotoModelService.class.getSimpleName();
 
     public static List<PhotoModel> findAll() {
         return (ArrayList<PhotoModel>) Select.from(PhotoModel.class)
@@ -53,8 +56,6 @@ public class PhotoModelService {
 
     public static PhotoModel savePhoto(byte[] bytes, String filename, final int mode) {
 
-//        String folder = Environment.getExternalStorageDirectory() + "/drcam/";
-//        File file = new File(folder);
 
         File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 
@@ -67,7 +68,8 @@ public class PhotoModelService {
         try {
             // Write to SD Card
 //            outStream = new FileOutputStream(folder + filename);
-            outStream = new FileOutputStream(file.getAbsolutePath()+filename);
+            Log.d(TAG, "파일저장 패스 = "+file.getAbsolutePath()+filename);
+            outStream = new FileOutputStream(file.getAbsolutePath()+filename); //파일저장
             outStream.write(bytes);
             outStream.close();
         } catch (FileNotFoundException e) { // <10>
@@ -104,6 +106,8 @@ public class PhotoModelService {
 
         final PhotoModel photoModel = new PhotoModel();
 //        photoModel.setFullpath(folder + filename);
+        Log.d(TAG, "path = "+file.getAbsolutePath() + filename);
+
         photoModel.setFullpath(file.getAbsolutePath() + filename);
         photoModel.setFilname(filename);
         photoModel.setUploaded(true);

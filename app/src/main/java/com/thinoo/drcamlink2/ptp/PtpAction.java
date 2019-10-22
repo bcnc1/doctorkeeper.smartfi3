@@ -23,6 +23,7 @@ package com.thinoo.drcamlink2.ptp;
  * for further communications. The action should do the communication via the
  * given {@code IO} interface and based on the received data and response repor
  * back to the actual {@code PtpCamera}.
+ * http://www.java2s.com/Open-Source/Android_Free_Code/Camera/device/com_remoteyourcam_usb_ptpPtpAction_java.htm
  */
 public interface PtpAction {
 

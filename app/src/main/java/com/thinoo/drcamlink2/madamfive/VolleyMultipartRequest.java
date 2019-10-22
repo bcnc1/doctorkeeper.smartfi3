@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class VolleyMultipartRequest extends Request<NetworkResponse> {
 
-
+    private static final String TAG = VolleyMultipartRequest.class.getSimpleName();
     private final String twoHyphens = "--";
     private final String lineEnd = "\r\n";
     private final String boundary = "apiclient-" + System.currentTimeMillis();
@@ -188,12 +188,13 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
      * @throws IOException
      */
     private void buildDataPart(DataOutputStream dataOutputStream, DataPart dataFile, String inputName) throws IOException {
+        Log.d(TAG,"buildDataPart ");
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" +
                 inputName + "\"; filename=\"" + dataFile.getFileName() + "\"" + lineEnd);
         if (dataFile.getType() != null && !dataFile.getType().trim().isEmpty()) {
             dataOutputStream.writeBytes("Content-Type: " + dataFile.getType() + lineEnd);
-            Log.d("Name", inputName + "      " + dataFile.getFileName());
+            Log.d(TAG, "inputName = "+inputName + "   filename =   " + dataFile.getFileName());
         }
         dataOutputStream.writeBytes(lineEnd);
 
@@ -206,14 +207,14 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
 
         int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-        while (bytesRead > 0) {
+        while (bytesRead > 0) {  //계속읽기
             dataOutputStream.write(buffer, 0, bufferSize);
             bytesAvailable = fileInputStream.available();
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
         }
 
-        dataOutputStream.writeBytes(lineEnd);
+        dataOutputStream.writeBytes(lineEnd);  //다 읽었으면 처리
     }
 
     /**
