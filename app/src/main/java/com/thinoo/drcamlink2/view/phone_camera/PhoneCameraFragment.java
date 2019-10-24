@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.usb.UsbManager;
 import android.media.MediaActionSound;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Environment;
@@ -112,6 +113,10 @@ public class PhoneCameraFragment extends BaseFragment {
 
     @BindView(R.id.btn_launch_cameraApp)
     Button btnLaunchCameraApp;
+
+    //kimcy: add video
+    @BindView(R.id.btn_launch_videoApp)
+    Button btnLaunchVideoApp;
 
     @BindView(R.id.button_capture)
     ImageButton btnCamera;
@@ -420,6 +425,19 @@ public class PhoneCameraFragment extends BaseFragment {
         startActivity(intent);
 
     }
+
+    @OnClick(R.id.btn_launch_cameraApp)
+    public void launchVideoApp(View view) {
+
+
+        Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(videofile));
+        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0);
+        intent.putExtra("android.intent.extra.durationLimit", 60);
+        startActivity(intent);
+
+    }
+
 
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){
