@@ -44,6 +44,9 @@
         android:theme="@style/Theme.RYC"
         tools:replace="android:icon"
         android:usesCleartextTraffic="true">
+
+
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -99,6 +102,7 @@
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.thinoo.drcamlink2"
             android:exported="false"
+
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
@@ -107,3 +111,6 @@
     </application>
 
 </manifest>
+
+<!-- android:readPermission="com.thinoo.drcamlink2.Permission.READ"
+            android:writePermission="com.thinoo.drcamlink2.Permission.WRITE" -->

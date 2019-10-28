@@ -16,7 +16,7 @@
 package com.thinoo.drcamlink2;
 
 public class AppConfig {
-    public static final boolean LOG = false;
+    public static final boolean LOG = true;
     public static final boolean USE_ACRA = false;
     public static final boolean LOG_PACKETS = false;
 

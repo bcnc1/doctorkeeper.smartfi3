@@ -17,6 +17,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.activities.LaunchCameraActivity;
 import com.thinoo.drcamlink2.view.doctor.DoctorDialogFragment;
 import com.wonderkiln.camerakit.CameraKitError;
@@ -55,6 +58,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +69,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static android.support.v4.content.FileProvider.getUriForFile;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_doctorSelectExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
@@ -369,6 +374,26 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
+//    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//    String filename = "DRCAM_" + timeStamp + ".mp4";
+//    File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
+//
+//    private File createVideoFile() throws IOException {
+//        // Create an image file name
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String imageFileName = "DRCAM_" + timeStamp + "_";
+//        File storageDir = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
+//        File image = File.createTempFile(
+//                imageFileName,  /* prefix */
+//                ".jpg",         /* suffix */
+//                storageDir      /* directory */
+//        );
+//
+//        // Save a file: path for use with ACTION_VIEW intents
+//        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+//        return image;
+//    }
+
     @OnClick(R.id.button_capture)
     public void onTakePhoto(View view) {
         if(cameraIsReady) {
@@ -426,14 +451,31 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
-    @OnClick(R.id.btn_launch_cameraApp)
+    //https://stackoverflow.com/questions/17004705/why-is-the-file-saving-here
+    @OnClick(R.id.btn_launch_videoApp)
     public void launchVideoApp(View view) {
 
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String filename = "DRCAM_" + timeStamp + ".mp4";
 
-        Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
-        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(videofile));
-        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0);
-        intent.putExtra("android.intent.extra.durationLimit", 60);
+
+        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + filename);
+
+        Uri contentUri = FileProvider.getUriForFile(this.getActivity(), BuildConfig.APPLICATION_ID , file);
+
+        Log.d(TAG,"contentUri = "+ contentUri);
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
+        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*10);  //10분
+        this.getActivity().grantUriPermission(this.getActivity().getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
+
+//        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
+//        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
+        //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
         startActivity(intent);
 
     }
