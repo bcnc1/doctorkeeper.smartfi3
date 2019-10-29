@@ -58,7 +58,7 @@ import com.thinoo.drcamlink2.view.WebViewDialogFragment;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
-public class MainActivity extends SessionActivity implements CameraListener, LaunchVrecordActivity.VrecordInterface {
+public class MainActivity extends SessionActivity implements CameraListener, PhoneCameraFragment.VrecordInterface {
 
     private static final int DIALOG_PROGRESS = 1;
     private static final int DIALOG_NO_CAMERA = 2;
@@ -524,7 +524,9 @@ public class MainActivity extends SessionActivity implements CameraListener, Lau
     @Override
     public void startRecord() {
         isVrecording = true;
+        countDownTimer.cancel();
     }
+
 
     public class MyCountDownTimer extends CountDownTimer {
         public MyCountDownTimer(long startTime, long interval) {

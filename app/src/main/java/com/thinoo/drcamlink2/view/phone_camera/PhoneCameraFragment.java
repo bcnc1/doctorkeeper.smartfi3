@@ -98,6 +98,11 @@ public class PhoneCameraFragment extends BaseFragment {
     private boolean cameraIsReady;
     private TextView patient_name;
     private TextView doctor_name;
+    private VrecordInterface mVrecInterface;
+
+    public interface VrecordInterface{
+        public void startRecord();
+    }
 
     //@BindView(R.id.listview_photo)
     RecyclerView listviewPhoto;
@@ -458,6 +463,7 @@ public class PhoneCameraFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
         startActivity(intent);
 
+        mVrecInterface.startRecord();
 //        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 //        String filename = "DRCAM_" + timeStamp + ".mp4";
 //
@@ -537,6 +543,14 @@ public class PhoneCameraFragment extends BaseFragment {
 ////        }
 //    }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(getActivity() !=null && getActivity() instanceof VrecordInterface){
+            mVrecInterface = (VrecordInterface)getActivity();
+        }
+    }
 
     private class OrientationListener extends OrientationEventListener {
 
