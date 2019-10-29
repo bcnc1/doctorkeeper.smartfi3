@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.thinoo.drcamlink2.R;
+
 public class LaunchVrecordActivity extends Activity {
     private final String TAG = LaunchVrecordActivity.class.getSimpleName();
 
@@ -12,5 +14,7 @@ public class LaunchVrecordActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.launch_camera_activity_main);
     }
 }
