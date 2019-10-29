@@ -29,6 +29,7 @@ public class LaunchVrecordActivity extends Activity {
     private static final int VREC_REQUEST = 2100;
     private Context mCon;
     private final int MaxMin = 30;
+    private VrecordInterface mVrecInterface;
 
     private final int PERMISSION_ALL = 1;
     private final String[] PERMISSIONS = {
@@ -36,6 +37,10 @@ public class LaunchVrecordActivity extends Activity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
+
+    public interface VrecordInterface{
+        public void startRecord();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

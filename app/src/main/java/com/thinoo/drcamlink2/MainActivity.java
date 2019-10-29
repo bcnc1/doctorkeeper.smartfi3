@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thinoo.drcamlink2.activities.AppSettingsActivity;
+import com.thinoo.drcamlink2.activities.LaunchVrecordActivity;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.ptp.Camera;
 import com.thinoo.drcamlink2.ptp.Camera.CameraListener;
@@ -57,7 +58,7 @@ import com.thinoo.drcamlink2.view.WebViewDialogFragment;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
-public class MainActivity extends SessionActivity implements CameraListener {
+public class MainActivity extends SessionActivity implements CameraListener, LaunchVrecordActivity.VrecordInterface {
 
     private static final int DIALOG_PROGRESS = 1;
     private static final int DIALOG_NO_CAMERA = 2;
@@ -82,6 +83,7 @@ public class MainActivity extends SessionActivity implements CameraListener {
     private long startTime=5*60*1000;
     private final long interval = 1 * 1000;
     public static MyCountDownTimer countDownTimer;
+    private boolean isVrecording;
 
     @Override
     public Camera getCamera() {        return camera;    }
@@ -512,8 +514,16 @@ public class MainActivity extends SessionActivity implements CameraListener {
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        countDownTimer.cancel();
-        countDownTimer.start();
+        if(!isVrecording){
+            countDownTimer.cancel();
+            countDownTimer.start();
+        }
+
+    }
+
+    @Override
+    public void startRecord() {
+        isVrecording = true;
     }
 
     public class MyCountDownTimer extends CountDownTimer {
