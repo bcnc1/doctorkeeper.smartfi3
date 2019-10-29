@@ -75,6 +75,7 @@
             android:label="@string/activity_app_settings_title"
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".activities.LaunchCameraActivity" />
+        <activity android:name=".activities.LaunchVrecordActivity" />
 
         <!--<activity-->
             <!--android:name="org.acra.CrashReportDialog"-->
