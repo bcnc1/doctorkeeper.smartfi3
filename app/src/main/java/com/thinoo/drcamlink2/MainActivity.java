@@ -57,6 +57,8 @@ import com.thinoo.drcamlink2.view.WebViewDialogFragment;
 
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
+import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
+
 
 public class MainActivity extends SessionActivity implements CameraListener, PhoneCameraFragment.VrecordInterface {
 
@@ -199,9 +201,11 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             Log.i(TAG, "onNewIntent " + intent.getAction());
         }
         this.setIntent(intent);
+
         if (isInStart) {
             ptp.initialize(this, intent);
         }
+        isVrecording = intent.getBooleanExtra(VIDEO_RECORD, false);
 
     }
 

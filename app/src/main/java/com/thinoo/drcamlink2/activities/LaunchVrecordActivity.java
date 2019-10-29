@@ -17,11 +17,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.thinoo.drcamlink2.BuildConfig;
+import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
+
 
 public class LaunchVrecordActivity extends Activity {
     private final String TAG = LaunchVrecordActivity.class.getSimpleName();
@@ -79,6 +83,12 @@ public class LaunchVrecordActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(getApplication(), MainActivity.class);
+        intent.putExtra(VIDEO_RECORD, false);
+        startActivity(intent);
     }
 
     @Override
