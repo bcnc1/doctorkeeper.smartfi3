@@ -15,6 +15,6 @@ public class LaunchVrecordActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.launch_camera_activity_main);
+        setContentView(R.layout.launch_vrecord_activity_main);
     }
 }
