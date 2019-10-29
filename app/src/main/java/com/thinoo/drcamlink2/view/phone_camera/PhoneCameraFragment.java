@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.activities.LaunchCameraActivity;
+import com.thinoo.drcamlink2.activities.LaunchVrecordActivity;
 import com.thinoo.drcamlink2.view.doctor.DoctorDialogFragment;
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
@@ -454,29 +455,31 @@ public class PhoneCameraFragment extends BaseFragment {
     //https://stackoverflow.com/questions/17004705/why-is-the-file-saving-here
     @OnClick(R.id.btn_launch_videoApp)
     public void launchVideoApp(View view) {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String filename = "DRCAM_" + timeStamp + ".mp4";
-
-
-        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + filename);
-
-        Uri contentUri = FileProvider.getUriForFile(this.getActivity(), BuildConfig.APPLICATION_ID , file);
-
-        Log.d(TAG,"contentUri = "+ contentUri);
-
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
-        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
-        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*10);  //10분
-        this.getActivity().grantUriPermission(this.getActivity().getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
-
-//        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
-//        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
-        //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
+        Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
         startActivity(intent);
+
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String filename = "DRCAM_" + timeStamp + ".mp4";
+//
+//
+//        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + filename);
+//
+//        Uri contentUri = FileProvider.getUriForFile(this.getActivity(), BuildConfig.APPLICATION_ID , file);
+//
+//        Log.d(TAG,"contentUri = "+ contentUri);
+//
+//        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+//        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
+//        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
+//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*10);  //10분
+//        this.getActivity().grantUriPermission(this.getActivity().getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+////        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
+//
+////        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
+////        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
+//        //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
+//        startActivity(intent);
 
     }
 
