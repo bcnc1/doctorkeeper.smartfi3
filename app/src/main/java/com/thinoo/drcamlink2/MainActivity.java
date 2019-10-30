@@ -82,7 +82,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
     private boolean cameraListenerInitialized = false;
 
-    private long startTime=5*60*1000;
+    private long startTime=1*60*1000;
     private final long interval = 1 * 1000;
     public static MyCountDownTimer countDownTimer;
     private boolean isVrecording;
@@ -206,6 +206,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             ptp.initialize(this, intent);
         }
         isVrecording = intent.getBooleanExtra(VIDEO_RECORD, false);
+        Log.i(TAG,"isVrecording = "+isVrecording);
 
     }
 
@@ -518,6 +519,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
+        Log.d(TAG,"isVrecording = "+isVrecording);
         if(!isVrecording){
             countDownTimer.cancel();
             countDownTimer.start();

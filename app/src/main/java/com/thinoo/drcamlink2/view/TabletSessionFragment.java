@@ -53,7 +53,7 @@ import com.thinoo.drcamlink2.ptp.FocusPoint;
 import com.thinoo.drcamlink2.ptp.PtpConstants;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.ptp.model.ObjectInfo;
-import com.thinoo.drcamlink2.util.DimenUtil;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 
 public class TabletSessionFragment extends SessionFragment implements GestureDetector.GestureHandler,
         Camera.RetrieveImageInfoListener {
@@ -306,7 +306,7 @@ public class TabletSessionFragment extends SessionFragment implements GestureDet
         properties.put(virtualProperty, displayer);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.FILL_PARENT);
-        params.rightMargin = (int) DimenUtil.dpToPx(getActivity(), 2);
+        params.rightMargin = (int) DisplayUtil.dpToPx(getActivity(), 2);
         displayer.getList().setLayoutParams(params);
         leftPropertiesView.addView(displayer.getList());
     }

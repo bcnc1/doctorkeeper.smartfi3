@@ -32,7 +32,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.thinoo.drcamlink2.ptp.Camera;
-import com.thinoo.drcamlink2.util.DimenUtil;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 
 public class PropertyDisplayer {
 
@@ -210,7 +210,7 @@ public class PropertyDisplayer {
     }
 
     private void layoutListView(int itemWidth) {
-        int paddingRight = (int) DimenUtil.dpToPx(context, 8);
+        int paddingRight = (int) DisplayUtil.dpToPx(context, 8);
         int listWidth = itemWidth + paddingRight + list.getListPaddingLeft() + list.getListPaddingRight()
                 + list.getVerticalScrollbarWidth();
         listContainer.getLayoutParams().width = Math.max(checkboxWidth, listWidth);
