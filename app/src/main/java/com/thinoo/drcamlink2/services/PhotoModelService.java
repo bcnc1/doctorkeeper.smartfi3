@@ -123,4 +123,7 @@ public class PhotoModelService {
     }
 
 
+//    public static PhotoModel saveVideo(byte[] bytes, String filename, final int mode) {
+//        return photoModel;
+//    }
 }

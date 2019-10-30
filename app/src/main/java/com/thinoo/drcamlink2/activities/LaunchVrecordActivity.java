@@ -16,13 +16,20 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.madamfive.BlabAPI;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.Header;
 
 import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
 
@@ -33,6 +40,8 @@ public class LaunchVrecordActivity extends Activity {
     private static final int VREC_REQUEST = 2100;
     private Context mCon;
     private final int MaxMin = 30;
+    private File mFile;
+    private String mFilename;
 
 
     private final int PERMISSION_ALL = 1;
@@ -56,12 +65,12 @@ public class LaunchVrecordActivity extends Activity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String filename = "DRCAM_" + timeStamp + ".mp4";
+            mFilename = "DRCAM_" + timeStamp + ".mp4";
 
 
-            File file = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + filename);
+            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + mFilename);
 
-            Uri contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , file);
+            Uri contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
 
             Log.d(TAG,"contentUri = "+ contentUri);
 
@@ -86,9 +95,45 @@ public class LaunchVrecordActivity extends Activity {
 
         Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(getApplication(), MainActivity.class);
-        intent.putExtra(VIDEO_RECORD, false);
-        startActivity(intent);
+        if(requestCode == VREC_REQUEST && resultCode == Activity.RESULT_OK){
+            //kimcy 업로드 테스트
+            BlabAPI.ktStoreObject(mFile.toString(),"video", mFilename, new JsonHttpResponseHandler(){
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    Log.i(TAG, "video-Uploading => 시작");
+                }
+
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+//                    super.onSuccess(statusCode, headers, response);
+//                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    super.onSuccess(statusCode, headers, responseString);
+                    Log.i(TAG, "video-Uploading => 성공");
+                }
+
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.i(TAG, "video-Uploading => 실패");
+                }
+
+                @Override
+                public void onRetry(int retryNo) {
+                    super.onRetry(retryNo);
+                }
+            }  );
+            Intent intent = new Intent(getApplication(), MainActivity.class);
+            intent.putExtra(VIDEO_RECORD, false);
+            startActivity(intent);
+        }else{
+            Log.e(TAG,"비디오에서 못 돌아옴");
+        }
+
     }
 
     @Override
@@ -115,6 +160,7 @@ public class LaunchVrecordActivity extends Activity {
         }
         return true;
     }
+
 
 
 }

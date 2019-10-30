@@ -82,7 +82,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
     private boolean cameraListenerInitialized = false;
 
-    private long startTime=1*60*1000;
+    private long startTime=5*60*1000;
     private final long interval = 1 * 1000;
     public static MyCountDownTimer countDownTimer;
     private boolean isVrecording;

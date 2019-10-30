@@ -91,11 +91,12 @@ public class BlabAPI {
 
     /**
      * 토큰을 가져온다
+     * curl -i -H'X-Auth-New-Token:true' -H'x-storage-user:doctorkeeper:abc' -H'x-storage-pass: abc1234' https://ssproxy.ucloudbiz.olleh.com/auth/v1.0 -XGET
      * @return
      */
     public static String getAccessToken() {
         //mAcccessToken = read_mAcccessToken();
-        mAcccessToken = "AUTH_tk9ac92ece3aeb46ba90c6f9beaeeb79e7";
+        mAcccessToken = "AUTH_tke22f9541a14840efb828d660658c780d";
         return mAcccessToken;
     }
 
@@ -104,7 +105,7 @@ public class BlabAPI {
      * @return
      */
     public static String getHospitalId() {
-        mHospitalId = "ab";
+        mHospitalId = "abc";
         return mHospitalId;
     }
 
@@ -160,7 +161,7 @@ public class BlabAPI {
         FilesClient smartFiClient = new FilesClient("ab", "1234"); //계정명(병원명==컨테이너명), 패스워드
     }
 
-    public static void ktStoreObject(final String filePath, final String cameraKind, final JsonHttpResponseHandler responseHandler) {
+    public static void ktStoreObject(final String filePath, final String cameraKind, final  String fileName, final JsonHttpResponseHandler responseHandler) {
         mAcccessToken = getAccessToken(); //token
         mPatientId = getPatientId(); // 환자명
         mHospitalId = getHospitalId(); //병원id이면서 containerName
@@ -177,7 +178,7 @@ public class BlabAPI {
 
 
                 okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url( getAbsoluteUrl(mHospitalId+"/"+ mPatientId+"/"+cameraKind+filePath))
+                        .url( getAbsoluteUrl(mHospitalId+"/"+ mPatientId+"/"+cameraKind+fileName))
                         .put(file_body)
                         .addHeader("X-Auth-Token",mAcccessToken)
                         .build();
@@ -199,9 +200,9 @@ public class BlabAPI {
                     }
 
 
-
-                    deleteImage();
-
+                      //추후구현
+//                    deleteImage();
+//
                     countDownTimer.cancel();
                     countDownTimer.start();
 

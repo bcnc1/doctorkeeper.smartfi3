@@ -164,7 +164,7 @@ public class DSLRFragment extends SessionFragment implements
 
                 Log.d(TAG,"dslr 파일패스 = "+photoModel.getFullpath());
                 //uploadImage(filename);
-                uploadDslrImage(photoModel.getFullpath());
+                uploadDslrImage(photoModel.getFullpath(), filename);
 
                 photoModel.setUploaded(true);  //db에 업로드 했다는, 비동기라 아직 업로드 전인데 이걸 먼저해도 되나?
                 photoModel.save();  //kimcy 왜 한번 더 저장하지?? 위에서 저렇게 하고 나서 기록하는...
@@ -515,11 +515,11 @@ public class DSLRFragment extends SessionFragment implements
     }
 
 
-    private void uploadDslrImage(String filePath){
+    private void uploadDslrImage(String filePath, String filename){
 
         Log.i("Upload Image","Read Bitmap");
 
-        BlabAPI.ktStoreObject(filePath, "DSLR", new JsonHttpResponseHandler() {
+        BlabAPI.ktStoreObject(filePath, "DSLR", filename, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 Log.i("AsyncTask", "Uploading");

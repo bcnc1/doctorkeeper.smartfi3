@@ -189,7 +189,7 @@ public class LaunchCameraActivity extends Activity {
 
 
             Log.d(TAG, "카메라업로드시작:" );
-            BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", new JsonHttpResponseHandler() {
+            BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", filename, new JsonHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     Log.i("AsyncTask", "Uploading");
