@@ -76,7 +76,10 @@
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".activities.LaunchCameraActivity" />
         <activity android:name=".activities.LaunchVrecordActivity" />
-
+        <service
+            android:name=".services.UploadService"
+            android:exported="false">
+        </service>
         <!--<activity-->
             <!--android:name="org.acra.CrashReportDialog"-->
             <!--android:excludeFromRecents="true"-->

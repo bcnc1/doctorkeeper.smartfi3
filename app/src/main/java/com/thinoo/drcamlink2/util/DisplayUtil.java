@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.webkit.MimeTypeMap;
 
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
@@ -43,5 +44,13 @@ public class DisplayUtil {
             }
         }
     }
+
+
+//    public static final String getMimeType(String path) {
+//
+//        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+//
+//        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+//    }
 
 }

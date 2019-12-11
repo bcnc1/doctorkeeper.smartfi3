@@ -2,45 +2,37 @@ package com.thinoo.drcamlink2.madamfive;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Network;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Network;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+//import com.android.volley.AuthFailureError;
+//import com.android.volley.Cache;
+//import com.android.volley.DefaultRetryPolicy;
+//import com.android.volley.Network;
+//import com.android.volley.NetworkResponse;
+//import com.android.volley.Request;
+//import com.android.volley.RequestQueue;
+//import com.android.volley.Response;
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
+//import com.android.volley.toolbox.Volley;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.thinoo.drcamlink2.services.VideoIntentService;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
+import okhttp3.Cache;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 
@@ -186,6 +178,8 @@ public class BlabAPI {
                 try {
                     okhttp3.Response response = client.newCall(request).execute();
 
+                    //response.body()
+
                     if(!response.isSuccessful()){
                         // throw new IOException("Error : "+response);
                         responseHandler.onFailure(response.code(), null, response.toString(), null);
@@ -217,240 +211,10 @@ public class BlabAPI {
     }
 
 
-    /**
-     * 파일 path 기반의 API
-     * @param filePath
-     * @param cameraKind
-     * @param responseHandler
-     * token : 업로드 사용자별로 별도의 token이 필요
-     */
-    public static void createPut(final String filePath,final String cameraKind, final JsonHttpResponseHandler responseHandler) {
-
-        mAcccessToken = getAccessToken();
-        mPatientId = getPatientId();
-
-//        final Map<String, String> params = new HashMap<String, String>();
-//
-//        String chartNumber = selectedPatientInfo.get("chartNumber");
-//        chartNumber = chartNumber.replace("++++++",""); //환자 차트 번호
-//        chartNumber.trim();
-//
-//        params.put("title", cameraKind);
-//        params.put("type", "smartfi");
-//        params.put("content", URLEncoder.encode(chartNumber));
-//        params.put("accessToken", mAcccessToken);
-//        //params.put("boardId", boardId);
-//        params.put("categories[]", selectedPatientInfo.get("categoryId"));
-//        params.put("currency", URLEncoder.encode(selectedPatientInfo.get("name")));
-//
-//        JSONObject attachmentJson = new JSONObject();
-        final String fileName = UUID.randomUUID().toString();
-        Log.i(TAG, "fileName: " + fileName);
-//
-//        try {
-//            attachmentJson.put("guid", fileName);
-//            attachmentJson.put("fileType", "image/jpeg");
-//            attachmentJson.put("fileName", fileName);
-//            attachmentJson.put("type", "none.ko");
-//            params.put("attachments[]", URLEncoder.encode(attachmentJson.toString()));
-//
-//        } catch (JSONException e) {
-//            Log.i("m5API",e.toString());
-//        }
-//
-//        JSONObject userDataJson = new JSONObject();
-//        try {
-//            if(selectedDoctor!=null) {
-//                userDataJson.put("doctorName", URLEncoder.encode(selectedDoctor.get("name")));
-//                userDataJson.put("doctorNumber", URLEncoder.encode(selectedDoctor.get("doctorNumber")));
-//            }
-//            userDataJson.put("patient", URLEncoder.encode(selectedPatientInfo.get("name")));
-//            params.put("userData", userDataJson.toString());
-//        } catch (JSONException e) {
-//            Log.i("m5API",e.toString());
-//        }
-
-
-        //VolleySingleton queue = VolleySingleton.getInstance(mContext);
-
-
-
-//        final String url = "http://httpbin.org/get?param1=hello";
-//
-//// prepare the Request
-//        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-//                new Response.Listener<JSONObject>()
-//                {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        // display response
-//                        Log.d("Response", response.toString());
-//                    }
-//                },
-//                new Response.ErrorListener()
-//                {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d("Error.Response", response);
-//                    }
-//                }
-//        );
-
-
-        StringRequest putRequest = new StringRequest(Request.Method.PUT,
-                getAbsoluteUrl(getHospitalId() + "/"+getPatientId()+"/"+ getCategoryId()+"/"+"20191010"),
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response) {
-                        // response
-                        Log.d("Response", response);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // error
-                        Log.d("Error.Response", String.valueOf(error));
-                    }
-                }
-        ) {
-
-//            @Override
-//            protected Map<String, String> getParams()
-//            {
-//                Map<String, String>  params = new HashMap<String, String> ();
-//                params.put("name", "Alif");
-//                params.put("domain", "http://itsalif.info");
-//
-//                return params;
-//            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("X-Auth-Token", mAcccessToken);
-                //return super.getHeaders();
-                return params;
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                  Log.d(TAG, "getBody");
-//                final File root = new File((Environment.getExternalStorageDirectory() + File.separator + "DIR_NAME"));
-//
-//                FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile) );
-//
-//
-//
-//                ByteArrayInputStream fileInputStream = new ByteArrayInputStream(dataFile.getContent());
-
-
-                 byte[] buffer = new byte[4096];
-                 BufferedInputStream bis = null;
-                 ByteArrayOutputStream baos = null;
-//                bytesAvailable = fileInputStream.available();
-//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                buffer = new byte[bufferSize
-
-//                byte[] buffer;
-//                int maxBufferSize = 1*1024*1024;
-
-                try {
-                     bis = new BufferedInputStream(new FileInputStream(filePath));
-                     baos = new ByteArrayOutputStream();
-                    int bytes = 0;
-                    while ((bytes = bis.read(buffer, 0, buffer.length)) > 0) {
-                        baos.write(buffer, 0, bytes);
-                    }
-                    //return super.getBody();
-                    baos.close();
-                    bis.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return baos.toByteArray();
-            }
-
-
-        };
-
-        VolleySingleton.getInstance(mContext).addToRequestQueue(putRequest);
-
-
-
-
-
-
-        //컨테이너명(병원이름)+환자명+사진/비디오+진료날짜(사진찍은날짜?,로그인한날짜?)+디바이스명(폰/dslr)+파일명
-//        VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.PUT,
-//                getAbsoluteUrl("/ab/" + mPatientId+"/pictures"+"20191010"),
-//                new Response.Listener<NetworkResponse>() {
-//                    @Override
-//                    public void onResponse(NetworkResponse response) {
-//                        Log.i(TAG, "Response:%n %s" + new String(response.data));
-//                        String resultResponse = new String(response.data);
-//                        JSONObject resultJson = null;
-//                        try {
-//                            resultJson = new JSONObject(resultResponse);
-//                            responseHandler.onSuccess(200, null, resultJson);
-//                        } catch (JSONException e) {
-//                            Log.i(TAG,e.toString());
-//                            responseHandler.onSuccess(501, null, resultJson);
-//                        }
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                responseHandler.onFailure(200, null, error.getLocalizedMessage(), null);
-////                error.printStackTrace();
-//            }
-//        }) {
-////            @Override
-////            protected Map<String, String> getParams() {
-////                return params;
-////            }
-//
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("X-Auth-Token", mAcccessToken);
-//                return params;
-//            }
-//
-//            @Override
-//            protected Map<String, DataPart> getByteData() {
-//
-//                Map<String, DataPart> ImageParams = new HashMap<String, DataPart>();
-//                // file name could found file base or direct access from real path
-//                // for now just get bitmap data from ImageView
-//                long imagename = System.currentTimeMillis(); //현재 시간을 이름으로 사용하기 위해..
-//                Log.i(TAG, "imageBytes.length : " + imageBytes.length);
-//                ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));
-//
-//                return ImageParams;
-//            }
-//        };
-//
-////        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000, 1, 1.0f));
-//        request.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//
-//        VolleySingleton.getInstance(mContext).addToRequestQueue(request);
-
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(getActivity(),selectedPatientInfo.get("name")+"님 이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        deleteImage();
-
-        countDownTimer.cancel();
-        countDownTimer.start();
+    public static void S3UploadIntentService(final String filePath, final String cameraKind, final  String fileName, final JsonHttpResponseHandler responseHandler) {
+        Intent it = new Intent(getActivity(), VideoIntentService.class);
+        //it.putExtra()
+        getActivity().startService(it);
 
     }
 

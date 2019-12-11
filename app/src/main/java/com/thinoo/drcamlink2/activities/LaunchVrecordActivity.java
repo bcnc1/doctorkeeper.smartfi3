@@ -16,21 +16,18 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
-import com.thinoo.drcamlink2.madamfive.BlabAPI;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.thinoo.drcamlink2.services.UploadService;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import cz.msebera.android.httpclient.Header;
-
+import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_KIND;
+import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_NAME;
+import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
 
 
@@ -96,37 +93,44 @@ public class LaunchVrecordActivity extends Activity {
         Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
 
         if(requestCode == VREC_REQUEST && resultCode == Activity.RESULT_OK){
+
+            //서비스로 구현
+            Intent it = new Intent(mCon, UploadService.class);
+            it.putExtra(UPLOAD_FILE_PATH, mFile.toString());
+            it.putExtra(UPLOAD_FILE_KIND, "video");
+            it.putExtra(UPLOAD_FILE_NAME, mFilename);
+
+            startService(it);
+
+
+
             //kimcy 업로드 테스트
-            BlabAPI.ktStoreObject(mFile.toString(),"video", mFilename, new JsonHttpResponseHandler(){
-                @Override
-                public void onStart() {
-                    super.onStart();
-                    Log.i(TAG, "video-Uploading => 시작");
-                }
-
+//            BlabAPI.ktStoreObject(mFile.toString(),"video", mFilename, new JsonHttpResponseHandler(){
 //                @Override
-//                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                    super.onSuccess(statusCode, headers, response);
+//                public void onStart() {
+//                    super.onStart();
+//                    Log.i(TAG, "video-Uploading => 시작");
 //                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    super.onSuccess(statusCode, headers, responseString);
-                    Log.i(TAG, "video-Uploading => 성공");
-                }
-
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    super.onFailure(statusCode, headers, responseString, throwable);
-                    Log.i(TAG, "video-Uploading => 실패");
-                }
-
-                @Override
-                public void onRetry(int retryNo) {
-                    super.onRetry(retryNo);
-                }
-            }  );
+//
+//
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                    super.onSuccess(statusCode, headers, responseString);
+//                    Log.i(TAG, "video-Uploading => 성공");
+//                }
+//
+//
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                    super.onFailure(statusCode, headers, responseString, throwable);
+//                    Log.i(TAG, "video-Uploading => 실패");
+//                }
+//
+//                @Override
+//                public void onRetry(int retryNo) {
+//                    super.onRetry(retryNo);
+//                }
+//            }  );
             Intent intent = new Intent(getApplication(), MainActivity.class);
             intent.putExtra(VIDEO_RECORD, false);
             startActivity(intent);
