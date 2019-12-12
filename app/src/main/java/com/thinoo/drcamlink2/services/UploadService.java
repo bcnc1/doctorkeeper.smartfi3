@@ -2,9 +2,12 @@ package com.thinoo.drcamlink2.services;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,6 +20,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
@@ -39,7 +43,7 @@ public class UploadService extends Service {
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
     private String mFPath, mFKind, mFContainer;
-    private static String mAcccessToken = "AUTH_tkc098dfae46d9490b833add56c39e1f4b";
+    private static String mAcccessToken = "AUTH_tkbd95172ba4a641dd81c75e5beb3c34c5";
     private Context mCon;
     private String mHospitalId = "abc";
     private String mPatientId = "kimcy";
@@ -116,6 +120,7 @@ public class UploadService extends Service {
                 //추후 사용할 코드임
                // mAcccessToken = SmartFiPreference.getSfToken(mCon);
                 makenoti("비디오 업로딩..");
+                //makenotiHeadUp("비디오 업로딩..");
                 Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -165,7 +170,7 @@ public class UploadService extends Service {
     private void makenoti(String message) {
 
         Notification noti = new NotificationCompat.Builder(getApplicationContext() /*, MainActivity.id*/)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setWhen(System.currentTimeMillis())  //When the event occurred, now, since noti are stored by time.
 
                 .setContentTitle("Service")   //Title message top row.
@@ -177,4 +182,63 @@ public class UploadService extends Service {
         nm.notify(NotID, noti);
        // NotID++;
     }
+
+    //헤드업 디스플레이 적용안됨..추후 수정 및 개발..
+    private void makenotiHeadUp(String message) {
+
+        int HeadNotiId = 1010;
+        //createNotificationChannel
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+        }else{
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+
+            NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(getApplicationContext())
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("SmartFi")
+                    .setContentText("비디오 파일 업로딩..")
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setContentIntent(pendingIntent);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(HeadNotiId, notiBuilder.build());
+
+
+
+        }
+
+//        Notification noti = new NotificationCompat.Builder(getApplicationContext() /*, MainActivity.id*/)
+//                .setSmallIcon(R.drawable.ic_launcher)
+//                .setWhen(System.currentTimeMillis())  //When the event occurred, now, since noti are stored by time.
+//
+//                .setContentTitle("Service")   //Title message top row.
+//                .setContentText(message)  //message when looking at the notification, second row
+//                .setAutoCancel(true)   //allow auto cancel when pressed.
+//                .build();  //finally build and return a Notification.
+
+        //Show the notification
+      //  nm.notify(NotID, noti);
+        // NotID++;
+    }
+
+//    private void createNotificationChannel(context: Context, importance: Int, showBadge: Boolean,
+//                                          name: String, description: String) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val channelId = "${context.packageName}-$name"
+//            val channel = NotificationChannel(channelId, name, importance)
+//            channel.description = description
+//            channel.setShowBadge(showBadge)
+//
+//            val notificationManager = context.getSystemService(NotificationManager::class.java)
+//            notificationManager.createNotificationChannel(channel)
+//        }
+//    }
+
 }
