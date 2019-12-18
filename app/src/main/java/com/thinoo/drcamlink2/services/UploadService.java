@@ -128,6 +128,8 @@ public class UploadService extends Service {
                         File f = new File(mFPath);
                         String contentType = getMimeType(mFPath);
 
+                        Log.d(TAG, "contentType = "+contentType);
+
                         OkHttpClient client = new OkHttpClient();
 
                         RequestBody file_body = RequestBody.create(MediaType.parse(contentType),f);

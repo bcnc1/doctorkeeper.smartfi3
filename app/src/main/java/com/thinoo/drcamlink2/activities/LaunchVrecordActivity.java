@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.services.UploadService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -61,7 +63,8 @@ public class LaunchVrecordActivity extends Activity {
         if(!hasPermissions(mCon, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
             mFilename = "DRCAM_" + timeStamp + ".mp4";
 
 
@@ -100,8 +103,13 @@ public class LaunchVrecordActivity extends Activity {
             it.putExtra(UPLOAD_FILE_KIND, "video");
             it.putExtra(UPLOAD_FILE_NAME, mFilename);
 
+            //썸네일 테스트
+            Bitmap thumb = DisplayUtil.getThumbImage(mFile.toString());
+
             startService(it);
 
+            //using uploadmanager
+            //1. data 저장.
 
 
             //kimcy 업로드 테스트

@@ -2,6 +2,8 @@ package com.thinoo.drcamlink2.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.webkit.MimeTypeMap;
@@ -43,6 +45,15 @@ public class DisplayUtil {
                 bitmap.recycle();
             }
         }
+    }
+
+    static final int THUMB_WIDTH = 255;
+    static final int THUMB_HEIGHT = 170;
+
+    public static final Bitmap getThumbImage(String filePath){
+        Bitmap source = BitmapFactory.decodeFile(filePath);
+
+        return ThumbnailUtils.extractThumbnail(source, THUMB_WIDTH, THUMB_HEIGHT);
     }
 
 

@@ -749,6 +749,7 @@ public class MadamfiveAPI {
 
     public static void deleteImage() {
 
+        Log.d(TAG,"deleteImage");
         File myDir = getActivity().getExternalFilesDir(Environment.getExternalStorageState());
         if(myDir.exists()&&myDir.isDirectory()){
             File[] files = myDir.listFiles();

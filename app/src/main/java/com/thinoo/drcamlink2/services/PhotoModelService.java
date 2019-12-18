@@ -16,6 +16,7 @@
 package com.thinoo.drcamlink2.services;
 
 
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 
@@ -52,6 +53,39 @@ public class PhotoModelService {
     public static void deleteImageDBDate(Long id){
         PhotoModel photoModel = PhotoModel.findById(PhotoModel.class, id);
         photoModel.delete();
+    }
+
+//    public static PhotoModel saveThumb(Bitmap bitmap, String filename, final int mode) {
+//        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
+//
+//        if (!file.isDirectory()) {
+//            file.mkdir();
+//        }
+//
+//        FileOutputStream outStream = null;
+//
+//        try {
+//
+//            Log.d(TAG, "파일저장 패스 = "+file.getAbsolutePath()+filename);
+//            outStream = new FileOutputStream(file.getAbsolutePath()+filename); //파일저장
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//            outStream.close();
+//        } catch (FileNotFoundException e) { // <10>
+//            Log.e(TAG,e.toString());
+//        } catch (IOException e) {
+//            Log.e(TAG,e.toString());
+//        }
+//
+//
+//        final PhotoModel photoModel = new PhotoModel();
+//        photoModel.setThumbpath(file.getAbsolutePath()+filename);
+//
+//
+//    }
+    //mode: 카메라(0), dslr(1), 비디오(2)
+    public static PhotoModel saveMediaObj(byte[] bytes, String filename, final int mode) {
+
+        return null;
     }
 
     public static PhotoModel savePhoto(byte[] bytes, String filename, final int mode) {
@@ -112,12 +146,15 @@ public class PhotoModelService {
         photoModel.setFilname(filename);
         photoModel.setUploaded(true);
         photoModel.setMode(mode); // CAMERA
-        photoModel.setTargetId("");
+ //       photoModel.setTargetId("");
 //        photoModel.setThumb(bytes);
 //        photoModel.setBitmap(bytes);
-        photoModel.setTargetName("");
+ //       photoModel.setTargetName("");
         photoModel.setCreated(new Date());
         photoModel.save();
+
+
+
 
         return photoModel;
     }

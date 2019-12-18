@@ -119,7 +119,7 @@ public class BlabAPI {
         return mCateId;
     }
 
-    private static String getMimeType(String path) {
+    private static final String getMimeType(String path) {
 
         String extension = MimeTypeMap.getFileExtensionFromUrl(path);
 

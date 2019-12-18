@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
@@ -48,6 +49,10 @@ public class LaunchCameraActivity extends Activity {
     private Button btnUpload;
     private OrientationListener orientationListener;
     private Uri imageToUploadUri;
+    private String mFileName;
+    private File mFile;
+    private final String  DEVICE = "phone";
+    private Context mCon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,40 +60,29 @@ public class LaunchCameraActivity extends Activity {
 
         setContentView(R.layout.launch_camera_activity_main);
 
+        mCon = this;
+
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
-//        Button photoButton = (Button) this.findViewById(R.id.btn_CameraApp);
-//        photoButton.setOnClickListener(new View.OnClickListener() {
-
-//            @Override
-//            public void onClick(View v) {
-//                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-//                } else {
-                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//                    File f = new File(Environment.getExternalStorageDirectory(), "tempImage.jpg");
-                    File f = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/tempImage.jpg");
-
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
-//                    imageToUploadUri = Uri.fromFile(f);
-                    imageToUploadUri = FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f);
-                    Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
-//                }
-//            }
-//        });
-
-//        btnUpload = (Button) this.findViewById(R.id.btn_UploadAtCameraApp);
-//        btnUpload.setVisibility(View.INVISIBLE);
-
-//        Button btnBack = (Button) this.findViewById(R.id.btn_backToMain);
-//        btnBack.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
 
 
-//            }
-//        });
+
+        //File f = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/tempImage.jpg");
+        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
+
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        mFileName = DEVICE + "_" + timeStamp+".jpg";
+
+        mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+
+
+        imageToUploadUri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID, mFile);
+        Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
+
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageToUploadUri );
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+
 
         orientationListener = new OrientationListener(getContext());
         orientationListener.enable();
@@ -117,15 +111,8 @@ public class LaunchCameraActivity extends Activity {
             try {
 
                 if(imageToUploadUri != null) {
-//                    Uri selectedImageUri = data.getData();
-                    Bitmap srcBmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageToUploadUri), null, null);
-//            final Bitmap photo = (Bitmap) data.getExtras().get("data");
-//            imageView.setImageBitmap(photo);
 
-//            btnUpload.setVisibility(View.VISIBLE);
-//            btnUpload.setOnClickListener(new View.OnClickListener(){
-//                @Override
-//                public void onClick(View view) {
+                    Bitmap srcBmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageToUploadUri), null, null);
 
                     int orientationValue = orientationListener.rotation;
                     srcBmp = rotateImage(srcBmp, orientationValue);
@@ -151,8 +138,6 @@ public class LaunchCameraActivity extends Activity {
             }catch (Exception e){
                 Log.e("INSIDE___",e.toString());
             }
-//                }
-//            });
 
         }
     }

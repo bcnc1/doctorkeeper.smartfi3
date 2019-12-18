@@ -6,6 +6,10 @@ import android.preference.PreferenceManager;
 
 public class SmartFiPreference {
     public static final String SF_TOKEN = "smartfi.token";
+    public static final String SF_HOSPITAL_ID = "smartfi.hospital.id";
+    public static final String SF_DOCTOR_ID = "smartfi.doctor.id";
+    public static final String SF_PATIENT_ID = "smartfi.patient.id";
+    public static final String SF_PATIENT_CHART = "smartfi.patient.chart";
 
     public static void defaultPreference(Context context){
 
@@ -17,6 +21,38 @@ public class SmartFiPreference {
 
     public static void setSfToken(Context con, String tk){
         setString(con, SF_TOKEN, tk);
+    }
+
+    public static final String getHospitalId(Context con){
+        return getString(con, SF_HOSPITAL_ID, "sf-hospital");
+    }
+
+    public static void setHospitalId(Context con, String id){
+        setString(con, SF_HOSPITAL_ID, id);
+    }
+
+    public static final String getDoctorId(Context con){
+        return getString(con, SF_DOCTOR_ID, "sf-doctor");
+    }
+
+    public static void setDoctorId(Context con, String id){
+        setString(con, SF_DOCTOR_ID, id);
+    }
+
+    public static final String getPatientId(Context con){
+        return getString(con, SF_PATIENT_ID, "sf-patient");
+    }
+
+    public static void setPatientId(Context con, String id){
+        setString(con, SF_PATIENT_ID, id);
+    }
+
+    public static final String getPatientChart(Context con){
+        return getString(con, SF_PATIENT_CHART, "101010");
+    }
+
+    public static void setPatientChart(Context con, String chartNum){
+        setString(con, SF_PATIENT_CHART, chartNum);
     }
 
     public static void setInt(Context context, String key, int value){

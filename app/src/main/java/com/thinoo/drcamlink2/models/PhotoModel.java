@@ -22,15 +22,20 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
 
     private Long id;
-    private Integer mode;     // camera / dsrl
-    private String fullpath;
+    private Integer mode;     // camera / dsrl /video
+    private String fullpath;  //원본파일패스
     private String filname;
-    private String targetName;
-    private String targetId;
-    private Boolean uploaded;
+    private String thumbpath;  //섬네일 파일패스
+   // private String targetName;  // 사용하지 않음
+   // private String targetId;    //사용하지 않음
+    private Boolean uploaded = false;     //업로드 완료시
     private Boolean uploading = false;
-    private Boolean needUploading = false;
+    //private Boolean needUploading = false;
     private Date created;
+    private Boolean thumbUploading = false;
+    private Boolean chainUploading = false;
+
+
 
 
     public PhotoModel() {
@@ -49,9 +54,17 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
         this.fullpath = fullpath;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getThumbpath(){
+        return thumbpath;
     }
+
+    public void setThumbpath(String thumbpath){
+        this.thumbpath = thumbpath;
+    }
+//
+//    public void setId(long id) {
+//        this.id = id;
+//    }
 
     public Integer getMode() {
         return mode;
@@ -69,21 +82,21 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
         this.filname = filname;
     }
 
-    public String getTargetName() {
-        return targetName;
-    }
-
-    public void setTargetName(String targetName) {
-        this.targetName = targetName;
-    }
-
-    public String getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
+//    public String getTargetName() {
+//        return targetName;
+//    }
+//
+//    public void setTargetName(String targetName) {
+//        this.targetName = targetName;
+//    }
+//
+//    public String getTargetId() {
+//        return targetId;
+//    }
+//
+//    public void setTargetId(String targetId) {
+//        this.targetId = targetId;
+//    }
 
     public Boolean getUploaded() {
         return uploaded;
@@ -93,13 +106,13 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
         this.uploaded = uploaded;
     }
 
-    public Boolean getNeedUploading() {
-        return needUploading;
-    }
-
-    public void setNeedUploading(Boolean needUploading) {
-        this.needUploading = needUploading;
-    }
+//    public Boolean getNeedUploading() {
+//        return needUploading;
+//    }
+//
+//    public void setNeedUploading(Boolean needUploading) {
+//        this.needUploading = needUploading;
+//    }
 
     public Boolean getUploading() {
         return uploading;
@@ -117,4 +130,30 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
         this.created = created;
     }
 
+//    @Override
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    @Override
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+
+
+    public Boolean getThumbUploading() {
+        return thumbUploading;
+    }
+
+    public void setThumbUploading(Boolean thumbUploading) {
+        this.thumbUploading = thumbUploading;
+    }
+
+    public Boolean getChainUploading() {
+        return chainUploading;
+    }
+
+    public void setChainUploading(Boolean chainUploading) {
+        this.chainUploading = chainUploading;
+    }
 }
