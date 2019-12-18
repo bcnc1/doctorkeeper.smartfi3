@@ -104,7 +104,7 @@ public class LaunchVrecordActivity extends Activity {
             it.putExtra(UPLOAD_FILE_NAME, mFilename);
 
             //썸네일 테스트
-            Bitmap thumb = DisplayUtil.getThumbImage(mFile.toString());
+           // Bitmap thumb = DisplayUtil.getThumbImage(mFile.toString());
 
             startService(it);
 

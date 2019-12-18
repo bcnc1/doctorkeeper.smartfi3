@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,11 +28,13 @@ import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -112,28 +115,35 @@ public class LaunchCameraActivity extends Activity {
 
                 if(imageToUploadUri != null) {
 
-                    Bitmap srcBmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageToUploadUri), null, null);
+//                    Bitmap srcBmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageToUploadUri), null, null);
+//
+//                    int orientationValue = orientationListener.rotation;
+//                    srcBmp = rotateImage(srcBmp, orientationValue);
+//
+//                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                    srcBmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+////            photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+//                    byte[] imageData = bos.toByteArray();  //이미지데이터가 바이트로 직렬화
+//
+//                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//                    String filename = "DRCAM_" + timeStamp + "_";
+//                    Log.i(TAG, "카메라 파일명 ===:" + filename);
+//
+//
+//                    savePhoto(imageData, "phone", filename);
+//
+////                    deleteGalleryFile();
+//
+//                    Intent intent = new Intent(getApplication(), MainActivity.class);
+//                    intent.putExtra("fragment", "phonefragment");
+//                    startActivity(intent);
 
-                    int orientationValue = orientationListener.rotation;
-                    srcBmp = rotateImage(srcBmp, orientationValue);
-
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    srcBmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-//            photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                    byte[] imageData = bos.toByteArray();  //이미지데이터가 바이트로 직렬화
-
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                    String filename = "DRCAM_" + timeStamp + "_";
-                    Log.i(TAG, "카메라 파일명 ===:" + filename);
 
 
-                    savePhoto(imageData, "phone", filename);
+                    //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+                    DisplayUtil.storeThumbImage(mFile.toString(),
+                            mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
 
-//                    deleteGalleryFile();
-
-                    Intent intent = new Intent(getApplication(), MainActivity.class);
-                    intent.putExtra("fragment", "phonefragment");
-                    startActivity(intent);
                 }
             }catch (Exception e){
                 Log.e("INSIDE___",e.toString());
