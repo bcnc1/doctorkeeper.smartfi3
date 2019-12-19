@@ -12,6 +12,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -138,7 +139,19 @@ public class LaunchCameraActivity extends Activity {
 //                    intent.putExtra("fragment", "phonefragment");
 //                    startActivity(intent);
 
-
+                    //미디어db에서..
+//                    String wholeID = DocumentsContract.getDocumentId(imageToUploadUri);
+//                    String id = wholeID.split(":")[1];
+//                    Long origId = Long.parseLong(id);
+//                    Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(
+//
+//                            getContentResolver(), origId,
+//
+//                            MediaStore.Images.Thumbnails.MINI_KIND, null );
+//
+//                    FileOutputStream outStream = new FileOutputStream(mFile.toString()+"tmpimg001.jpg"); //파일저장
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//                    outStream.close();
 
                     //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                     DisplayUtil.storeThumbImage(mFile.toString(),

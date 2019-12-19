@@ -49,6 +49,7 @@ import com.thinoo.drcamlink2.ptp.PtpConstants;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.ptp.model.ObjectInfo;
 import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionFragment;
@@ -59,6 +60,9 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -438,8 +442,24 @@ public class DSLRFragment extends SessionFragment implements
             scaled.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         }
         Log.i(TAG,"COMPRESSED");
+
+
+
         final byte[] bytes = baos.toByteArray();
         final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, info.filename, 1);
+
+
+        //test 썸네일
+        try {
+            FileOutputStream outStream = new FileOutputStream(getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()+ File.separator +"eosThumb.jpg"); //파일저장
+            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            outStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //test end...
 
         Log.i(TAG,"sendPhoto ==> SAVED");
 //        photoList.add(0, photoModel);

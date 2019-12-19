@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,6 +25,9 @@ import com.thinoo.drcamlink2.services.UploadService;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -104,7 +108,19 @@ public class LaunchVrecordActivity extends Activity {
             it.putExtra(UPLOAD_FILE_NAME, mFilename);
 
             //썸네일 테스트
-           // Bitmap thumb = DisplayUtil.getThumbImage(mFile.toString());
+            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mFile.toString(), MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
+            try {
+                FileOutputStream outStream = new FileOutputStream(mCon.getExternalFilesDir(Environment.getExternalStorageState())+ File.separator +"videoThumb.jpg"); //파일저장
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                outStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 비디오 썸 테스트 end
 
             startService(it);
 

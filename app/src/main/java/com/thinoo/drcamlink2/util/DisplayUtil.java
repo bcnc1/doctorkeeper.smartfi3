@@ -72,6 +72,7 @@ public class DisplayUtil {
 
         Bitmap source = BitmapFactory.decodeFile(sourcePath);
 
+
         Bitmap bitmapThumb = ThumbnailUtils.extractThumbnail(source, THUMB_WIDTH, THUMB_HEIGHT,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
 
@@ -88,7 +89,7 @@ public class DisplayUtil {
             Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
             FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
             //bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 90, outStream);
-            rotateThumb.compress(Bitmap.CompressFormat.JPEG, 90, outStream); //90도회줜
+            rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream); //
             outStream.close();
 
         } catch (FileNotFoundException e) {
