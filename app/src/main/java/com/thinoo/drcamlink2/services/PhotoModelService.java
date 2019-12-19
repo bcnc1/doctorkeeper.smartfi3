@@ -16,6 +16,7 @@
 package com.thinoo.drcamlink2.services;
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
@@ -82,10 +83,28 @@ public class PhotoModelService {
 //
 //
 //    }
-    //mode: 카메라(0), dslr(1), 비디오(2)
-    public static PhotoModel saveMediaObj(byte[] bytes, String filename, final int mode) {
 
-        return null;
+    public static void makeDir(Context con, final String subDir){
+        File file = new File(con.getExternalFilesDir(Environment.getExternalStorageState()), subDir);
+
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
+    }
+
+    //mode: 카메라(0), dslr(1), 비디오(2)
+    public static PhotoModel addPhotoModel( final String sourcePath, final String thumbPath, String filename, final int mode) {
+
+        final PhotoModel photoModel = new PhotoModel();
+
+        photoModel.setFullpath(sourcePath);
+        photoModel.setThumbpath(thumbPath);
+        photoModel.setFilename(filename);
+        photoModel.setMode(mode);
+        photoModel.setCreated(new Date());
+        photoModel.save();
+
+        return photoModel;
     }
 
     public static PhotoModel savePhoto(byte[] bytes, String filename, final int mode) {
@@ -143,7 +162,7 @@ public class PhotoModelService {
         Log.d(TAG, "path = "+file.getAbsolutePath() + filename);
 
         photoModel.setFullpath(file.getAbsolutePath() + filename);
-        photoModel.setFilname(filename);
+        photoModel.setFilename(filename);
         photoModel.setUploaded(true);
         photoModel.setMode(mode); // CAMERA
  //       photoModel.setTargetId("");

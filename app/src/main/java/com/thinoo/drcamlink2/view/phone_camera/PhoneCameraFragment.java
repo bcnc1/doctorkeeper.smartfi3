@@ -250,7 +250,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 mode = "CAM";
             }
             photoList.add(photo);
-            Log.d("#F", photo.getFilname() + "(" + photo.getUploaded() + "/" + mode + ")");
+            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
         }
 
         phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
@@ -330,7 +330,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 mode = "CAM";
             }
             photoList.add(photo);
-            Log.d("#F", photo.getFilname() + "(" + photo.getUploaded() + "/" + mode + ")");
+            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
         }
         phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
         listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
@@ -369,7 +369,7 @@ public class PhoneCameraFragment extends BaseFragment {
 
         // THread 처리위한 부분
         HashMap<String,Object> taskInfo = new HashMap<>();
-        taskInfo.put("filename",photoModelRotated.getFilname());
+        taskInfo.put("filename",photoModelRotated.getFilename());
         taskInfo.put("photoModel",photoModelRotated);
 //        taskInfo.put("bitmap",bitmap);
         Message msg = saveHandler.obtainMessage();

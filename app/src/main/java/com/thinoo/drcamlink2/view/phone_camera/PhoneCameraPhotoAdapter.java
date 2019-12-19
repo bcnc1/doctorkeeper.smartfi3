@@ -46,7 +46,7 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
                 public boolean onLongClick(View view) {
                     int position = getAdapterPosition();
                     final PhotoModel photo = photoModelList.get(position);
-                    String fileName = photo.getFilname();
+                    String fileName = photo.getFilename();
                     Long photoId = photo.getId();
                     //Toast.makeText(view.getContext(),"name"+photo.getFilname()+"/id:"+photo.getId(),Toast.LENGTH_SHORT).show();
                     deleteImage(fileName,photoId);
@@ -88,7 +88,7 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final PhotoModel photo = photoModelList.get(position);
 
-        Log.i("XXX", "position:"+photo.getFilname()+","+position);
+        Log.i("XXX", "position:"+photo.getFilename()+","+position);
 
         File f = new File(photo.getFullpath());
 

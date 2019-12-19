@@ -24,7 +24,7 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
     private Long id;
     private Integer mode;     // camera / dsrl /video
     private String fullpath;  //원본파일패스
-    private String filname;
+    private String filename;
     private String thumbpath;  //섬네일 파일패스
    // private String targetName;  // 사용하지 않음
    // private String targetId;    //사용하지 않음
@@ -74,12 +74,12 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
         this.mode = mode;
     }
 
-    public String getFilname() {
-        return filname;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setFilname(String filname) {
-        this.filname = filname;
+    public void setFilename(String filname) {
+        this.filename = filname;
     }
 
 //    public String getTargetName() {

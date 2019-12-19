@@ -138,7 +138,7 @@ public class DSLRPhotoAdapter extends BaseAdapter {
         holder.image1.setImageBitmap(thumbImage);
         holder.image1.setExpectedDimensions(120, 120);
 
-        holder.filename.setText(holder.photo.getFilname());
+        holder.filename.setText(holder.photo.getFilename());
 
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         String createdDate = df.format(holder.photo.getCreated());

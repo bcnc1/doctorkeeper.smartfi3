@@ -444,7 +444,7 @@ public class GalleryFragment extends SessionFragment
                         Boolean uploadCheck=false;
                         for(int d = 0 ;d < photoModelLists.size();d++){
                             PhotoModel p = photoModelLists.get(d);
-                            if(objectInfo.filename.equals(p.getFilname())){
+                            if(objectInfo.filename.equals(p.getFilename())){
                                 uploadCheck = p.getUploaded();
                                 break;
                             }

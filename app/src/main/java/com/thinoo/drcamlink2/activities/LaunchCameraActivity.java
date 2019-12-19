@@ -74,7 +74,7 @@ public class LaunchCameraActivity extends Activity {
         //File f = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/tempImage.jpg");
         //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
 
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);

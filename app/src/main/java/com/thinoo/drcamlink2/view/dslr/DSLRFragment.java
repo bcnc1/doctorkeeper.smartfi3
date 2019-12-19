@@ -65,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -135,7 +136,10 @@ public class DSLRFragment extends SessionFragment implements
         return f;
     }
 
-//    Timer mTimer = new Timer();
+    private String mFileName;
+    private File mFile;
+    private final String  DEVICE = "dslr";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -429,36 +433,69 @@ public class DSLRFragment extends SessionFragment implements
 
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
 
+        //기존코드 사용(추후 삭제예정)
+//        currentObjectHandle = 0;
+//        Log.d(TAG,"sendPhoto ObjectInfo = "+info +" Bitmap = "+thumb.getByteCount());
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//
+//        try {
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        }catch(Exception e){
+//            Log.d(TAG,e.toString());
+//            int nh = (int) ( bitmap.getHeight() * (3072.0 / bitmap.getWidth()) );
+//            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 3072, nh, true);
+//            scaled.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        }
+//        Log.i(TAG,"COMPRESSED");
+//        final byte[] bytes = baos.toByteArray();
+//        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, info.filename, 1);
+//        Log.d(TAG, "저장된 id  = "+photoModel.getId());
+//        Log.d(TAG, "업로딩  = "+photoModel.getUploading());
+
+
+
         currentObjectHandle = 0;
-        Log.d(TAG,"sendPhoto ObjectInfo = "+info +" Bitmap = "+thumb.getByteCount());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        mFileName = DEVICE + "_" + timeStamp+".jpg";
+
+        PhotoModelService.makeDir(getActivity(), "/thumbnail/");
+
+        String root = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString();
+        String oriPath = root+ File.separator +mFileName;
+
+        String thumbPath = root+ File.separator +"thumbnail"+File.separator+mFileName;
 
         try {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        }catch(Exception e){
-            Log.d(TAG,e.toString());
-            int nh = (int) ( bitmap.getHeight() * (3072.0 / bitmap.getWidth()) );
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 3072, nh, true);
-            scaled.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        }
-        Log.i(TAG,"COMPRESSED");
+            FileOutputStream outSource = new FileOutputStream(oriPath); //파일저장
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
+            outSource.close();
 
+            FileOutputStream outThumb = new FileOutputStream(thumbPath); //파일저장
+            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumb);
+            outThumb.close();
 
-
-        final byte[] bytes = baos.toByteArray();
-        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, info.filename, 1);
-
-
-        //test 썸네일
-        try {
-            FileOutputStream outStream = new FileOutputStream(getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()+ File.separator +"eosThumb.jpg"); //파일저장
-            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-            outStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
+
+        //test 썸네일
+//        try {
+//            String thumbPath = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()+ File.separator +"eosThumb.jpg";
+//            FileOutputStream outStream = new FileOutputStream(thumbPath); //파일저장
+//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//            outStream.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        PhotoModel photoModel = PhotoModelService.addPhotoModel(bytes, info.filename, 1);
+
         //test end...
 
         Log.i(TAG,"sendPhoto ==> SAVED");
