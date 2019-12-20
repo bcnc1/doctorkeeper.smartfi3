@@ -49,6 +49,7 @@ import com.thinoo.drcamlink2.ptp.PtpConstants;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.ptp.model.ObjectInfo;
 import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.services.UploadManager;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.SessionActivity;
@@ -486,7 +487,9 @@ public class DSLRFragment extends SessionFragment implements
 
         final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
 
-// 기존 코드 삭제 예정
+        new UploadManager(getActivity(), photoModel);
+
+// 기존 코드 삭제 예
 //        Log.i(TAG,"sendPhoto ==> SAVED");
 //
 //
