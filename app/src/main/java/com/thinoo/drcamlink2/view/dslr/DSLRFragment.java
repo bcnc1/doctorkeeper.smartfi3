@@ -160,24 +160,27 @@ public class DSLRFragment extends SessionFragment implements
 //        enableUi(true);
 
 // HandlerThread를 이용하여 업로드를 별도 thread에서 처리
-        uploadHandlerThread = new HandlerThread("imageUploadThread");
-        uploadHandlerThread.start();
-        uploadHandler = new Handler(uploadHandlerThread.getLooper()){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
-                String filename = hashMap.get("filename").toString();
-                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
+         // 기존코드 삭제 예
+//        uploadHandlerThread = new HandlerThread("imageUploadThread");
+//        uploadHandlerThread.start();
+//        uploadHandler = new Handler(uploadHandlerThread.getLooper()){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
+//                String filename = hashMap.get("filename").toString();
+//                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
+//
+//                Log.d(TAG,"dslr 파일패스 = "+photoModel.getFullpath());
+//                //uploadImage(filename);
+//                uploadDslrImage(photoModel.getFullpath(), filename);
+//
+//                photoModel.setUploaded(true);  //db에 업로드 했다는, 비동기라 아직 업로드 전인데 이걸 먼저해도 되나?
+//                photoModel.save();  //kimcy 왜 한번 더 저장하지?? 위에서 저렇게 하고 나서 기록하는...
+//            }
+//        };
+// ===> end
 
-                Log.d(TAG,"dslr 파일패스 = "+photoModel.getFullpath());
-                //uploadImage(filename);
-                uploadDslrImage(photoModel.getFullpath(), filename);
-
-                photoModel.setUploaded(true);  //db에 업로드 했다는, 비동기라 아직 업로드 전인데 이걸 먼저해도 되나?
-                photoModel.save();  //kimcy 왜 한번 더 저장하지?? 위에서 저렇게 하고 나서 기록하는...
-            }
-        };
 
         return view;
     }
@@ -483,35 +486,19 @@ public class DSLRFragment extends SessionFragment implements
 
         final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
 
-        //test 썸네일
-//        try {
-//            String thumbPath = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()+ File.separator +"eosThumb.jpg";
-//            FileOutputStream outStream = new FileOutputStream(thumbPath); //파일저장
-//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//            outStream.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        PhotoModel photoModel = PhotoModelService.addPhotoModel(bytes, info.filename, 1);
+// 기존 코드 삭제 예정
+//        Log.i(TAG,"sendPhoto ==> SAVED");
+//
+//
+//        HashMap<String,Object> taskInfo = new HashMap<>();
+//        taskInfo.put("filename",info.filename);
+//        taskInfo.put("photoModel",photoModel);
+//
+//        Message msg = uploadHandler.obtainMessage();
+//        msg.obj = taskInfo;
+//        uploadHandler.sendMessage(msg);
+//        Log.i(TAG,"sendPhoto => Finished");
 
-        //test end...
-
-        Log.i(TAG,"sendPhoto ==> SAVED");
-//        photoList.add(0, photoModel);
-//        galleryAdapter.notifyDataSetChanged();
-
-        HashMap<String,Object> taskInfo = new HashMap<>();
-        taskInfo.put("filename",info.filename);
-        taskInfo.put("photoModel",photoModel);
-//        taskInfo.put("bitmap",bitmap);
-        Message msg = uploadHandler.obtainMessage();
-        msg.obj = taskInfo;
-        uploadHandler.sendMessage(msg);
-        Log.i(TAG,"sendPhoto => Finished");
-//        myAsyncTask = new MyAsyncTask();
-//        myAsyncTask.execute(info.filename);
 
     }
 

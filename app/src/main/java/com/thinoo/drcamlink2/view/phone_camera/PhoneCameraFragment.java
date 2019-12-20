@@ -412,6 +412,7 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     }
 
+    //dslr 버튼을 누를때 프레그먼트 생성
     @OnClick(R.id.button_dslr)
     public void onShowDslr(View view) {
 
