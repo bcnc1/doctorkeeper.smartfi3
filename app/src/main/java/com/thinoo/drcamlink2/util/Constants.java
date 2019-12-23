@@ -6,6 +6,8 @@ public class Constants {
         public static final String UPLOAD_FILE_PATH = "upload.file.path";
         public static final String UPLOAD_FILE_KIND = "upload.file.kind";
         public static final String UPLOAD_FILE_NAME = "upload.file.name";
+        public static final String UPLOAD_FILE_TYPE = "upload.file.type";
+        public static final String UPLOAD_MESSAGE_CALLBACK = "upload.message.callback";
     }
 
     public static final class Storage{

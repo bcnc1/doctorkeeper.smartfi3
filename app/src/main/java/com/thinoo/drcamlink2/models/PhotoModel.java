@@ -22,18 +22,20 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
 
     private Long id;
-    private Integer mode;     // camera / dsrl /video
+    private Integer mode;     // camera 0 / dsrl 1/video 2
     private String fullpath;  //원본파일패스
     private String filename;
     private String thumbpath;  //섬네일 파일패스
    // private String targetName;  // 사용하지 않음
    // private String targetId;    //사용하지 않음
-    private Boolean uploaded = false;     //업로드 완료시
-    private Boolean uploading = false;
+    private Boolean uploaded = false;     //업로드 완료시 , 모든 업로드 완료시 true
+    private Integer uploading = 0;        //초기값 0, 업로드중: 1, 업로드 완료: 2, 업로드 실패: 3
+    private Integer thumbUploading = 0;
+    private Integer chainUploading = 0;
     //private Boolean needUploading = false;
     private Date created;
-    private Boolean thumbUploading = false;
-    private Boolean chainUploading = false;
+
+
 
 
 
@@ -114,13 +116,31 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 //        this.needUploading = needUploading;
 //    }
 
-    public Boolean getUploading() {
+    public Integer getUploading() {
         return uploading;
     }
 
-    public void setUploading(Boolean uploading) {
+    public void setUploading(Integer uploading) {
         this.uploading = uploading;
     }
+
+
+    public Integer getThumbUploading() {
+        return thumbUploading;
+    }
+
+    public void setThumbUploading(Integer thumbUploading) {
+        this.thumbUploading = thumbUploading;
+    }
+
+    public Integer getChainUploading() {
+        return chainUploading;
+    }
+
+    public void setChainUploading(Integer chainUploading) {
+        this.chainUploading = chainUploading;
+    }
+
 
     public Date getCreated() {
         return created;
@@ -141,19 +161,5 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 //    }
 
 
-    public Boolean getThumbUploading() {
-        return thumbUploading;
-    }
 
-    public void setThumbUploading(Boolean thumbUploading) {
-        this.thumbUploading = thumbUploading;
-    }
-
-    public Boolean getChainUploading() {
-        return chainUploading;
-    }
-
-    public void setChainUploading(Boolean chainUploading) {
-        this.chainUploading = chainUploading;
-    }
 }
