@@ -15,6 +15,8 @@ import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_NAME;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_TYPE;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
+import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_FAIL;
+import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_SUCCESS;
 
 public class UploadManager {
     private static final String TAG = "UploadManager";
@@ -65,6 +67,7 @@ public class UploadManager {
     public void start(){
         //시작과 끝을 관리
         //mUploadId = mPhotoModel.getId();
+        //서비스에서 상태를 저장해야 한다. 왜냐하면 app이 죽어도 서비스는 살아 있기 때문에..
 
         switch (mUploadingStep){
             case 0:
@@ -77,37 +80,16 @@ public class UploadManager {
             case 1:
                 if(uploadMediaObj(mPhotoModel) == true) {
                     mUploadingStep ++ ;
-                    uploadChain();
+                    uploadChain(mPhotoModel);
                 }
                 break;
 
             case 2:
-                uploadChain();
+                // TODO: 2019-12-24  
+                uploadChain(mPhotoModel);
                 break;
         }
-
-
-//        switch (mPhotoModel.getThumbUploading()){
-//            case 0:
-//                uploadThumbImage();
-//                break;
-//
-//            case 1:
-//                // TODO: 2019-12-23 원본이미지업로드
-//                uploadMediaObj();
-//                break;
-//
-//            case 2:
-//                uploadThumbImage();
-//                break;
-//        }
-
-
-//        if(mPhotoModel.getThumbUploading() == 0){
-//            uploadThumbImage();
-//        }else if(mPhotoModel.getThumbUploading() == 1){
-//
-//        }
+        
 
         handler = new Handler(new Handler.Callback() {
             @Override
@@ -115,11 +97,11 @@ public class UploadManager {
 
                 Object getMsg = msg.obj;
 
-                if(getMsg.toString() == "file-upload success"){
+                if(getMsg.toString() == FILE_UPLOAD_SUCCESS){
                     Log.d(TAG, "mUploadingStep = "+mUploadingStep);
                     mUploadingStep ++ ;
-                }else if(getMsg.toString() == "file-upload fail"){
-
+                }else if(getMsg.toString() == FILE_UPLOAD_FAIL){
+                    Log.d(TAG, "업로드 실패 ,, mUploadingStep = "+mUploadingStep);
                 }
 
                 return false;
@@ -127,13 +109,11 @@ public class UploadManager {
         });
     }
 
-    private void uploadChain() {
-    }
 
-    private Boolean uploadMediaObj(PhotoModel model) {
-
+    private Boolean uploadChain(PhotoModel model) {
         if(model.getUploading() == 0){
             //서비스로 구현
+            Log.d(TAG,"업로드 처음 시작..");
             Intent it = new Intent(mCon, UploadService.class);
             it.putExtra(UPLOAD_FILE_PATH, model.getFullpath());
             it.putExtra(UPLOAD_FILE_KIND, model.getMode());  //interger
@@ -151,6 +131,50 @@ public class UploadManager {
             return false;
         }else if(model.getUploading() == 2){
             Log.d(TAG,"업로드 완료..");
+            model.setUploading(2);
+            return true;
+
+        } else{
+            Log.d(TAG,"업로드 실패..");
+            //서비스로 구현
+            Intent it = new Intent(mCon, UploadService.class);
+            it.putExtra(UPLOAD_FILE_PATH, model.getFullpath());
+            it.putExtra(UPLOAD_FILE_KIND, model.getMode());  //interger
+            it.putExtra(UPLOAD_FILE_NAME, model.getFilename());
+            it.putExtra(UPLOAD_FILE_TYPE, "media");
+            model.setUploading(1); //업로드 시작
+
+            Messenger messenger = new Messenger(handler);
+            it.putExtra(UPLOAD_MESSAGE_CALLBACK, messenger);
+
+            mCon.startService(it);
+            return false;
+        }
+    }
+
+    private Boolean uploadMediaObj(PhotoModel model) {
+
+        if(model.getUploading() == 0){
+            //서비스로 구현
+            Log.d(TAG,"업로드 처음 시작..");
+            Intent it = new Intent(mCon, UploadService.class);
+            it.putExtra(UPLOAD_FILE_PATH, model.getFullpath());
+            it.putExtra(UPLOAD_FILE_KIND, model.getMode());  //interger
+            it.putExtra(UPLOAD_FILE_NAME, model.getFilename());
+            it.putExtra(UPLOAD_FILE_TYPE, "media");
+            model.setUploading(1); //업로드 시작
+
+            Messenger messenger = new Messenger(handler);
+            it.putExtra(UPLOAD_MESSAGE_CALLBACK, messenger);
+
+            mCon.startService(it);
+            return false;
+        }else if(model.getUploading() == 1){
+            Log.d(TAG,"업로드중..");
+            return false;
+        }else if(model.getUploading() == 2){
+            Log.d(TAG,"업로드 완료..");
+            model.setUploading(2);
             return true;
 
         } else{
@@ -174,8 +198,53 @@ public class UploadManager {
 
     private Boolean uploadThumbImage(PhotoModel model){
 
+        switch (model.getThumbUploading()){
+            case 0:
+            case 3:
+                Log.d(TAG,"썸네일 업로드  =  "+ model.getThumbUploading());
+                Intent it = new Intent(mCon, UploadService.class);
+                it.putExtra(UPLOAD_FILE_PATH, model.getThumbpath());
+                it.putExtra(UPLOAD_FILE_KIND, model.getMode());  //interger
+                it.putExtra(UPLOAD_FILE_NAME, model.getFilename());
+                it.putExtra(UPLOAD_FILE_TYPE, "thumbnail");
+                model.setUploading(1); //업로드 시작
 
-        return false;
+                Messenger messenger = new Messenger(handler);
+                it.putExtra(UPLOAD_MESSAGE_CALLBACK, messenger);
+
+                mCon.startService(it);
+                return false;
+                
+            case 1:
+                Log.d(TAG,"업로드중..");
+                return false;
+                
+            case 2:
+                Log.d(TAG,"업로드 완료..");
+                model.setUploading(2);
+                return true;
+                
+            default:
+                return false;
+                
+//            case 3:
+//                Log.d(TAG,"썸네일 업로드 실패 재업로드..");
+//                Intent int = new Intent(mCon, UploadService.class);
+//                it.putExtra(UPLOAD_FILE_PATH, model.getThumbpath());
+//                it.putExtra(UPLOAD_FILE_KIND, model.getMode());  //interger
+//                it.putExtra(UPLOAD_FILE_NAME, model.getFilename());
+//                it.putExtra(UPLOAD_FILE_TYPE, "thumbnail");
+//                model.setUploading(1); //업로드 시작
+//
+//                Messenger messenger = new Messenger(handler);
+//                it.putExtra(UPLOAD_MESSAGE_CALLBACK, messenger);
+//
+//                mCon.startService(it);
+//                return false:
+        }
+            
+        
+
 
     }
 }

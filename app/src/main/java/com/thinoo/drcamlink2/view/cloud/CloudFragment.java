@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.BaseFragment;
 import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
 import com.thinoo.drcamlink2.view.options.OptionsDialogFragment;
@@ -108,6 +109,9 @@ public class CloudFragment extends BaseFragment
 
     @OnClick(R.id.btn_logout)
     public void logoutBtnClicked(){
+        SmartFiPreference.setDoctorId(getActivity(),"");
+        SmartFiPreference.setSfDoctorPw(getActivity(),"");
+
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();
         changelogTx.add(loginDialogFragment, "Login");

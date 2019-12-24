@@ -16,6 +16,7 @@
 package com.thinoo.drcamlink2.ptp.commands;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.thinoo.drcamlink2.ptp.Camera.RetrieveImageInfoListener;
 import com.thinoo.drcamlink2.ptp.PtpAction;
@@ -62,6 +63,7 @@ public class RetrieveImageInfoAction implements PtpAction {
             }
         }
 
+        Log.d(TAG,"onImageInfoRetrieved => 호출");
         listener.onImageInfoRetrieved(objectHandle, getInfo.getObjectInfo(), thumbnail);
     }
 

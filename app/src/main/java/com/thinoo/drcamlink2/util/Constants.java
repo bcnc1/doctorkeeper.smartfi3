@@ -10,7 +10,14 @@ public class Constants {
         public static final String UPLOAD_MESSAGE_CALLBACK = "upload.message.callback";
     }
 
+    public static final class Upload{
+        public static final String FILE_UPLOAD_SUCCESS = "file.upload.success";
+        public static final String FILE_UPLOAD_FAIL = "file.upload.fail";
+        public static final String CHAIN_CREATE_SUCCESS = "chain.create.success";
+        public static final String CHAIN_CREATE_FAIL = "chain.create.fail";
+    }
+
     public static final class Storage{
-        public static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_10b1107b-ce24-4cb4-a066-f46c53b474a3";
+        public static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_3de4a999-ff5c-416a-ad30-77fcd4f9383f";
     }
 }

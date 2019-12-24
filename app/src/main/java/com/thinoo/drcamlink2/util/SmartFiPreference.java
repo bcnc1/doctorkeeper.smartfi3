@@ -10,6 +10,7 @@ public class SmartFiPreference {
     public static final String SF_DOCTOR_ID = "smartfi.doctor.id";
     public static final String SF_PATIENT_ID = "smartfi.patient.id";
     public static final String SF_PATIENT_CHART = "smartfi.patient.chart";
+    public static final String SF_DOCTOR_PW = "smartfi.doctor.password";
 
     public static void defaultPreference(Context context){
 
@@ -32,7 +33,7 @@ public class SmartFiPreference {
     }
 
     public static final String getDoctorId(Context con){
-        return getString(con, SF_DOCTOR_ID, "sf-doctor");
+        return getString(con, SF_DOCTOR_ID, "test7");
     }
 
     public static void setDoctorId(Context con, String id){
@@ -54,6 +55,16 @@ public class SmartFiPreference {
     public static void setPatientChart(Context con, String chartNum){
         setString(con, SF_PATIENT_CHART, chartNum);
     }
+
+
+    public static final String getSfDoctorPw(Context con){
+        return getString(con, SF_DOCTOR_PW, "7777777");
+    }
+
+    public static void setSfDoctorPw(Context con, String pw){
+        setString(con, SF_PATIENT_CHART, pw);
+    }
+
 
     public static void setInt(Context context, String key, int value){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);

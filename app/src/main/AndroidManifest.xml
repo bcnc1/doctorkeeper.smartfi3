@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright 2013 Nils Assbeck, Guersel Ayaz and Michael Zoech
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.thinoo.drcamlink2"
@@ -26,26 +11,25 @@
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="false"
-        android:xlargeScreens="true" />
-
-    <!-- For Camera -->
+        android:xlargeScreens="true" /> <!-- For Camera -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <!--https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted -->
     <application
         android:name="com.orm.SugarApp"
         android:icon="@drawable/smartfi_icon"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/Theme.RYC"
-        tools:replace="android:icon"
-        android:usesCleartextTraffic="true">
-
-
+        android:usesCleartextTraffic="true"
+        tools:replace="android:icon">
+      <!--  <service
+            android:name=".services.UploadService3"
+            android:enabled="true"
+            android:exported="true"></service>  -->
 
         <activity
             android:name=".MainActivity"
@@ -55,6 +39,7 @@
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -68,7 +53,6 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
                 android:resource="@xml/device_filter" />
-
         </activity>
         <activity
             android:name=".activities.AppSettingsActivity"
@@ -76,23 +60,25 @@
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".activities.LaunchCameraActivity" />
         <activity android:name=".activities.LaunchVrecordActivity" />
+
         <service
             android:name=".services.UploadService"
-            android:exported="false">
-        </service>
-        <!--<activity-->
-            <!--android:name="org.acra.CrashReportDialog"-->
-            <!--android:excludeFromRecents="true"-->
-            <!--android:finishOnTaskLaunch="true"-->
-            <!--android:launchMode="singleInstance"-->
-            <!--android:theme="@android:style/Theme.Dialog" />-->
-
+            android:exported="false"></service>
+       <!-- <service
+            android:name=".services.UploadService2"
+            android:exported="false"></service> -->
+       <!-- <activity -->
+        <!-- android:name="org.acra.CrashReportDialog" -->
+        <!-- android:excludeFromRecents="true" -->
+        <!-- android:finishOnTaskLaunch="true" -->
+        <!-- android:launchMode="singleInstance" -->
+        <!-- android:theme="@android:style/Theme.Dialog" /> -->
         <!-- <meta-data android:name="AA_DB_NAME" android:value="drcamlink" /> -->
         <!-- <meta-data android:name="AA_DB_VERSION" android:value="5" /> -->
         <!-- <meta-data android:name="AA_MODELS" android:value="com.thinoo.drcamlink.models.PhotoModel" /> -->
-
-        <meta-data android:name="DATABASE" android:value="smartfi.db" />
-
+        <meta-data
+            android:name="DATABASE"
+            android:value="smartfi.db" />
         <meta-data
             android:name="VERSION"
             android:value="1" />
@@ -102,11 +88,11 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.thinoo.drcamlink2" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.thinoo.drcamlink2"
             android:exported="false"
-
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
@@ -115,6 +101,3 @@
     </application>
 
 </manifest>
-
-<!-- android:readPermission="com.thinoo.drcamlink2.Permission.READ"
-            android:writePermission="com.thinoo.drcamlink2.Permission.WRITE" -->

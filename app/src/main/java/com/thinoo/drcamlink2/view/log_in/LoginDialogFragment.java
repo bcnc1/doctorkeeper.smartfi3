@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
 
 import org.json.JSONObject;
@@ -63,8 +64,11 @@ public class LoginDialogFragment extends DialogFragment {
         usernameTextView = (TextView) view.findViewById(R.id.input_email);
         passwordTextView = (TextView) view.findViewById(R.id.input_password);
 
-//        usernameTextView.setText("test1234");
-//        passwordTextView.setText("123456");
+
+        //일단 id, pw(암호화??)를 저장 추후 수정 예정
+        SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
+        SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
+
 
         final Button loginButton = (Button)view.findViewById(R.id.btn_login);
 
@@ -72,6 +76,7 @@ public class LoginDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 loginButton.setEnabled(false);
+                // TODO: 2019-12-24 로그인 수정
                 MadamfiveAPI.login(usernameTextView.getText().toString(), passwordTextView.getText().toString(), new JsonHttpResponseHandler() {
 
                     @Override

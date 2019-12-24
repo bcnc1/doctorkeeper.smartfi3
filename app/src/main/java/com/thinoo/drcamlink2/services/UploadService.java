@@ -39,6 +39,8 @@ import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_TYPE;
 import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
 import static com.thinoo.drcamlink2.util.Constants.Storage.BASE_URL;
+import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_FAIL;
+import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_SUCCESS;
 
 
 public class UploadService extends Service {
@@ -107,6 +109,7 @@ public class UploadService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
@@ -172,7 +175,7 @@ public class UploadService extends Service {
                               //  makenoti("비디오 업로딩 성공");
                                 if (messenger != null) {
                                     Message msg = Message.obtain();
-                                    msg.obj = "file-upload success";
+                                    msg.obj = FILE_UPLOAD_SUCCESS;
                                     try {
                                         messenger.send(msg);
                                     } catch (android.os.RemoteException e1) {
@@ -183,7 +186,7 @@ public class UploadService extends Service {
                         } catch (IOException e){
                             if (messenger != null) {
                                 Message msg = Message.obtain();
-                                msg.obj = "file-upload fail";
+                                msg.obj = FILE_UPLOAD_FAIL;
                                 try {
                                     messenger.send(msg);
                                 } catch (android.os.RemoteException e1) {
@@ -327,4 +330,9 @@ public class UploadService extends Service {
 //        }
 //    }
 
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
 }
