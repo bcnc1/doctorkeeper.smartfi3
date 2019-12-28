@@ -22,7 +22,6 @@ import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.services.UploadService;
-import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,10 +30,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_KIND;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_NAME;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_KIND;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_NAME;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_PATH;
+import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 
 
 public class LaunchVrecordActivity extends Activity {

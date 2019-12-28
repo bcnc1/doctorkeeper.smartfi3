@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,14 +32,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_KIND;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_NAME;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_TYPE;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
-import static com.thinoo.drcamlink2.util.Constants.Storage.BASE_URL;
-import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_FAIL;
-import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_SUCCESS;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_KIND;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_NAME;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_PATH;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_TYPE;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
+import static com.thinoo.drcamlink2.Constants.Storage.BASE_URL;
+import static com.thinoo.drcamlink2.Constants.Upload.FILE_UPLOAD_FAIL;
+import static com.thinoo.drcamlink2.Constants.Upload.FILE_UPLOAD_SUCCESS;
 
 
 public class UploadService extends Service {

@@ -40,7 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thinoo.drcamlink2.activities.AppSettingsActivity;
-import com.thinoo.drcamlink2.activities.LaunchVrecordActivity;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.ptp.Camera;
 import com.thinoo.drcamlink2.ptp.Camera.CameraListener;
@@ -55,9 +54,8 @@ import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionView;
 import com.thinoo.drcamlink2.view.WebViewDialogFragment;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.VIDEO_RECORD;
+import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 
 
 public class MainActivity extends SessionActivity implements CameraListener, PhoneCameraFragment.VrecordInterface {

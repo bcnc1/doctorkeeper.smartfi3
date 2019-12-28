@@ -6,17 +6,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.thinoo.drcamlink2.models.PhotoModel;
 
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_KIND;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_NAME;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_PATH;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_FILE_TYPE;
-import static com.thinoo.drcamlink2.util.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
-import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_FAIL;
-import static com.thinoo.drcamlink2.util.Constants.Upload.FILE_UPLOAD_SUCCESS;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_KIND;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_NAME;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_PATH;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_TYPE;
+import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_MESSAGE_CALLBACK;
+import static com.thinoo.drcamlink2.Constants.Upload.FILE_UPLOAD_FAIL;
+import static com.thinoo.drcamlink2.Constants.Upload.FILE_UPLOAD_SUCCESS;
 
 public class UploadManager {
     private static final String TAG = "UploadManager";

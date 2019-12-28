@@ -1,4 +1,4 @@
-package com.thinoo.drcamlink2.util;
+package com.thinoo.drcamlink2;
 
 public class Constants {
     public static final class Invoke{
@@ -20,4 +20,7 @@ public class Constants {
     public static final class Storage{
         public static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_3de4a999-ff5c-416a-ad30-77fcd4f9383f";
     }
+
+
+    public static final long DELAY_TIME_MILLIS = 3000;
 }
