@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
 
     defaultConfig {
         applicationId "com.thinoo.drcamlink2"
@@ -50,5 +50,5 @@ dependencies {
     implementation project(':camerakit-vision-release')
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
 
-    implementation "androidx.work:work-runtime:2.2.0"
+   // implementation "androidx.work:work-runtime:2.2.0"
 }
