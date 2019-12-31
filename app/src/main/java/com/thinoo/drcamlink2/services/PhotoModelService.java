@@ -51,10 +51,17 @@ public class PhotoModelService {
                 .list();
     }
 
-    public static void deleteImageDBDate(Long id){
+    public static void deletePhotoModel(Long id){
         PhotoModel photoModel = PhotoModel.findById(PhotoModel.class, id);
         photoModel.delete();
     }
+
+    public static PhotoModel getPhotoModel(Long id){
+        PhotoModel photoModel = PhotoModel.findById(PhotoModel.class, id);
+        long id1 = photoModel.getId();
+        return photoModel;
+    }
+
 
 //    public static PhotoModel saveThumb(Bitmap bitmap, String filename, final int mode) {
 //        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");

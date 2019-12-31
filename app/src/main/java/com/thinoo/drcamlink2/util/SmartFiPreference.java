@@ -17,7 +17,7 @@ public class SmartFiPreference {
     }
 
     public static String getSfToken(Context con){
-        return getString(con, SF_TOKEN, null);
+        return getString(con, SF_TOKEN, "AUTH_tk11c6caf3f4ce4a71a30aa5b1a0cc30d6");
     }
 
     public static void setSfToken(Context con, String tk){
@@ -25,7 +25,7 @@ public class SmartFiPreference {
     }
 
     public static final String getHospitalId(Context con){
-        return getString(con, SF_HOSPITAL_ID, "sf-hospital");
+        return getString(con, SF_HOSPITAL_ID, "000000000001");
     }
 
     public static void setHospitalId(Context con, String id){

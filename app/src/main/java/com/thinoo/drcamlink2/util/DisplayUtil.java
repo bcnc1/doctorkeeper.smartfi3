@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,8 +68,8 @@ public class DisplayUtil {
     }
 
 
-    public static void storeThumbImage(String sourcePath, File storePath, String fileName){
-        //private LaunchCameraActivity.OrientationListener orientationListener;
+    public static String storeThumbImage(String sourcePath, File storePath, String fileName){
+        String path = null;
 
         Bitmap source = BitmapFactory.decodeFile(sourcePath);
 
@@ -92,10 +93,15 @@ public class DisplayUtil {
             rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream); //
             outStream.close();
 
+            path = file.getAbsolutePath()+ File.separator +fileName;
+            return path;
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return path;
         } catch (IOException e) {
             e.printStackTrace();
+            return path;
         }
 
 
@@ -156,11 +162,18 @@ public class DisplayUtil {
             }
         }
     }
-//    public static final String getMimeType(String path) {
-//
-//        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-//
-//        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
-//    }
+
+    public static void makeStatusNotification(Context con, String msg){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+        }
+    }
+
+    public static final String getMimeType(String path) {
+
+        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+    }
 
 }

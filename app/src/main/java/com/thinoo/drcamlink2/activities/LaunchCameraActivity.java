@@ -1,6 +1,8 @@
 package com.thinoo.drcamlink2.activities;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
@@ -29,6 +32,7 @@ import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.services.PictureIntentService;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import org.json.JSONObject;
@@ -154,8 +158,23 @@ public class LaunchCameraActivity extends Activity {
 //                    outStream.close();
 
                     //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
-                    DisplayUtil.storeThumbImage(mFile.toString(),
-                            mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
+                    String path = DisplayUtil.storeThumbImage(mFile.toString(),
+                                    mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
+
+                    if(path != null){
+                        PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 0);
+                        //startPictureUpload();
+                        Long id = photoModel.getId();
+                        PictureIntentService.startUploadPicture(mCon, id);
+
+                    }else{
+                        Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+
+                    }
+
+
+
+
 
                 }
             }catch (Exception e){
@@ -163,6 +182,31 @@ public class LaunchCameraActivity extends Activity {
             }
 
         }
+    }
+
+    private void startPictureUpload() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            String CHANNEL_ID = "picture_upload_channel";
+//            CharSequence name = mCon.getString(R.string.notification_file_upload)
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel channel =
+//                    new NotificationChannel(CHANNEL_ID, name, importance);
+//
+//            // Add the channel
+//            NotificationManager notificationManager =
+//                    (NotificationManager) mCon.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//            if (notificationManager != null) {
+//                notificationManager.createNotificationChannel(channel);
+//            }
+//
+//
+//        }
+//
+//        //startForegroundService(1)
+//        mCon.startForegroundService(1);
+
+
     }
 
     private void savePhoto(byte[] bytes, String cameraKind, String filePath) {

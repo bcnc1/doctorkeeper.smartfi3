@@ -26,11 +26,15 @@
         android:theme="@style/Theme.RYC"
         android:usesCleartextTraffic="true"
         tools:replace="android:icon">
-      <!--  <service
+        <service
+            android:name=".services.PictureIntentService"
+            android:exported="false"></service>
+        <!--
+          <service
             android:name=".services.UploadService3"
             android:enabled="true"
-            android:exported="true"></service>  -->
-
+            android:exported="true"></service>
+        -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -63,11 +67,13 @@
 
         <service
             android:name=".services.UploadService"
-            android:exported="false"></service>
-       <!-- <service
+            android:exported="false" />
+        <!--
+ <service
             android:name=".services.UploadService2"
-            android:exported="false"></service> -->
-       <!-- <activity -->
+            android:exported="false"></service>
+        -->
+        <!-- <activity -->
         <!-- android:name="org.acra.CrashReportDialog" -->
         <!-- android:excludeFromRecents="true" -->
         <!-- android:finishOnTaskLaunch="true" -->

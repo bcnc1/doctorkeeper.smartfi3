@@ -133,4 +133,6 @@
     <string name="notification_upload_complete">upload completed successfully!</string>
     <string name="notification_error_during_upload">error during upload</string>
 
+    <string name="make_error_thumbnail">썸네일 이미지 생성 실패!</string>
+
 </resources>
