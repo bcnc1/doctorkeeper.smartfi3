@@ -31,9 +31,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import cz.msebera.android.httpclient.Header;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.thinoo.drcamlink2.Constants.Storage.BASE_URL;
 import static com.thinoo.drcamlink2.MainActivity.countDownTimer;
@@ -51,9 +54,11 @@ public class PictureIntentService extends IntentService {
     private static String mHospitalId = null;
     private static String mChartNum =  null;
     private static String mMediaType = null;
+    private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
 
     public PictureIntentService() {
         super("PictureIntentService");
+        Log.d(TAG,"PictureIntentService 생성");
     }
 
     /**
@@ -65,33 +70,22 @@ public class PictureIntentService extends IntentService {
     // TODO: Customize helper method
     public static void startUploadPicture(Context context, long id) {
         Intent intent = new Intent(context, PictureIntentService.class);
-        //intent.setAction(ACTION_FOO);
         intent.putExtra(EXTRA_PICTURE_ID, id);
-        //intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
+        Log.d(TAG,"startUploadPicture 호출");
     }
 
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-//    public static void startActionBaz(Context context, String param1, String param2) {
-//        Intent intent = new Intent(context, PictureIntentService.class);
-//        intent.setAction(ACTION_BAZ);
-//        intent.putExtra(EXTRA_PARAM1, param1);
-//        intent.putExtra(EXTRA_PARAM2, param2);
-//        context.startService(intent);
-//    }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        mAcccessToken = SmartFiPreference.getSfToken(getApplication());
-        mChartNum = SmartFiPreference.getPatientChart(getApplication());
-        mPatientId = SmartFiPreference.getPatientId(getApplication());
-        mHospitalId = SmartFiPreference.getHospitalId(getApplication());
+        Log.d(TAG,"onHandleIntent 호출");
+        mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
+        //mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
+        mChartNum = "101010";
+
+        mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
+        mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
         if (intent != null) {
             Bundle extras = intent.getExtras();
@@ -100,9 +94,10 @@ public class PictureIntentService extends IntentService {
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
 
+                makeNoti("picture uploading...", 1);
+
                 uploadThumbnail(photoModel);
-               // uploadPicture(photoModel);
-                
+
 
             }
 
@@ -110,42 +105,103 @@ public class PictureIntentService extends IntentService {
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy, notiId = "+mNotiId);
+       // mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
+
+    }
 
     private void uploadChain(final PhotoModel pm) {
 
         Log.d(TAG,"uploadChain");
 
+//        final String fileName = pm.getFilename();
+//        pm.setChainUploading(1);
+//
+//        RequestParams params = new RequestParams();
+//        params.put("hospital", mHospitalId);
+//        params.put("patient", mPatientId);
+//        params.put("file", "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName);
+//
+//
+//        SyncHttpClient client = new SyncHttpClient();
+//        client.addHeader("Content-Type", "application/json");
+//        client.addHeader("X-Auth-Token", mAcccessToken);
+//
+//        String url = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
+//
+//        client.post(url, params, new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+//                pm.setChainUploading(2);
+//                makeNoti("uploading success",0);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//                Log.d(TAG, "chain error = "+statusCode);
+//                Log.d(TAG, "chain error body = "+responseBody.hashCode());
+//                pm.setChainUploading(3);
+//                makeNoti("uploading fail",0);
+//            }
+//        });
+
         final String fileName = pm.getFilename();
         pm.setChainUploading(1);
 
-        RequestParams params = new RequestParams();
-        params.put("hospital", mHospitalId);
-        params.put("patient", mPatientId);
-        params.put("file", "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName);
+        Thread t2 = new Thread(new Runnable() {
 
-
-        SyncHttpClient client = new SyncHttpClient();
-        client.addHeader("Content-Type", "application/json");
-        client.addHeader("X-Auth-Token", mAcccessToken);
-
-        String url = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
-
-        client.post(url, params, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                pm.setChainUploading(2);
-                makeNoti("uploading success");
-            }
+            String urlproof = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d(TAG, "chain error = "+statusCode);
-                Log.d(TAG, "chain error body = "+responseBody.hashCode());
-                pm.setChainUploading(3);
-                makeNoti("uploading fail");
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody formBody = new FormBody.Builder()
+                        .add("hospital", mHospitalId)
+                        .add("patient", mPatientId)
+                        .add("file", filepath)
+                        .build();
+
+
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url(urlproof)
+                        .addHeader("X-Auth-Token",mAcccessToken)
+                        .addHeader("Content-Type", "application/json")
+                        .post(formBody)
+                        .build();
+
+                try {
+                    okhttp3.Response response = client.newCall(request).execute();
+
+
+                    if(!response.isSuccessful()){
+                        Log.d(TAG," 체인 create 싪패 , response code = "+response.code());
+
+                        pm.setChainUploading(3);//업로드실패
+                        makeNoti("uploading fail",0);
+
+                    }else{
+                        Log.d(TAG," 체인 create 성공 ");
+                        pm.setChainUploading(2);
+
+                        makeNoti("uploading success",0);
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    pm.setUploading(3); //업로드실패
+                    makeNoti("uploading fail",0);
+                }
+
             }
         });
 
+        t2.start();
     }
 
     private void uploadPicture(final PhotoModel pm) {
@@ -182,40 +238,25 @@ public class PictureIntentService extends IntentService {
                 try {
                     okhttp3.Response response = client.newCall(request).execute();
 
-                    //response.body()
 
                     if(!response.isSuccessful()){
                         Log.d(TAG," 원본, response code = "+response.code());
-                        // throw new IOException("Error : "+response);
+
                         pm.setUploading(3);//업로드실패
-                        makeNoti("uploading fail");
+                        makeNoti("uploading fail",0);
 
-
-                        //responseHandler.onFailure(response.code(), null, response.toString(), null);
                     }else{
                         Log.d(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
                         uploadChain(pm);
-                        //responseHandler.onSuccess(response.code(), null, "");
-                        //구현완료
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            public void run() {
-//                                Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+
                     }
 
-
-                    //추후구현
-//                    deleteImage();
-//
-//                    countDownTimer.cancel();
-//                    countDownTimer.start();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail");
+                    makeNoti("uploading fail",0);
                 }
             }
         });
@@ -225,7 +266,7 @@ public class PictureIntentService extends IntentService {
 
     private void uploadThumbnail(final PhotoModel pm) {
 
-        makeNoti("picture uploading...");
+
 
         final String filePath = pm.getThumbpath();
 
@@ -260,7 +301,6 @@ public class PictureIntentService extends IntentService {
                 try {
                     okhttp3.Response response = client.newCall(request).execute();
 
-                    //response.body()
 
                     if(!response.isSuccessful()){
                         // throw new IOException("Error : "+response);
@@ -268,35 +308,21 @@ public class PictureIntentService extends IntentService {
 
                         pm.setThumbUploading(3);
 
-                        makeNoti("uploading fail");
+                        makeNoti("uploading fail", 0);
 
-                        //responseHandler.onFailure(response.code(), null, response.toString(), null);
                     }else{
 
                         Log.d(TAG, " 썸네일, 업로드 성공 ");
                         pm.setThumbUploading(2);
 
                         uploadPicture(pm);
-                        //responseHandler.onSuccess(response.code(), null, "");
-                        //구현완료
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            public void run() {
-//                                Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+
                     }
-
-
-                    //추후구현
-//                    deleteImage();
-//
-//                    countDownTimer.cancel();
-//                    countDownTimer.start();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setThumbUploading(3); //업로드실패
-                    makeNoti("uploading fail. please check network");
+                    makeNoti("uploading fail. please check network", 0);
                 }
             }
         });
@@ -304,23 +330,7 @@ public class PictureIntentService extends IntentService {
         t.start();
     }
 
-//    /**
-//     * Handle action Foo in the provided background thread with the provided
-//     * parameters.
-//     */
-//    private void handleActionFoo(String param1, String param2) {
-//        // TODO: Handle action Foo
-//        throw new UnsupportedOperationException("Not yet implemented");
-//    }
-//
-//    /**
-//     * Handle action Baz in the provided background thread with the provided
-//     * parameters.
-//     */
-//    private void handleActionBaz(String param1, String param2) {
-//        // TODO: Handle action Baz
-//        throw new UnsupportedOperationException("Not yet implemented");
-//    }
+
 
     private static String getAbsoluteUrl(String relativeUrl) {
 //        String encString =  null;
@@ -337,7 +347,18 @@ public class PictureIntentService extends IntentService {
 
 
 
-    private void makeNoti(String message) {
+    private void makeNoti(String message, int id) {
+
+        Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
+        int notiID;
+
+//        if(id == 0){
+//            notiID = mNotiId;
+//        }else{
+//            notiID = mNotiId++;
+//        }
+
+        Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
 
         String CHANNEL_ID = "picture_upload_channel";
 
@@ -371,6 +392,7 @@ public class PictureIntentService extends IntentService {
                 .setWhen(System.currentTimeMillis());
 
 
+        Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
         // Show the notification
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_PICTURE_ID, builder.build());
 

@@ -29,12 +29,11 @@
         <service
             android:name=".services.PictureIntentService"
             android:exported="false"></service>
-        <!--
-          <service
-            android:name=".services.UploadService3"
-            android:enabled="true"
-            android:exported="true"></service>
-        -->
+
+        <service
+            android:name=".services.VideoIntentService"
+            android:exported="false"></service>
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -65,14 +64,8 @@
         <activity android:name=".activities.LaunchCameraActivity" />
         <activity android:name=".activities.LaunchVrecordActivity" />
 
-        <service
-            android:name=".services.UploadService"
-            android:exported="false" />
-        <!--
- <service
-            android:name=".services.UploadService2"
-            android:exported="false"></service>
-        -->
+
+
         <!-- <activity -->
         <!-- android:name="org.acra.CrashReportDialog" -->
         <!-- android:excludeFromRecents="true" -->

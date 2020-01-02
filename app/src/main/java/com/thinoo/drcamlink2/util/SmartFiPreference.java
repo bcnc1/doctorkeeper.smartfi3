@@ -25,7 +25,8 @@ public class SmartFiPreference {
     }
 
     public static final String getHospitalId(Context con){
-        return getString(con, SF_HOSPITAL_ID, "000000000001");
+        //return getString(con, SF_HOSPITAL_ID, "000000000001");
+        return getString(con, SF_HOSPITAL_ID, "kimcy");
     }
 
     public static void setHospitalId(Context con, String id){
