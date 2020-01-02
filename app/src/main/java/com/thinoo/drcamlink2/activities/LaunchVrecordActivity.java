@@ -21,7 +21,12 @@ import android.widget.Toast;
 import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.models.PhotoModel;
+import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.services.PictureIntentService;
 import com.thinoo.drcamlink2.services.UploadService;
+import com.thinoo.drcamlink2.services.VideoIntentService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,8 +48,9 @@ public class LaunchVrecordActivity extends Activity {
     private Context mCon;
     private final int MaxMin = 30;
     private File mFile;
-    private String mFilename;
-
+    private String mFileName;
+    private final String  DEVICE = "phone";
+    private Uri contentUri;
 
     private final int PERMISSION_ALL = 1;
     private final String[] PERMISSIONS = {
@@ -67,13 +73,14 @@ public class LaunchVrecordActivity extends Activity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
             //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-            mFilename = "DRCAM_" + timeStamp + ".mp4";
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            mFileName = DEVICE + "_" + timeStamp + ".mp4";
 
 
-            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + mFilename);
+            //mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + mFilename);
+            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
-            Uri contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
+            contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
 
             Log.d(TAG,"contentUri = "+ contentUri);
 
@@ -100,28 +107,42 @@ public class LaunchVrecordActivity extends Activity {
 
         if(requestCode == VREC_REQUEST && resultCode == Activity.RESULT_OK){
 
+            if(contentUri != null){
+
+            }
+
             //서비스로 구현
-            Intent it = new Intent(mCon, UploadService.class);
-            it.putExtra(UPLOAD_FILE_PATH, mFile.toString());
-            it.putExtra(UPLOAD_FILE_KIND, "video");
-            it.putExtra(UPLOAD_FILE_NAME, mFilename);
+//            Intent it = new Intent(mCon, UploadService.class);
+//            it.putExtra(UPLOAD_FILE_PATH, mFile.toString());
+//            it.putExtra(UPLOAD_FILE_KIND, "video");
+//            it.putExtra(UPLOAD_FILE_NAME, mFilename);
+
 
             //썸네일 테스트
-            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mFile.toString(), MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
-            try {
-                FileOutputStream outStream = new FileOutputStream(mCon.getExternalFilesDir(Environment.getExternalStorageState())+ File.separator +"videoThumb.jpg"); //파일저장
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                outStream.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mFile.toString(), MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+//            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
+//
+//            File file = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()), "/thumbnail/");
+//            if (!file.isDirectory()) {
+//                file.mkdir();
+//            }
+//            try {
+//
+//
+//               // FileOutputStream outStream = new FileOutputStream(mCon.getExternalFilesDir(Environment.getExternalStorageState())+ File.separator +"videoThumb.jpg"); //파일저장
+//                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//                outStream.close();
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+
+
 
             // 비디오 썸 테스트 end
 
-            startService(it);
+           // startService(it);
 
             //using uploadmanager
             //1. data 저장.
@@ -154,6 +175,21 @@ public class LaunchVrecordActivity extends Activity {
 //                    super.onRetry(retryNo);
 //                }
 //            }  );
+
+            String path = DisplayUtil.storeThumbPtictureImage(mFile.toString(),
+                    mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
+
+            if(path != null){
+                PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 0);
+
+                Long id = photoModel.getId();
+                VideoIntentService.startUploadVideo(mCon, id);
+
+            }else{
+                Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+
+            }
+
             Intent intent = new Intent(getApplication(), MainActivity.class);
             intent.putExtra(VIDEO_RECORD, false);
             startActivity(intent);

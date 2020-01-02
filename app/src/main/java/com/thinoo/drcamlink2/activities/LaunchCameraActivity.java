@@ -158,7 +158,7 @@ public class LaunchCameraActivity extends Activity {
 //                    outStream.close();
 
                     //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
-                    String path = DisplayUtil.storeThumbImage(mFile.toString(),
+                    String path = DisplayUtil.storeThumbPtictureImage(mFile.toString(),
                                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
 
                     if(path != null){

@@ -8,6 +8,7 @@ import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -68,7 +69,7 @@ public class DisplayUtil {
     }
 
 
-    public static String storeThumbImage(String sourcePath, File storePath, String fileName){
+    public static String storeThumbPtictureImage(String sourcePath, File storePath, String fileName){
         String path = null;
 
         Bitmap source = BitmapFactory.decodeFile(sourcePath);
@@ -105,6 +106,38 @@ public class DisplayUtil {
         }
 
 
+    }
+
+
+    public static String storeThumbVideoImage(String sourcePath, File storePath, String fileName){
+
+        String path = null;
+
+        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(sourcePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+        Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
+
+        File file = new File(storePath, "/thumbnail/");
+
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
+
+        try {
+            Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
+            FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
+
+            outStream.close();
+
+            path = file.getAbsolutePath()+ File.separator +fileName;
+            return path;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return path;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return path;
+        }
     }
 
     private static Bitmap rotate(Bitmap bitmap, int degrees)
