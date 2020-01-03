@@ -33,5 +33,5 @@ public class Constants {
     }
 
     public static final long DELAY_TIME_MILLIS = 3000;
-
+    public static final boolean FILE_N_DB_DELETE = true;
 }

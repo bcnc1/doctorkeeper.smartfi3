@@ -139,7 +139,7 @@ public class GalleryFragment extends SessionFragment
         //storageSpinner = (Spinner) view.findViewById(R.id.storage_spinner);
         storageAdapter = new StorageAdapter(getActivity());
         storageSpinner.setAdapter(storageAdapter);
-        storageSpinner.setVisibility(View.GONE);
+        storageSpinner.setVisibility(View.GONE);   //만들고 여기서는 사용하지 않음
 
 //        emptyView.setText(getString(R.string.gallery_loading));
 
@@ -276,6 +276,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void cameraStopped(Camera camera) {
+        Log.d(TAG,"cameraStopped");
         enableUi(false);
         galleryAdapter.setHandles(new int[0]);
     }
@@ -352,6 +353,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void onStorageFound(final int handle, final String label) {
+        Log.d(TAG, "onStorageFound");
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -365,6 +367,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void onAllStoragesFound() {
+        Log.d(TAG, "onAllStoragesFound");
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -386,6 +389,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void onImageHandlesRetrieved(final int[] handles) {
+        Log.d(TAG, "onImageHandlesRetrieved");
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -409,6 +413,7 @@ public class GalleryFragment extends SessionFragment
     @Override
     public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
 
+        Log.d(TAG, "onImageInfoRetrieved");
         handler.post(new Runnable() {
 
             @Override
@@ -427,19 +432,24 @@ public class GalleryFragment extends SessionFragment
                     gotThumbWidth = true;
                     galleryAdapter.setThumbDimensions(thumbnail.getWidth(), thumbnail.getHeight());
                 }
+
                 for (int i = 0; i < galleryView.getChildCount(); ++i) {
 
-                    View child = galleryView.getChildAt(i);
+                    //View child = galleryView.getChildAt(i );
+                    View child = galleryView.getChildAt(i );
+
+                    Log.d(TAG,"child :"+child);
                     if (child == null) {
+                        Log.d(TAG,"child is null !!");
                         continue;
                     }
                     final ViewHolder holder = (ViewHolder) child.getTag();
                     if (holder.objectHandle == objectHandle) {
 
-                        pictureMap.put(objectHandle+"",objectInfo.filename);
+                        pictureMap.put(objectHandle+"",objectInfo.filename); //업로드할 파일들..
                         pictureMap.put(objectHandle+"_data",thumbnail);
 
-                        holder.image1.setImageBitmap(thumbnail);
+                        holder.image1.setImageBitmap(thumbnail);  //썸네일
 
                         Boolean uploadCheck=false;
                         for(int d = 0 ;d < photoModelLists.size();d++){
@@ -473,10 +483,11 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
+        Log.d(TAG,"onScrollStateChanged = "+scrollState);
         currentScrollState = scrollState;
         switch (scrollState) {
             case OnScrollListener.SCROLL_STATE_IDLE: {
-                Camera camera = camera();
+                Camera camera = camera();   //연결된 카메라를 말함..
                 if (!inStart || camera == null) {
                     break;
                 }
@@ -487,7 +498,9 @@ public class GalleryFragment extends SessionFragment
                         continue;
                     }
                     ViewHolder holder = (ViewHolder) child.getTag();
+                    Log.d(TAG,"holder.done = "+holder.done);
                     if (!holder.done) {
+                        Log.d(TAG,"holder.done => false 신규요청??? ");
                         holder.done = true;
                         camera.retrieveImageInfo(this, holder.objectHandle);
                     }
@@ -504,6 +517,7 @@ public class GalleryFragment extends SessionFragment
     }
 
     public void onNewListItemCreated(ViewHolder holder) {
+        Log.d(TAG,"onNewListItemCreated");
         if (currentScrollState == SCROLL_STATE_IDLE) {
             Camera camera = camera();
             if (camera == null) {
@@ -601,7 +615,7 @@ public class GalleryFragment extends SessionFragment
      */
     @Override
     public void onImageRetrieved(int objectHandle, Bitmap image) {
-
+        Log.d(TAG,"onImageRetrieved");
         Camera camera = camera();
         if (camera == null) {
             return;

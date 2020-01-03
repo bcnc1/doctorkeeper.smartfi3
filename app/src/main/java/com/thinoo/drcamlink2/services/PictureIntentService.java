@@ -117,37 +117,6 @@ public class PictureIntentService extends IntentService {
 
         Log.d(TAG,"uploadChain");
 
-//        final String fileName = pm.getFilename();
-//        pm.setChainUploading(1);
-//
-//        RequestParams params = new RequestParams();
-//        params.put("hospital", mHospitalId);
-//        params.put("patient", mPatientId);
-//        params.put("file", "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName);
-//
-//
-//        SyncHttpClient client = new SyncHttpClient();
-//        client.addHeader("Content-Type", "application/json");
-//        client.addHeader("X-Auth-Token", mAcccessToken);
-//
-//        String url = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
-//
-//        client.post(url, params, new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                pm.setChainUploading(2);
-//                makeNoti("uploading success",0);
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                Log.d(TAG, "chain error = "+statusCode);
-//                Log.d(TAG, "chain error body = "+responseBody.hashCode());
-//                pm.setChainUploading(3);
-//                makeNoti("uploading fail",0);
-//            }
-//        });
-
         final String fileName = pm.getFilename();
         pm.setChainUploading(1);
 
@@ -186,9 +155,15 @@ public class PictureIntentService extends IntentService {
 
                     }else{
                         Log.d(TAG," 체인 create 성공 ");
-                        pm.setChainUploading(2);
+
 
                         makeNoti("uploading success",0);
+                        if(Constants.FILE_N_DB_DELETE){
+                            PhotoModelService.deleteFileNPhotoModel(pm);
+                        }else{
+                            pm.setChainUploading(2);
+                        }
+
                     }
 
 

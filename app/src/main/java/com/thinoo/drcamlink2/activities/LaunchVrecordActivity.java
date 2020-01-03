@@ -49,6 +49,7 @@ public class LaunchVrecordActivity extends Activity {
     private final int MaxMin = 30;
     private File mFile;
     private String mFileName;
+    private String mFileNameThumb;
     private final String  DEVICE = "phone";
     private Uri contentUri;
 
@@ -75,6 +76,7 @@ public class LaunchVrecordActivity extends Activity {
             //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             mFileName = DEVICE + "_" + timeStamp + ".mp4";
+            mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
 
 
             //mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + mFilename);
@@ -176,11 +178,11 @@ public class LaunchVrecordActivity extends Activity {
 //                }
 //            }  );
 
-            String path = DisplayUtil.storeThumbPtictureImage(mFile.toString(),
-                    mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
+            String path = DisplayUtil.storeThumbVideoImage(mFile.toString(),
+                    mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileNameThumb);
 
             if(path != null){
-                PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 0);
+                PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 2);
 
                 Long id = photoModel.getId();
                 VideoIntentService.startUploadVideo(mCon, id);

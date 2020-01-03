@@ -62,7 +62,34 @@ public class PhotoModelService {
         return photoModel;
     }
 
+    public static void  deleteFileNPhotoModel(PhotoModel pm){
+        boolean isOriDelete = false, isThumbDelete = false;
 
+        String filePath = pm.getFullpath();
+        File f = new File(filePath);
+        if(f.delete()){
+            Log.d(TAG,"원본파일 삭제 성공");
+            isOriDelete = true;
+        }else{
+            Log.d(TAG,"원본파일 삭제 실패");
+        }
+
+        String thumbPath = pm.getThumbpath();
+        File fthumb = new File(thumbPath);
+        if(fthumb.delete()){
+            Log.d(TAG,"thumbnail 삭제 성공");
+            isThumbDelete = true;
+        }else{
+            Log.d(TAG,"섬네일 삭제 실패");
+        }
+
+        if(isOriDelete && isThumbDelete){
+            pm.delete();
+
+            Log.d(TAG,"DB 삭제 완료");
+        }
+
+    }
 //    public static PhotoModel saveThumb(Bitmap bitmap, String filename, final int mode) {
 //        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 //

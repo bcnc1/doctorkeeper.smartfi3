@@ -40,6 +40,7 @@ public class RetrieveImageInfoAction implements PtpAction {
 
     @Override
     public void exec(IO io) {
+        Log.d(TAG,"exec");
         GetObjectInfoCommand getInfo = new GetObjectInfoCommand(camera, objectHandle);
         io.handleCommand(getInfo);
 

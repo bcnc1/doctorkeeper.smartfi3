@@ -90,6 +90,7 @@ public class DisplayUtil {
         try {
             Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
             FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
+
             //bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 90, outStream);
             rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream); //
             outStream.close();
@@ -108,6 +109,38 @@ public class DisplayUtil {
 
     }
 
+    public static String storeDslrImage(String sourcePath, File storePath, String fileName, Bitmap ori, Bitmap thumb){
+        String path = null;
+
+        File file = new File(storePath, "/thumbnail/");
+
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
+
+        try{
+            FileOutputStream outSource = new FileOutputStream(sourcePath); //파일저장
+            ori.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
+            outSource.close();
+
+            FileOutputStream outThumb = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
+            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumb);
+            outThumb.close();
+
+            path = file.getAbsolutePath()+ File.separator +fileName;
+            return path;
+
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return path;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return path;
+        }
+
+
+
+    }
 
     public static String storeThumbVideoImage(String sourcePath, File storePath, String fileName){
 
@@ -125,7 +158,7 @@ public class DisplayUtil {
         try {
             Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
             FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
-
+            thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
             outStream.close();
 
             path = file.getAbsolutePath()+ File.separator +fileName;

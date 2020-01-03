@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class StorageAdapter extends BaseAdapter {
+
+    private static final String TAG = "StorageAdapter";
 
     private final List<Integer> ids = new ArrayList<Integer>();
     private final List<String> labels = new ArrayList<String>();
@@ -36,6 +39,7 @@ public class StorageAdapter extends BaseAdapter {
     }
 
     public void add(int handle, String label) {
+        Log.d(TAG,"label = "+label);
         ids.add(handle);
         labels.add(label);
         notifyDataSetChanged();
@@ -62,6 +66,7 @@ public class StorageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.d(TAG,"getView");
         TextView view = (TextView) convertView;
 
         if (view == null) {

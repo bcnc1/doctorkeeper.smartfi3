@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -18,6 +19,7 @@ import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class VideoIntentService extends IntentService {
 
 
     public static void startUploadVideo(Context context, long id) {
-        Intent intent = new Intent(context, PictureIntentService.class);
+        Intent intent = new Intent(context, VideoIntentService.class);
         intent.putExtra(EXTRA_VIDEO_ID, id);
         context.startService(intent);
 
@@ -58,6 +60,30 @@ public class VideoIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+
+        Log.d(TAG,"onHandleIntent 호출");
+        mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
+
+        mChartNum = "101010";
+
+        mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
+        mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
+
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if(extras != null){
+                long id = extras.getLong(EXTRA_VIDEO_ID);
+                Log.d(TAG,"id = "+id);
+                PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
+
+                makeNoti("picture uploading...", 1);
+
+                uploadThumbnail(photoModel);
+
+
+            }
+
+        }
 
     }
 
@@ -238,9 +264,14 @@ public class VideoIntentService extends IntentService {
 
                     }else{
                         Log.d(TAG," 체인 create 성공 ");
-                        pm.setChainUploading(2);
+                        //pm.setChainUploading(2);
 
                         makeNoti("uploading success",0);
+                        if(Constants.FILE_N_DB_DELETE){
+                            PhotoModelService.deleteFileNPhotoModel(pm);
+                        }else{
+                            pm.setChainUploading(2);
+                        }
                     }
 
 
@@ -276,13 +307,13 @@ public class VideoIntentService extends IntentService {
 
         Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
 
-        String CHANNEL_ID = "picture_upload_channel";
+        String CHANNEL_ID = "video_upload_channel";
 
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            CharSequence name = "Picture Upload";
+            CharSequence name = "Video Upload";
             //String description = Constants.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION;
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel =
@@ -310,7 +341,7 @@ public class VideoIntentService extends IntentService {
 
         Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
         // Show the notification
-        NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_PICTURE_ID, builder.build());
+        NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_VIDEO_ID, builder.build());
 
 
     }

@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +39,6 @@ import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.R;
-import com.thinoo.drcamlink2.activities.LaunchCameraActivity;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
@@ -49,31 +47,24 @@ import com.thinoo.drcamlink2.ptp.PtpConstants;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.ptp.model.ObjectInfo;
 import com.thinoo.drcamlink2.services.PhotoModelService;
-import com.thinoo.drcamlink2.services.UploadManager;
+import com.thinoo.drcamlink2.services.PictureIntentService;
 import com.thinoo.drcamlink2.util.DisplayUtil;
-import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionFragment;
+import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.sdcard.StorageAdapter;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getActivity;
 
 public class DSLRFragment extends SessionFragment implements
         Camera.RetrieveImageListener,
@@ -436,7 +427,7 @@ public class DSLRFragment extends SessionFragment implements
     }
 
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
-
+        Log.d(TAG, "sendPhoto");
         //기존코드 사용(추후 삭제예정)
 //        currentObjectHandle = 0;
 //        Log.d(TAG,"sendPhoto ObjectInfo = "+info +" Bitmap = "+thumb.getByteCount());
@@ -460,34 +451,51 @@ public class DSLRFragment extends SessionFragment implements
 
 
         currentObjectHandle = 0;
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
-        PhotoModelService.makeDir(getActivity(), "/thumbnail/");
+        mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
-        String root = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString();
-        String oriPath = root+ File.separator +mFileName;
+        //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+        String path = DisplayUtil.storeDslrImage(mFile.toString(),
+                getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
-        String thumbPath = root+ File.separator +"thumbnail"+File.separator+mFileName;
 
-        try {
-            FileOutputStream outSource = new FileOutputStream(oriPath); //파일저장
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
-            outSource.close();
+        if(path != null){
+            PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 1);
+            Long id = photoModel.getId();
+            PictureIntentService.startUploadPicture(getActivity(), id);
 
-            FileOutputStream outThumb = new FileOutputStream(thumbPath); //파일저장
-            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumb);
-            outThumb.close();
+        }else{
+            Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
-
-        new UploadManager(getActivity(), photoModel);
+//        PhotoModelService.makeDir(getActivity(), "/thumbnail/");
+//
+//        String root = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString();
+//        String oriPath = root+ File.separator +mFileName;
+//
+//        String thumbPath = root+ File.separator +"thumbnail"+File.separator+mFileName;
+//
+//        try {
+//            FileOutputStream outSource = new FileOutputStream(oriPath); //파일저장
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
+//            outSource.close();
+//
+//            FileOutputStream outThumb = new FileOutputStream(thumbPath); //파일저장
+//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumb);
+//            outThumb.close();
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
+//
+//        new UploadManager(getActivity(), photoModel);
 
 // 기존 코드 삭제 예
 //        Log.i(TAG,"sendPhoto ==> SAVED");

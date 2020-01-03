@@ -510,6 +510,8 @@ public class LiveViewFragment extends SessionFragment implements
     @Override
     public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
 
+        Log.d(TAG,"onImageInfoRetrieved");
+
         handler.post(new Runnable() {
             @Override
             public void run() {
