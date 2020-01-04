@@ -141,8 +141,24 @@ public class PhotoModelService {
         return photoModel;
     }
 
+    public static PhotoModel addPhotoModelWithRawName( final String sourcePath, final String thumbPath, String filename, String rawName, final int mode) {
+
+        final PhotoModel photoModel = new PhotoModel();
+
+        photoModel.setFullpath(sourcePath);
+        photoModel.setThumbpath(thumbPath);
+        photoModel.setFilename(filename);
+        photoModel.setRawfileName(rawName);
+        photoModel.setMode(mode);
+        photoModel.setCreated(new Date());
+        photoModel.save();
+
+        return photoModel;
+    }
+
     public static PhotoModel savePhoto(byte[] bytes, String filename, final int mode) {
 
+        Log.w(TAG, "savePhoto =## ");
 
         File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 

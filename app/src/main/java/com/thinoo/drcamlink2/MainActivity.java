@@ -540,7 +540,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         @Override
         public void onFinish() {
             //DO WHATEVER YOU WANT HERE
-            Log.i(TAG,"Timer Completed");
+            Log.w(TAG,"Timer Completed");
 //            Log.i(TAG,"selectedPatientInfo:"+selectedPatientInfo.toString());
             MadamfiveAPI.write_patientInfo();
             MadamfiveAPI.write_doctorInfo();

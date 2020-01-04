@@ -28,12 +28,13 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
     private String thumbpath;  //섬네일 파일패스
    // private String targetName;  // 사용하지 않음
    // private String targetId;    //사용하지 않음
-    private Boolean uploaded = false;     //업로드 완료시 , 모든 업로드 완료시 true
+    private Boolean uploaded = false;     //업로드 완료시 , 모든 업로드 완료시 true, sd카드 읽어서 업로드 된 놈을 알려줄때 사용
     private Integer uploading = 0;        //초기값 0, 업로드중: 1, 업로드 완료: 2, 업로드 실패: 3
     private Integer thumbUploading = 0;
     private Integer chainUploading = 0;
     //private Boolean needUploading = false;
     private Date created;
+    private String rawfileName;  //카메라에서 넘어오는 원본 파일명을 저장한다.
 
 
 
@@ -82,6 +83,14 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
     public void setFilename(String filname) {
         this.filename = filname;
+    }
+
+    public String getRawfileName() {
+        return rawfileName;
+    }
+
+    public void setRawfileName(String filname) {
+        this.rawfileName = filname;
     }
 
 //    public String getTargetName() {

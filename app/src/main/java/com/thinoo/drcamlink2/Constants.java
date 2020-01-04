@@ -15,6 +15,8 @@ public class Constants {
         public static final String FILE_UPLOAD_FAIL = "file.upload.fail";
         public static final String CHAIN_CREATE_SUCCESS = "chain.create.success";
         public static final String CHAIN_CREATE_FAIL = "chain.create.fail";
+        public static final String READ_FILE_UPLOAD_SUCCESS = "파일 업로드 성공";
+        public static final String READ_FILE_UPLOAD_FAIL = "파일 업로드 실패";
     }
 
     public static final class Storage{
@@ -34,4 +36,5 @@ public class Constants {
 
     public static final long DELAY_TIME_MILLIS = 3000;
     public static final boolean FILE_N_DB_DELETE = true;
+    public static final String MESSENGER = "com.thinoo.drcamlink2.services.extra.picture.messenger";
 }

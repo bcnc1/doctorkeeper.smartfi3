@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -49,12 +52,14 @@ public class PictureIntentService extends IntentService {
 
     private static final String TAG = "PictureIntentService";
     private static final String EXTRA_PICTURE_ID = "com.thinoo.drcamlink2.services.extra.picture.id";
+
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;
     private static String mChartNum =  null;
     private static String mMediaType = null;
     private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
+    private Messenger mMessenger = null;
 
     public PictureIntentService() {
         super("PictureIntentService");
@@ -67,14 +72,20 @@ public class PictureIntentService extends IntentService {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
     public static void startUploadPicture(Context context, long id) {
         Intent intent = new Intent(context, PictureIntentService.class);
         intent.putExtra(EXTRA_PICTURE_ID, id);
         context.startService(intent);
-        Log.d(TAG,"startUploadPicture 호출");
+        Log.w(TAG,"startUploadPicture 호출");
     }
 
+    public static void startUploadPicture(Context context, long id, Parcelable value) {
+        Intent intent = new Intent(context, PictureIntentService.class);
+        intent.putExtra(EXTRA_PICTURE_ID, id);
+        intent.putExtra(Constants.MESSENGER, value);
+        context.startService(intent);
+        Log.w(TAG,"startUploadPicture 호출");
+    }
 
 
     @Override
@@ -91,6 +102,7 @@ public class PictureIntentService extends IntentService {
             Bundle extras = intent.getExtras();
             if(extras != null){
                 long id = extras.getLong(EXTRA_PICTURE_ID);
+                mMessenger = (Messenger) extras.get(Constants.MESSENGER);
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
 
@@ -148,13 +160,24 @@ public class PictureIntentService extends IntentService {
 
 
                     if(!response.isSuccessful()){
-                        Log.d(TAG," 체인 create 싪패 , response code = "+response.code());
+                        Log.w(TAG," 체인 create 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
                         makeNoti("uploading fail",0);
 
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
                     }else{
-                        Log.d(TAG," 체인 create 성공 ");
+                        Log.w(TAG," 체인 create 성공 ");
 
 
                         makeNoti("uploading success",0);
@@ -164,6 +187,18 @@ public class PictureIntentService extends IntentService {
                             pm.setChainUploading(2);
                         }
 
+                        Log.w(TAG," mMessenger =  "+mMessenger);
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
                     }
 
 
@@ -171,6 +206,18 @@ public class PictureIntentService extends IntentService {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
                     makeNoti("uploading fail",0);
+
+                    if(mMessenger != null){
+                        Message msg = Message.obtain();
+                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                        try {
+                            mMessenger.send(msg);
+                        } catch (android.os.RemoteException e1) {
+                            Log.w(getClass().getName(), "Exception sending message", e1);
+                        }
+
+                    }
                 }
 
             }
@@ -220,6 +267,19 @@ public class PictureIntentService extends IntentService {
                         pm.setUploading(3);//업로드실패
                         makeNoti("uploading fail",0);
 
+                        Log.w(TAG," mMessenger =  "+mMessenger);
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
+
                     }else{
                         Log.d(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
@@ -232,6 +292,19 @@ public class PictureIntentService extends IntentService {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
                     makeNoti("uploading fail",0);
+
+                    Log.w(TAG," mMessenger =  "+mMessenger);
+                    if(mMessenger != null){
+                        Message msg = Message.obtain();
+                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                        try {
+                            mMessenger.send(msg);
+                        } catch (android.os.RemoteException e1) {
+                            Log.w(getClass().getName(), "Exception sending message", e1);
+                        }
+
+                    }
                 }
             }
         });
@@ -279,11 +352,24 @@ public class PictureIntentService extends IntentService {
 
                     if(!response.isSuccessful()){
                         // throw new IOException("Error : "+response);
-                        Log.d(TAG, " 썸네일, response = "+response.code());
+                        Log.w(TAG, " 썸네일, response = "+response.code());
 
                         pm.setThumbUploading(3);
 
                         makeNoti("uploading fail", 0);
+
+                        Log.w(TAG," mMessenger =  "+mMessenger);
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
 
                     }else{
 
@@ -298,6 +384,19 @@ public class PictureIntentService extends IntentService {
                     e.printStackTrace();
                     pm.setThumbUploading(3); //업로드실패
                     makeNoti("uploading fail. please check network", 0);
+
+                    Log.w(TAG," mMessenger =  "+mMessenger);
+                    if(mMessenger != null){
+                        Message msg = Message.obtain();
+                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                        try {
+                            mMessenger.send(msg);
+                        } catch (android.os.RemoteException e1) {
+                            Log.w(getClass().getName(), "Exception sending message", e1);
+                        }
+
+                    }
                 }
             }
         });
@@ -325,13 +424,6 @@ public class PictureIntentService extends IntentService {
     private void makeNoti(String message, int id) {
 
         Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
-        int notiID;
-
-//        if(id == 0){
-//            notiID = mNotiId;
-//        }else{
-//            notiID = mNotiId++;
-//        }
 
         Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
 

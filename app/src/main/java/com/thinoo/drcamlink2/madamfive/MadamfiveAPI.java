@@ -268,7 +268,7 @@ public class MadamfiveAPI {
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-                        Log.i(TAG, "Response:%n %s" + new String(response.data));
+                        Log.e(TAG, "Response:%n %s" + new String(response.data));
                         String resultResponse = new String(response.data);
                         JSONObject resultJson = null;
                         try {

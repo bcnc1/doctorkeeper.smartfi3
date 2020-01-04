@@ -15,14 +15,17 @@
  */
 package com.thinoo.drcamlink2.view.sdcard;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,6 +54,8 @@ import com.thinoo.drcamlink2.ptp.PtpConstants;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.ptp.model.ObjectInfo;
 import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.services.PictureIntentService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionFragment;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
@@ -59,6 +64,10 @@ import com.thinoo.drcamlink2.view.sdcard.GalleryAdapter.ViewHolder;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -113,17 +122,63 @@ public class GalleryFragment extends SessionFragment
     private Handler saveHandler;
     private HandlerThread saveHandlerThread;
 
+
     private ProgressBar multi_image_uploading_progressbar;
     private TextView multi_image_uploading_message;
     private int numberOfSendPhoto;
     private int progressBarPortionSum;
+    private static GalleryFragment mGalleryFragment;
 
-//    private ProgressTask mProgressTask;
+    private String mFileName;
+    private File mFile;
+    private final String  DEVICE = "dslr";
+    private final int PROGRESS_VALUE_MULTIPLE_10 = 10;
+    private final int PROGRESS_VALUE_MULTIPLE_2 = 2; //초기값을 그럭저럭 맞추려고..
+    private final int PROGRESS_VALUE_INIT  = 2;
 
     public static GalleryFragment newInstance() {
-        GalleryFragment f = new GalleryFragment();
-        return f;
+     //이전 코드 삭제 예정
+//        GalleryFragment f = new GalleryFragment();
+//        return f;
+//end
+        mGalleryFragment = new GalleryFragment();
+        return mGalleryFragment;
     }
+
+    public static GalleryFragment getInstance(){
+        return mGalleryFragment;
+    }
+
+    private Handler msgHandler = new Handler(new Handler.Callback() {
+        int uploadCount = 0;
+        @Override
+        public boolean handleMessage(Message msg) {
+            Object path = msg.obj;
+            Log.w(TAG,"msgHandler 호출..");
+            if(GalleryFragment.getInstance() != null){
+                uploadCount++;
+                numberOfSendPhoto++;
+                multi_image_uploading_progressbar.setProgress(uploadCount);
+
+                if(numberOfSendPhoto==selectedObjectHandles.size()){  //마지막 값이면..
+                    multi_image_uploading_progressbar.setVisibility(View.INVISIBLE);
+                    Log.e(TAG,"완료.. => progressBarPortionSum = "+progressBarPortionSum + "  numberOfSendPhoto = "+numberOfSendPhoto);
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
+                    ft.addToBackStack(null);
+                    ft.commit();
+                }
+
+            }else{
+                Log.w(TAG,"back key 누른 경우..");
+            }
+            // TODO: 2020-01-04 프로그래스브 바 처리 , 메모리 릭 유의, tost메세지 유무확인 필요!!
+            Toast.makeText(getActivity().getBaseContext(), path.toString(), Toast.LENGTH_LONG).show();
+            return true;
+        }
+    });
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -193,6 +248,7 @@ public class GalleryFragment extends SessionFragment
 
 
     private void retrieveDirection(ArrayList<Integer> list){
+        Log.w(TAG,"retrieveDirection => 카메라에게..이미지 요청");
         for(int h : list) {
             camera().retrieveImage(this, h);
         }
@@ -226,7 +282,7 @@ public class GalleryFragment extends SessionFragment
         galleryView.setEnabled(enabled);
         orderCheckbox.setEnabled(enabled);
 
-        // 이미 저장되어 있는 PhotoModel db 읽어오기
+        // 이미 저장되어 있는 PhotoModel db 읽어오기???
         photoModelLists = PhotoModelService.findImageListOld();
 
         numberOfSendPhoto=0;
@@ -413,7 +469,7 @@ public class GalleryFragment extends SessionFragment
     @Override
     public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
 
-        Log.d(TAG, "onImageInfoRetrieved");
+        Log.i(TAG, "갤러러, 이미지 정보  ==> onImageInfoRetrieved");
         handler.post(new Runnable() {
 
             @Override
@@ -426,7 +482,7 @@ public class GalleryFragment extends SessionFragment
                 }
 
                 if (currentObjectHandle == objectHandle) {
-                    Log.i(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
+                    Log.w(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
                 }
                 if (!gotThumbWidth && thumbnail != null) {
                     gotThumbWidth = true;
@@ -446,6 +502,7 @@ public class GalleryFragment extends SessionFragment
                     final ViewHolder holder = (ViewHolder) child.getTag();
                     if (holder.objectHandle == objectHandle) {
 
+                        Log.w(TAG,"정보저장 :");
                         pictureMap.put(objectHandle+"",objectInfo.filename); //업로드할 파일들..
                         pictureMap.put(objectHandle+"_data",thumbnail);
 
@@ -454,17 +511,30 @@ public class GalleryFragment extends SessionFragment
                         Boolean uploadCheck=false;
                         for(int d = 0 ;d < photoModelLists.size();d++){
                             PhotoModel p = photoModelLists.get(d);
-                            if(objectInfo.filename.equals(p.getFilename())){
+                            //이전코드
+//                            if(objectInfo.filename.equals(p.getFilename())){
+//                                Log.w(TAG,"업로드 상태 체크 :");
+//                                uploadCheck = p.getUploaded();
+//                                break;
+//                            }
+                            //end
+                            //변경코드
+                            if(objectInfo.filename.equals(p.getRawfileName())){
+                                Log.w(TAG,"업로드 상태 체크 :");
                                 uploadCheck = p.getUploaded();
                                 break;
                             }
+                            //end
                         }
 //                        PhotoModel pm = PhotoModel.findById(PhotoModel.class,photoModelLists.get(0).getId());
                         if(uploadCheck==true) {
+                            Log.d(TAG,"업로드 된 이미지표시 :"); //그런데 제대로 동작 안하는듯..
                             holder.sdcard_image_upload_check.setVisibility(View.VISIBLE);
                         }
 
                         if (!"".equals(objectInfo.captureDate)) {
+
+                            Log.d(TAG,"캡쳐??? :");
                             try {
                                 Date date = formatParser.parse(objectInfo.captureDate);
                                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -532,7 +602,7 @@ public class GalleryFragment extends SessionFragment
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Log.i(TAG,"item selected");
+        Log.w(TAG,"item selected");
 
 //        View child = galleryView.getChildAt(position);
         View child = galleryView.getChildAt(position - parent.getFirstVisiblePosition());
@@ -567,39 +637,54 @@ public class GalleryFragment extends SessionFragment
         sdcard_toast_select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.w(TAG,"계속선택 클릭");
                 toast.cancel();
             }
         });
 
         sdcard_toast_upload.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                Log.w(TAG,"업로드 클릭");
                 toast.cancel();
 
-//                mProgressTask.execute(25);
-                MadamfiveAPI.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        multi_image_uploading_progressbar.setVisibility(View.VISIBLE);
-                        multi_image_uploading_message.setVisibility(View.VISIBLE);
+                //이전 코드 삭제 예정..
+//                MadamfiveAPI.getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        multi_image_uploading_progressbar.setVisibility(View.VISIBLE);
+//                        multi_image_uploading_message.setVisibility(View.VISIBLE);
+//
+//                        int[] tempHandles =new int[0];
+//                        galleryAdapter.setHandles(tempHandles);
+//
+//                        //2초에한번씩 30번..
+//                        // 조금씩 프로그래시브바를 진행시키다가 1분후에는 반으로 만듬
+//                        new CountDownTimer(60000, 2000) {
+//                            int tick = 0;
+//                            public void onTick(long millisUntilFinished) {
+//                                tick++;
+//                                Log.w(TAG,"카운트 호출, 프로그레스브바 tick = "+tick);
+//                                multi_image_uploading_progressbar.setProgress(20+tick);
+//                            }
+//                            public void onFinish() {
+//                                Log.w(TAG,"카운트 종료, 프로그레스브바 50 !!");
+//                                multi_image_uploading_progressbar.setProgress(50);
+//                            }
+//                        }.start();
+//
+//                    }
+//                });
+//end
+                //이미지 업로드 될때 마다 프로그레시브바 변경되게 ...
+                multi_image_uploading_progressbar.setVisibility(View.VISIBLE);
+                multi_image_uploading_message.setVisibility(View.VISIBLE);
+                int[] tempHandles =new int[0];
+                galleryAdapter.setHandles(tempHandles);
 
-                        int[] tempHandles =new int[0];
-                        galleryAdapter.setHandles(tempHandles);
-
-                        new CountDownTimer(60000, 2000) {
-                            int tick = 0;
-                            public void onTick(long millisUntilFinished) {
-                                tick++;
-                                multi_image_uploading_progressbar.setProgress(20+tick);
-                            }
-                            public void onFinish() {
-                                multi_image_uploading_progressbar.setProgress(50);
-                            }
-                        }.start();
-
-                    }
-                });
-
+                multi_image_uploading_progressbar.setMax(selectedImageNumber);
+                //multi_image_uploading_progressbar.setProgress();
                 uploadSelectedHandles();
             }
         });
@@ -615,7 +700,7 @@ public class GalleryFragment extends SessionFragment
      */
     @Override
     public void onImageRetrieved(int objectHandle, Bitmap image) {
-        Log.d(TAG,"onImageRetrieved");
+        Log.w(TAG,"onImageRetrieved, 카메라로부터 이미지 받음");
         Camera camera = camera();
         if (camera == null) {
             return;
@@ -625,9 +710,61 @@ public class GalleryFragment extends SessionFragment
         currentBitmap = image;
         String currentObjectInfo = pictureMap.get(currentObjectHandle+"")+"";
 
-        Log.i(TAG,"retrieveImage+++Done"+currentObjectInfo);
+        Bitmap thumb = (Bitmap) pictureMap.get(objectHandle+"_data");
 
-        sendPhoto(currentObjectInfo, currentBitmap);
+        Log.e(TAG,"retrieveImage+++Done"+currentObjectInfo);
+
+        //삭제 예정
+       //sendPhoto(currentObjectInfo, currentBitmap);
+
+
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        mFileName = DEVICE + "_" + timeStamp+".jpg";
+
+        mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+
+        String path = DisplayUtil.storeDslrImage(mFile.toString(),
+                getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, currentBitmap, thumb);
+
+        if(path != null){
+            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(mFile.toString(),path, mFileName, currentObjectInfo, 1);
+            Long id = photoModel.getId();
+
+            Messenger messenger = new Messenger(msgHandler);
+
+            PictureIntentService.startUploadPicture(getActivity(), id, messenger);
+
+        }else{
+            Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+
+        }
+
+        //test code, 삭제 예정
+//        Bitmap thumb = (Bitmap) pictureMap.get(objectHandle+"_data");
+//        File mFile = new File((getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()));
+//        File file = new File(mFile, "/camera/");
+//
+//        if (!file.isDirectory()) {
+//            file.mkdir();
+//        }
+//
+//        try{
+//            FileOutputStream oriPath = new FileOutputStream(file.getAbsolutePath()+ File.separator +"camera-ori.jpg"); //파일저장
+//            currentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, oriPath);
+//            oriPath.close();
+//
+//
+//            FileOutputStream tPath = new FileOutputStream(file.getAbsolutePath()+ File.separator +"camera-thumb.jpg"); //파일저장
+//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, tPath);
+//            tPath.close();
+//
+//        }catch (FileNotFoundException e){
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        //end
 
     }
 
@@ -643,9 +780,9 @@ public class GalleryFragment extends SessionFragment
 
     private void sendPhoto(String filename, Bitmap bitmap) {
 
-        Log.i(TAG,"sendPhoto"+filename);
+        Log.w(TAG,"sendPhoto"+filename);
 
-        int progressBarPortion = 50 / selectedObjectHandles.size();
+        int progressBarPortion = 50 / selectedObjectHandles.size();  //what means 50??, 10개선택했으면 progressBarPortion은 5
         numberOfSendPhoto++;
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -660,38 +797,46 @@ public class GalleryFragment extends SessionFragment
 
         final byte[] bytes = baos.toByteArray();
 
-        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, filename, 1);
+        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, filename, 1); //파일및 DB 저장..
 
+        //동기처럼동작 응답받아야만 다음 진행...??
+        Log.w(TAG,"MadamfiveAPI.createPost => 호출 ");
         MadamfiveAPI.createPost(bytes, "DSLR", new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                Log.i("CAMERA", "onStart2:");
+                Log.w(TAG, "onStart2:");
             }
 
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("CAMERA", "HTTP21:" + statusCode + responseString);
+                Log.w(TAG, "HTTP21:" + statusCode + responseString);
                 photoModel.setUploaded(true);
                 photoModel.save();
             }
 
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                Log.d("CAMERA", "HTTP22:" + statusCode + response.toString());
+                Log.w(TAG, "HTTP=> 응답 :" + statusCode + response.toString());
             }
         });
 
+        Log.w(TAG,"progressBarPortion = "+progressBarPortion+" progressBarPortionSum = "+progressBarPortionSum);
         progressBarPortionSum = 50 + progressBarPortion + progressBarPortionSum;
+
+        Log.w(TAG,"after => progressBarPortionSum = "+progressBarPortionSum);
 
         MadamfiveAPI.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.w(TAG,"진행.. => progressBarPortionSum = "+progressBarPortionSum);
                 multi_image_uploading_progressbar.setProgress(progressBarPortionSum);
             }
         });
 
-        if(numberOfSendPhoto==selectedObjectHandles.size()){
+        if(numberOfSendPhoto==selectedObjectHandles.size()){  //마지막 값이면..
 //            multi_image_uploading_progressbar.setVisibility(View.INVISIBLE);
+            Log.e(TAG,"완료.. => progressBarPortionSum = "+progressBarPortionSum + "  numberOfSendPhoto = "+numberOfSendPhoto);
+
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
             ft.addToBackStack(null);

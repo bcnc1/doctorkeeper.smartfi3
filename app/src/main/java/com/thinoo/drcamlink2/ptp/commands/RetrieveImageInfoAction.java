@@ -64,7 +64,7 @@ public class RetrieveImageInfoAction implements PtpAction {
             }
         }
 
-        Log.d(TAG,"onImageInfoRetrieved => 호출");
+        Log.i(TAG,"onImageInfoRetrieved => 전달");
         listener.onImageInfoRetrieved(objectHandle, getInfo.getObjectInfo(), thumbnail);
     }
 

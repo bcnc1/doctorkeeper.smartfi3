@@ -109,17 +109,17 @@ public class DisplayUtil {
 
     }
 
-    public static String storeDslrImage(String sourcePath, File storePath, String fileName, Bitmap ori, Bitmap thumb){
+    public static String storeDslrImage(String storeOriPath, File storeThumbPath, String fileName, Bitmap ori, Bitmap thumb){
         String path = null;
 
-        File file = new File(storePath, "/thumbnail/");
+        File file = new File(storeThumbPath, "/thumbnail/");
 
         if (!file.isDirectory()) {
             file.mkdir();
         }
 
         try{
-            FileOutputStream outSource = new FileOutputStream(sourcePath); //파일저장
+            FileOutputStream outSource = new FileOutputStream(storeOriPath); //파일저장
             ori.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
             outSource.close();
 
@@ -137,8 +137,6 @@ public class DisplayUtil {
             e.printStackTrace();
             return path;
         }
-
-
 
     }
 
