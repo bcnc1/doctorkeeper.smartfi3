@@ -32,11 +32,14 @@ import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
 
 import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 public class LoginDialogFragment extends DialogFragment {
 
@@ -76,42 +79,57 @@ public class LoginDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 loginButton.setEnabled(false);
-                // TODO: 2019-12-24 로그인 수정
-                MadamfiveAPI.login(usernameTextView.getText().toString(), passwordTextView.getText().toString(), new JsonHttpResponseHandler() {
-
+                // TODO: 2019-12-24 로그인 수정 , 이전코드 삭제 예정
+              //  BlabAPI.loginEMR(getActivity(), "admin","1");
+                BlabAPI.loginEMR(getActivity(), "admin","1", new JsonHttpResponseHandler(){
                     @Override
-                    public void onStart() {
-                        Log.i(TAG, "onStart:");
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+                        Log.w(TAG,"성공 = "+response);
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                        Log.i(TAG, "HTTPa:" + statusCode + responseString);
-
-                        if(statusCode == 400) {
-                            Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-
-                            loginButton.setEnabled(true);
-                        }else{
-                            dismiss();
-                            loginButton.setEnabled(true);
-                            startSelectPatient();
-                        }
-
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        Log.w(TAG,"실패");
                     }
-
-                    @Override
-                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                        // If the response is JSONObject instead of expected JSONArray
-                        Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-
-                        dismiss();
-                        startSelectPatient();
-                    }
-
                 });
+
+//                MadamfiveAPI.login(usernameTextView.getText().toString(), passwordTextView.getText().toString(), new JsonHttpResponseHandler() {
+//
+//                    @Override
+//                    public void onStart() {
+//                        Log.i(TAG, "onStart:");
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+//                        Log.i(TAG, "HTTPa:" + statusCode + responseString);
+//
+//                        if(statusCode == 400) {
+//                            Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER, 0, 0);
+//                            toast.show();
+//
+//                            loginButton.setEnabled(true);
+//                        }else{
+//                            dismiss();
+//                            loginButton.setEnabled(true);
+//                            startSelectPatient();
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+//                        // If the response is JSONObject instead of expected JSONArray
+//                        Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+//
+//                        dismiss();
+//                        startSelectPatient();
+//                    }
+//
+//                });
 
             }
         });

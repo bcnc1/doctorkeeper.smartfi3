@@ -125,7 +125,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         setContentView(R.layout.main);
 
-        //kimcy 일단 추가
+        //kimcy 일단 추가, 추후 삭제 예정
         MadamfiveAPI.setContext(this, getApplicationContext());
         BlabAPI.setContext(this, getApplicationContext());
 
@@ -135,11 +135,6 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
         ft.addToBackStack(null);
         ft.commit();
-
-//        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        ft.replace(R.id.fragment_container, DSLRFragment.newInstance(), null);
-//        ft.addToBackStack(null);
-//        ft.commit();
 
         int appVersionCode = -1;
         try {
@@ -154,22 +149,24 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         ptp = PtpService.Singleton.getInstance(this);
 
-        if (MadamfiveAPI.getAccessToken() == null || MadamfiveAPI.getBoardId() == null) {
-            showLoginDialog();
-        }else{
-            MadamfiveAPI.read_patientInfo();
-            if(selectedPatientInfo==null) {
-                if (getFragmentManager() != null) {
-                    FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
-                    PatientDialogFragment patientDialogFragment = PatientDialogFragment.newInstance();
-                    changelogTx.add(patientDialogFragment, "환자검색");
-                    changelogTx.commit();
-                }
-            }
-            if(MadamfiveAPI.doctorSelectExtraOption){
-                MadamfiveAPI.read_doctorInfo();
-            }
-        }
+        //todo 이전코드 삭제 예정
+//        if (MadamfiveAPI.getAccessToken() == null || MadamfiveAPI.getBoardId() == null) {
+//            showLoginDialog();
+//        }else{
+//            MadamfiveAPI.read_patientInfo();
+//            if(selectedPatientInfo==null) {
+//                if (getFragmentManager() != null) {
+//                    FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+//                    PatientDialogFragment patientDialogFragment = PatientDialogFragment.newInstance();
+//                    changelogTx.add(patientDialogFragment, "환자검색");
+//                    changelogTx.commit();
+//                }
+//            }
+//            if(MadamfiveAPI.doctorSelectExtraOption){
+//                MadamfiveAPI.read_doctorInfo();
+//            }
+//        }
+//end
 
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();

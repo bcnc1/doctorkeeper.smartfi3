@@ -34,6 +34,12 @@ public class Constants {
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
     }
 
+    public static final class EMRAPI{
+        public static final String BASE_URL = "http://211.252.87.177:8080";
+        public static final String  LOGIN = "/emrmng/api/getLogin";
+        public static final int  NOTIFICATION_VIDEO_ID = 1010;
+    }
+
     public static final long DELAY_TIME_MILLIS = 3000;
     public static final boolean FILE_N_DB_DELETE = true;
     public static final String MESSENGER = "com.thinoo.drcamlink2.services.extra.picture.messenger";

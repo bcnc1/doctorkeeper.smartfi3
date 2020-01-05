@@ -20,17 +20,27 @@ import android.webkit.MimeTypeMap;
 //import com.android.volley.toolbox.StringRequest;
 //import com.android.volley.toolbox.Volley;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.services.VideoIntentService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -46,7 +56,7 @@ import static com.thinoo.drcamlink2.MainActivity.countDownTimer;
 
 public class BlabAPI {
     private static final String TAG = BlabAPI.class.getSimpleName();
-    private static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_10b1107b-ce24-4cb4-a066-f46c53b474a3";
+   // private static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_10b1107b-ce24-4cb4-a066-f46c53b474a3";
 
     private static String mAcccessToken = null;
 
@@ -132,7 +142,84 @@ public class BlabAPI {
      * @return
      */
     private static String getAbsoluteUrl(String relativeUrl) {
-        return BASE_URL + "/" + relativeUrl;
+        return Constants.Storage.BASE_URL + "/" + relativeUrl;
+    }
+
+
+    public static void loginEMR(Context con, String id, String pw){
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
+        StringEntity jsonEntity = null;
+
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("userId", id);
+            jsonParams.put("pwd", pw);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonEntity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+
+        client.post(con, url, jsonEntity, "application/json", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Log.w(TAG,"성공 = "+response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.w(TAG,"실패");
+            }
+        });
+    }
+
+
+    public static void loginEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
+        StringEntity jsonEntity = null;
+
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("userId", id);
+            jsonParams.put("pwd", pw);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonEntity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.post(con, url, jsonEntity, "application/json",responseHandler);
+
+//        client.post(con, url, jsonEntity, "application/json", new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//                Log.w(TAG,"성공 = "+response);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                super.onFailure(statusCode, headers, responseString, throwable);
+//                Log.w(TAG,"실패");
+//            }
+//        });
     }
 
     public static Activity getActivity() {
