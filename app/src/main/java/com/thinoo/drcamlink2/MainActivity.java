@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.activities.AppSettingsActivity;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.ptp.Camera;
@@ -47,12 +50,18 @@ import com.thinoo.drcamlink2.ptp.PtpService;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.PackageUtil;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
 import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionView;
 import com.thinoo.drcamlink2.view.WebViewDialogFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
@@ -84,6 +93,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
     private final long interval = 1 * 1000;
     public static MyCountDownTimer countDownTimer;
     private boolean isVrecording;
+    private Context mCon;
 
     @Override
     public Camera getCamera() {        return camera;    }
@@ -111,6 +121,8 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             Log.i(TAG, "onCreate");
         }
 
+        mCon = this;
+
         backButtonCount=0;
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -125,8 +137,9 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         setContentView(R.layout.main);
 
-        //kimcy 일단 추가, 추후 삭제 예정
+
         MadamfiveAPI.setContext(this, getApplicationContext());
+        //kimcy todo 일단 추가, 추후 삭제 예정
         BlabAPI.setContext(this, getApplicationContext());
 
         settings = new AppSettings(this);
@@ -168,8 +181,58 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 //        }
 //end
 
+        if(SmartFiPreference.getDoctorId(this).equals(Constants.EMRAPI.UNDEFINED)
+            || SmartFiPreference.getSfToken(this).equals(Constants.EMRAPI.UNDEFINED)){
+            Log.w(TAG,"로그인되어 있지 않음");
+            showLoginDialog();
+        }else {
+            //자동 로그인
+            autoGetToken();
+        }
+
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();
+    }
+
+    private void autoGetToken() {
+        Log.w(TAG,"autoGetToken");
+        String id = SmartFiPreference.getDoctorId(mCon);
+        String pw = SmartFiPreference.getSfDoctorPw(mCon);
+        BlabAPI.loginEMR(mCon, id,pw, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                try {
+                    String code =  response.get(Constants.EMRAPI.CODE).toString();
+                    if(!code.equals(Constants.EMRAPI.CODE_200)){
+                        Log.e(TAG,"응답에러");
+                    }else{
+
+                        try {
+
+                            JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
+                            SmartFiPreference.setSfToken(mCon,data.getString("token"));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e(TAG," 응답에러");
+                        }
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+
+
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.w(TAG,"실패");
+
+            }
+        });
     }
 
     public void showLoginDialog() {

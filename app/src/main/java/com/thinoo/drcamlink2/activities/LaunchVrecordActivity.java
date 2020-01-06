@@ -74,7 +74,7 @@ public class LaunchVrecordActivity extends Activity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
             //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
             mFileName = DEVICE + "_" + timeStamp + ".mp4";
             mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
 
@@ -192,12 +192,17 @@ public class LaunchVrecordActivity extends Activity {
 
             }
 
-            Intent intent = new Intent(getApplication(), MainActivity.class);
-            intent.putExtra(VIDEO_RECORD, false);
-            startActivity(intent);
+//            Intent intent = new Intent(getApplication(), MainActivity.class);
+//            intent.putExtra(VIDEO_RECORD, false);
+//            startActivity(intent);
         }else{
             Log.e(TAG,"비디오에서 못 돌아옴");
         }
+
+        //어쨋거나 메인으로..
+        Intent intent = new Intent(getApplication(), MainActivity.class);
+        intent.putExtra(VIDEO_RECORD, false);
+        startActivity(intent);
 
     }
 

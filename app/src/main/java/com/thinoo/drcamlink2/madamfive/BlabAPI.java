@@ -3,7 +3,9 @@ package com.thinoo.drcamlink2.madamfive;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -26,6 +28,7 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.thinoo.drcamlink2.Constants;
+import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.services.VideoIntentService;
 
 import org.json.JSONException;
@@ -46,7 +49,9 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.thinoo.drcamlink2.MainActivity.countDownTimer;
+import android.widget.Toast;
 
 //https://stackoverflow.com/questions/52149016/how-to-upload-video-in-android-using-volley(비디오업로드 참고)
 //https://stackoverflow.com/questions/49166938/record-and-upload-audio-and-video-files-to-the-server-in-android
@@ -185,6 +190,12 @@ public class BlabAPI {
 
 
     public static void loginEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
+
+        if(!getNetworkStatus(con)){
+            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+            return;
+        }
+
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
         StringEntity jsonEntity = null;
 
@@ -364,5 +375,35 @@ public class BlabAPI {
                 }
             }
         }
+    }
+
+    private static boolean getNetworkStatus(Context con){
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if(mobile.isConnected() || wifi.isConnected()){
+            return true;
+        }else{
+            return false;
+        }
+
+//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+//
+//        if(networkInfo != null && networkInfo.isConnected()) {
+//            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+//                //WIFI에 연결됨
+//                return true;
+//            } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+//                //LTE(이동통신망)에 연결됨
+//                return true;
+//            }
+//        } else {
+//            // 연결되지않음
+//            return false;
+//        }
+//
+//        return false;
     }
 }

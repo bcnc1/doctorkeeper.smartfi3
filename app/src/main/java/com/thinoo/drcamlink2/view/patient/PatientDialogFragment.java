@@ -19,8 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.FragmentTransaction;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 
@@ -30,7 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
@@ -44,6 +46,7 @@ public class PatientDialogFragment extends DialogFragment {
     private ListView patientListView;
 
     private ProgressBar patient_list_progressBar;
+    private boolean patientInsertExtraOption = true;
 
 
     public static PatientDialogFragment newInstance() {
@@ -58,14 +61,24 @@ public class PatientDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if (MadamfiveAPI.getAccessToken() == null) {
-            showLoginDialog();
-        }
-        if (MadamfiveAPI.getBoardId() == null) {
+        //이전code. todo 삭제예정
+//        if (MadamfiveAPI.getAccessToken() == null) {
+//            showLoginDialog();
+//        }
+//        if (MadamfiveAPI.getBoardId() == null) {
+//            showLoginDialog();
+//        }
+//        Log.i("+++++",MadamfiveAPI.getAccessToken()+":::"+MadamfiveAPI.getBoardId());
+//end
+
+        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(getActivity());
+
+        //환자검색버튼을 누르면 해당 다이얼로그 호출
+        if(SmartFiPreference.getSfToken(getActivity()).equals(Constants.EMRAPI.UNDEFINED)){
             showLoginDialog();
         }
 
-        Log.i("+++++",MadamfiveAPI.getAccessToken()+":::"+MadamfiveAPI.getBoardId());
+
 
         getDialog().setTitle("환자 검색");
         final View view = inflater.inflate(R.layout.activity_search_patient, container, false);
@@ -119,6 +132,7 @@ public class PatientDialogFragment extends DialogFragment {
                 chartNumberTextView.clearFocus();
                 final String loginCheck = keyword;
 
+                // TODO: 2020-01-06 죽음으로 수정해야 한다.
                 MadamfiveAPI.searchPatient(keyword, searchName, new JsonHttpResponseHandler() {
                     @Override
                     public void onStart() {
@@ -161,6 +175,7 @@ public class PatientDialogFragment extends DialogFragment {
                                                 return;
                                             }
 
+                                            // TODO:2020-01-06 환자정보등록
                                             MadamfiveAPI.insertPatient(name, chartNumber, new JsonHttpResponseHandler() {
 
                                                 @Override

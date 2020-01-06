@@ -38,6 +38,11 @@ public class Constants {
         public static final String BASE_URL = "http://211.252.87.177:8080";
         public static final String  LOGIN = "/emrmng/api/getLogin";
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
+        public static final String DATA = "data";
+        public static final String CODE = "code";
+        public static final String CODE_200 = "200";
+        public static final String UNDEFINED = "undefined";
+
     }
 
     public static final long DELAY_TIME_MILLIS = 3000;

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.thinoo.drcamlink2.Constants;
+
 public class SmartFiPreference {
     public static final String SF_TOKEN = "smartfi.token";
     public static final String SF_HOSPITAL_ID = "smartfi.hospital.id";
@@ -11,13 +13,14 @@ public class SmartFiPreference {
     public static final String SF_PATIENT_ID = "smartfi.patient.id";
     public static final String SF_PATIENT_CHART = "smartfi.patient.chart";
     public static final String SF_DOCTOR_PW = "smartfi.doctor.password";
+    public static final String INSERT_PATIENT = "smartfi.patient.insert";
 
     public static void defaultPreference(Context context){
 
     }
 
     public static String getSfToken(Context con){
-        return getString(con, SF_TOKEN, "AUTH_tk1eac95a141c34afbad8dd4f5052b17bb");
+        return getString(con, SF_TOKEN, Constants.EMRAPI.UNDEFINED);
     }
 
     public static void setSfToken(Context con, String tk){
@@ -25,8 +28,8 @@ public class SmartFiPreference {
     }
 
     public static final String getHospitalId(Context con){
-        //return getString(con, SF_HOSPITAL_ID, "000000000001");
-        return getString(con, SF_HOSPITAL_ID, "000000000001");
+        //000000000001
+        return getString(con, SF_HOSPITAL_ID, Constants.EMRAPI.UNDEFINED);
     }
 
     public static void setHospitalId(Context con, String id){
@@ -64,6 +67,15 @@ public class SmartFiPreference {
 
     public static void setSfDoctorPw(Context con, String pw){
         setString(con, SF_PATIENT_CHART, pw);
+    }
+
+
+    public static final Boolean getSfInsertPatientOpt(Context con){
+        return getBoolean(con, INSERT_PATIENT, true);
+    }
+
+    public static void setSfInsertPatientOpt(Context con, boolean is){
+        setBoolean(con, INSERT_PATIENT, is);
     }
 
 

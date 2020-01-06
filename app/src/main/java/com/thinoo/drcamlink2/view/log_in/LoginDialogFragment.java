@@ -31,12 +31,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -68,9 +71,6 @@ public class LoginDialogFragment extends DialogFragment {
         passwordTextView = (TextView) view.findViewById(R.id.input_password);
 
 
-        //일단 id, pw(암호화??)를 저장 추후 수정 예정
-        SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
-        SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
 
 
         final Button loginButton = (Button)view.findViewById(R.id.btn_login);
@@ -79,32 +79,66 @@ public class LoginDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 loginButton.setEnabled(false);
-                // TODO: 2019-12-24 로그인 수정 , 이전코드 삭제 예정
-              //  BlabAPI.loginEMR(getActivity(), "admin","1");
-                BlabAPI.loginEMR(getActivity(), "admin","1", new JsonHttpResponseHandler(){
+                BlabAPI.loginEMR(getActivity(), usernameTextView.getText().toString(),passwordTextView.getText().toString(), new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);
-                        Log.w(TAG,"성공 = "+response);
+                        Log.w(TAG,"성공 = "+response+" code = "+statusCode);
+                        try {
+                            String code =  response.get(Constants.EMRAPI.CODE).toString();
+                            if(!code.equals(Constants.EMRAPI.CODE_200)){
+                                Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                                loginButton.setEnabled(true);
+                            }else{
+                                SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
+                                SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
+
+                                try {
+
+                                    JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
+                                    SmartFiPreference.setSfToken(getActivity(),data.getString("token"));
+                                    SmartFiPreference.setHospitalId(getActivity(),data.getString("hsptId"));
+                                    dismiss();
+                                    loginButton.setEnabled(true);
+                                    startSelectPatient();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Log.e(TAG," 파싱에러");
+                                }
+                            }
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+
+
                     }
+
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
                         Log.w(TAG,"실패");
+                        Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                        loginButton.setEnabled(true);
                     }
                 });
 
+                //이전코드
 //                MadamfiveAPI.login(usernameTextView.getText().toString(), passwordTextView.getText().toString(), new JsonHttpResponseHandler() {
 //
 //                    @Override
 //                    public void onStart() {
-//                        Log.i(TAG, "onStart:");
+//                        Log.w(TAG, "onStart:");
 //                    }
 //
 //                    @Override
 //                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-//                        Log.i(TAG, "HTTPa:" + statusCode + responseString);
+//                        Log.w(TAG, "HTTPa:" + statusCode + responseString);
 //
 //                        if(statusCode == 400) {
 //                            Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
@@ -123,7 +157,7 @@ public class LoginDialogFragment extends DialogFragment {
 //                    @Override
 //                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
 //                        // If the response is JSONObject instead of expected JSONArray
-//                        Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+//                        Log.w(TAG, "HTTPb:" + statusCode + response.toString());
 //
 //                        dismiss();
 //                        startSelectPatient();
@@ -133,6 +167,7 @@ public class LoginDialogFragment extends DialogFragment {
 
             }
         });
+
         return view;
     }
 

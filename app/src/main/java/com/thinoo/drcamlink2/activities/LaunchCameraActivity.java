@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getActivity;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getContext;
 
@@ -78,7 +79,7 @@ public class LaunchCameraActivity extends Activity {
         //File f = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/tempImage.jpg");
         //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
 
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
@@ -172,9 +173,8 @@ public class LaunchCameraActivity extends Activity {
 
                     }
 
-
-
-
+//                    Intent intent = new Intent(getApplication(), MainActivity.class);
+//                    startActivity(intent);
 
                 }
             }catch (Exception e){
@@ -182,6 +182,9 @@ public class LaunchCameraActivity extends Activity {
             }
 
         }
+
+        Intent intent = new Intent(getApplication(), MainActivity.class);
+        startActivity(intent);
     }
 
     private void startPictureUpload() {

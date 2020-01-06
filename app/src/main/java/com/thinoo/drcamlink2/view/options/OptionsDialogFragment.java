@@ -66,29 +66,29 @@ public class OptionsDialogFragment extends DialogFragment {
 
         OptionsDialogFragment.this.getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        /// Option 1
-        switch_options_patient_info = (Switch) view.findViewById(R.id.switch_options_patient_info);
-        switch_options_patient_info.setChecked(false);
-
-        read_patientSearchDisplayExtraOption();
-        if(patientSearchDisplayExtraOption){
-            switch_options_patient_info.setChecked(true);
-        }
-
-        switch_options_patient_info.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if(patientSearchDisplayExtraOption){
-                    patientSearchDisplayExtraOption = false;
-                    switch_options_patient_info.setChecked(false);
-                }else {
-                    patientSearchDisplayExtraOption = true;
-                    switch_options_patient_info.setChecked(true);
-                }
-                write_patientSearchDisplayExtraOption();
-            }
-        });
+        /// Option 1 삭제
+//        switch_options_patient_info = (Switch) view.findViewById(R.id.switch_options_patient_info);
+//        switch_options_patient_info.setChecked(false);
+//
+//        read_patientSearchDisplayExtraOption();
+//        if(patientSearchDisplayExtraOption){
+//            switch_options_patient_info.setChecked(true);
+//        }
+//
+//        switch_options_patient_info.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//
+//                if(patientSearchDisplayExtraOption){
+//                    patientSearchDisplayExtraOption = false;
+//                    switch_options_patient_info.setChecked(false);
+//                }else {
+//                    patientSearchDisplayExtraOption = true;
+//                    switch_options_patient_info.setChecked(true);
+//                }
+//                write_patientSearchDisplayExtraOption();
+//            }
+//        });
 
         /// Option 2
         switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
@@ -114,53 +114,53 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
-        /// Option 3
-        switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
-        switch_options_doctor_insert_activate.setChecked(false);
+        /// Option 3 삭제
+//        switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
+//        switch_options_doctor_insert_activate.setChecked(false);
+//
+//        read_doctorSelectExtraOption();
+//        if(doctorSelectExtraOption){
+//            switch_options_doctor_insert_activate.setChecked(true);
+//        }
+//
+//        switch_options_doctor_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//
+//                if(doctorSelectExtraOption){
+//                    doctorSelectExtraOption = false;
+//                    switch_options_doctor_insert_activate.setChecked(false);
+//                }else {
+//                    doctorSelectExtraOption = true;
+//                    switch_options_doctor_insert_activate.setChecked(true);
+//                }
+//                write_doctorSelectExtraOption();
+//            }
+//        });
 
-        read_doctorSelectExtraOption();
-        if(doctorSelectExtraOption){
-            switch_options_doctor_insert_activate.setChecked(true);
-        }
-
-        switch_options_doctor_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if(doctorSelectExtraOption){
-                    doctorSelectExtraOption = false;
-                    switch_options_doctor_insert_activate.setChecked(false);
-                }else {
-                    doctorSelectExtraOption = true;
-                    switch_options_doctor_insert_activate.setChecked(true);
-                }
-                write_doctorSelectExtraOption();
-            }
-        });
-
-        /// optins4
-        switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
-        switch_options_shooting_image_display.setChecked(false);
-
-        read_ShootingImageDisplayExtraOption();
-        if(shootingImageDisplayExtraOption){
-            switch_options_shooting_image_display.setChecked(true);
-        }
-
-        switch_options_shooting_image_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if(shootingImageDisplayExtraOption){
-                    shootingImageDisplayExtraOption = false;
-                    switch_options_shooting_image_display.setChecked(false);
-                }else {
-                    shootingImageDisplayExtraOption = true;
-                    switch_options_shooting_image_display.setChecked(true);
-                }
-                write_ShootingImageDisplayExtraOption();
-            }
-        });
+        /// optins4 삭제
+//        switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
+//        switch_options_shooting_image_display.setChecked(false);
+//
+//        read_ShootingImageDisplayExtraOption();
+//        if(shootingImageDisplayExtraOption){
+//            switch_options_shooting_image_display.setChecked(true);
+//        }
+//
+//        switch_options_shooting_image_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//
+//                if(shootingImageDisplayExtraOption){
+//                    shootingImageDisplayExtraOption = false;
+//                    switch_options_shooting_image_display.setChecked(false);
+//                }else {
+//                    shootingImageDisplayExtraOption = true;
+//                    switch_options_shooting_image_display.setChecked(true);
+//                }
+//                write_ShootingImageDisplayExtraOption();
+//            }
+//        });
 
         return view;
     }

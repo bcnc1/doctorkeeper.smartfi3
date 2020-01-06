@@ -25,6 +25,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.BaseFragment;
@@ -51,8 +52,9 @@ public class CloudFragment extends BaseFragment
     @BindView(R.id.btn_logout)
     Button logoutBtn;
 
-    @BindView(R.id.btn_options)
-    Button optionsBtn;
+    //todo 삭제예정
+//    @BindView(R.id.btn_options)
+//    Button optionsBtn;
 
     private Fragment cloudGalleryFragment;
     private int currentScrollState;
@@ -109,8 +111,8 @@ public class CloudFragment extends BaseFragment
 
     @OnClick(R.id.btn_logout)
     public void logoutBtnClicked(){
-        SmartFiPreference.setDoctorId(getActivity(),"");
-        SmartFiPreference.setSfDoctorPw(getActivity(),"");
+        SmartFiPreference.setDoctorId(getActivity(), Constants.EMRAPI.UNDEFINED);
+        SmartFiPreference.setSfDoctorPw(getActivity(),Constants.EMRAPI.UNDEFINED);
 
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();
@@ -118,30 +120,14 @@ public class CloudFragment extends BaseFragment
         changelogTx.commit();
     }
 
-    @OnClick(R.id.btn_options)
-    public void optionsBtnClicked(){
-        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
-        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
-        changelogTx.add(opt, "Options");
-        changelogTx.commit();
-    }
-
-//    @Override
-//    public void onScrollStateChanged(AbsListView view, int scrollState) {
-//        currentScrollState = scrollState;
+    //todo 삭제예정
+//    @OnClick(R.id.btn_options)
+//    public void optionsBtnClicked(){
+//        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+//        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
+//        changelogTx.add(opt, "Options");
+//        changelogTx.commit();
 //    }
-//
-//    @Override
-//    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//    }
-//
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-////        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageInfoList.get(position).get("url")+
-////                "/attachments/"+imageInfoList.get(position).get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
-//    }
-
-
 
 
 }
