@@ -52,9 +52,9 @@ public class CloudFragment extends BaseFragment
     @BindView(R.id.btn_logout)
     Button logoutBtn;
 
-    //todo 삭제예정
-//    @BindView(R.id.btn_options)
-//    Button optionsBtn;
+   //박이사님 요청으로 기능활성화..
+    @BindView(R.id.btn_options)
+    Button optionsBtn;
 
     private Fragment cloudGalleryFragment;
     private int currentScrollState;
@@ -120,14 +120,14 @@ public class CloudFragment extends BaseFragment
         changelogTx.commit();
     }
 
-    //todo 삭제예정
-//    @OnClick(R.id.btn_options)
-//    public void optionsBtnClicked(){
-//        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
-//        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
-//        changelogTx.add(opt, "Options");
-//        changelogTx.commit();
-//    }
+
+    @OnClick(R.id.btn_options)
+    public void optionsBtnClicked(){
+        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
+        changelogTx.add(opt, "Options");
+        changelogTx.commit();
+    }
 
 
 }

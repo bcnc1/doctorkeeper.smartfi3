@@ -32,13 +32,13 @@
              <RelativeLayout
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content">
-                 <!-- <Button
+                  <Button
                       android:id="@+id/btn_options"
                       android:layout_width="80dp"
                       android:layout_height="32dp"
                       android:layout_alignParentLeft="true"
                       android:text="기타설정"
-                      android:textSize="10sp" /> -->
+                      android:textSize="10sp" />
 
                   <Button
                       android:id="@+id/btn_logout"

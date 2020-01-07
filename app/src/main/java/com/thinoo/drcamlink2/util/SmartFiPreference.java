@@ -71,7 +71,7 @@ public class SmartFiPreference {
 
 
     public static final Boolean getSfInsertPatientOpt(Context con){
-        return getBoolean(con, INSERT_PATIENT, true);
+        return getBoolean(con, INSERT_PATIENT, false);
     }
 
     public static void setSfInsertPatientOpt(Context con, boolean is){

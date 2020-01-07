@@ -18,6 +18,7 @@ package com.thinoo.drcamlink2.view.options;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.doctorSelectExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
@@ -94,7 +96,10 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
         switch_options_patient_insert_activate.setChecked(false);
 
-        read_patientInsertExtraOption();
+        //read_patientInsertExtraOption();
+        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(getActivity());
+
+        Log.w(TAG,"patientInsertExtraOption = "+patientInsertExtraOption);
         if(patientInsertExtraOption){
             switch_options_patient_insert_activate.setChecked(true);
         }
@@ -106,11 +111,13 @@ public class OptionsDialogFragment extends DialogFragment {
                 if(patientInsertExtraOption){
                     patientInsertExtraOption = false;
                     switch_options_patient_insert_activate.setChecked(false);
+                    SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
                 }else {
                     patientInsertExtraOption = true;
                     switch_options_patient_insert_activate.setChecked(true);
+                    SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
                 }
-                write_patientInsertExtraOption();
+                //write_patientInsertExtraOption();
             }
         });
 

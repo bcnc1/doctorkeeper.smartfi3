@@ -46,7 +46,7 @@ public class PatientDialogFragment extends DialogFragment {
     private ListView patientListView;
 
     private ProgressBar patient_list_progressBar;
-    private boolean patientInsertExtraOption = true;
+    private boolean patientInsertExtraOption = false;
 
 
     public static PatientDialogFragment newInstance() {
@@ -96,8 +96,10 @@ public class PatientDialogFragment extends DialogFragment {
         patientListView.setAdapter(adapter);
         patient_list_progressBar = (ProgressBar) view.findViewById(R.id.patient_list_progressBar);
 
-        read_patientSearchDisplayExtraOption();
-        read_patientInsertExtraOption();
+        //todo 삭제예정
+        //read_patientSearchDisplayExtraOption();
+        //read_patientInsertExtraOption();
+        //end
 
         view.findViewById(R.id.btn_search_patient).setOnClickListener(new OnClickListener() {
 
