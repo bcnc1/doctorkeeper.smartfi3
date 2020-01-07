@@ -65,8 +65,19 @@ public class PatientDialogAdapter extends BaseAdapter {
             }
         }else {
             HashMap<String, String> patientInfo = getItem(i);
-            patient_name.setText(patientInfo.get("name"));
-            patient_chartNumber.setText(patientInfo.get("chartNumber"));
+            String name = patientInfo.get("name");
+            if(name.equals("null")){
+                name = "";
+            }
+            patient_name.setText(name);
+
+            String chartNumber = patientInfo.get("chartNumber");
+
+            if(chartNumber.equals("null")){
+                chartNumber = "";
+            }
+
+            patient_chartNumber.setText(chartNumber);
         }
         if(getCount()==0)   patient_name.setText("결과 없음");
 

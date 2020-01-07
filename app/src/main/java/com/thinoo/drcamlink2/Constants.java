@@ -37,11 +37,22 @@ public class Constants {
     public static final class EMRAPI{
         public static final String BASE_URL = "http://211.252.87.177:8080";
         public static final String  LOGIN = "/emrmng/api/getLogin";
+        public static final String  SEARCH_PATIENT = "/emrmng/api/v1/custs";
+
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
         public static final String DATA = "data";
         public static final String CODE = "code";
+
         public static final String CODE_200 = "200";
+        public static final String CODE_401 = "401";
+        public static final String CODE_403 = "403";
+
         public static final String UNDEFINED = "undefined";
+
+        public static final String UID = "userId";
+        public static final String CUST_NO = "custNo";
+        public static final String CHART_NO = "chrtNo";
+
 
     }
 

@@ -206,7 +206,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
                 try {
                     String code =  response.get(Constants.EMRAPI.CODE).toString();
                     if(!code.equals(Constants.EMRAPI.CODE_200)){
-                        Log.e(TAG,"응답에러");
+                        Log.w(TAG,"응답 => OK");
                     }else{
 
                         try {

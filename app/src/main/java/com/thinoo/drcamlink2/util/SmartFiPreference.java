@@ -37,7 +37,7 @@ public class SmartFiPreference {
     }
 
     public static final String getDoctorId(Context con){
-        return getString(con, SF_DOCTOR_ID, "test7");
+        return getString(con, SF_DOCTOR_ID, Constants.EMRAPI.UNDEFINED);
     }
 
     public static void setDoctorId(Context con, String id){

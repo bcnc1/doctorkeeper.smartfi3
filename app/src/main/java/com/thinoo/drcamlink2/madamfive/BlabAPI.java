@@ -30,6 +30,7 @@ import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.services.VideoIntentService;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -233,6 +234,45 @@ public class BlabAPI {
 //        });
     }
 
+
+    public static void searchPatient(Context con, String searchByName, String searchByChart, ResponseHandlerInterface responseHandler){
+
+        if(!getNetworkStatus(con)){
+            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+            return;
+        }
+
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.SEARCH_PATIENT;
+
+        RequestParams requestParams = new RequestParams();
+
+        requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
+
+        if(searchByChart != null)
+            requestParams.put(Constants.EMRAPI.CUST_NO, searchByChart);
+
+//
+//        StringBuilder strUrl =  new StringBuilder();
+//        strUrl.append(Constants.EMRAPI.BASE_URL);
+//        strUrl.append(Constants.EMRAPI.SEARCH_PATIENT);
+//        strUrl.append("?");
+//        strUrl.append("userId=");
+//        strUrl.append(SmartFiPreference.getDoctorId(con));
+//
+//        if(searchByChart != null){
+//            strUrl.append("&custNo=");
+//            strUrl.append(searchByChart);
+//        }
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", SmartFiPreference.getSfToken(con));
+
+
+        client.get(con, url, requestParams ,responseHandler);
+
+    }
+
     public static Activity getActivity() {
         return mActivity;
     }
@@ -389,21 +429,5 @@ public class BlabAPI {
             return false;
         }
 
-//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-//
-//        if(networkInfo != null && networkInfo.isConnected()) {
-//            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-//                //WIFI에 연결됨
-//                return true;
-//            } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-//                //LTE(이동통신망)에 연결됨
-//                return true;
-//            }
-//        } else {
-//            // 연결되지않음
-//            return false;
-//        }
-//
-//        return false;
     }
 }
