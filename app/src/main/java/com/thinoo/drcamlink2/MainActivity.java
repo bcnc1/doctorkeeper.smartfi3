@@ -225,12 +225,10 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             }
 
 
-
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.w(TAG,"실패");
-
             }
         });
     }

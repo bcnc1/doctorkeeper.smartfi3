@@ -126,7 +126,7 @@ public class PatientDialogFragment extends DialogFragment {
                     searchName = false;
                 }
 
-                //이전코드 삭제 예정
+                //이전코드 삭제 예
 //                if (keyword == null || keyword.length() == 0) {
 //                    Toast.makeText(getActivity(), "이름 또는 차트번호를 넣어주세요", Toast.LENGTH_SHORT).show();
 //                }
@@ -349,12 +349,8 @@ public class PatientDialogFragment extends DialogFragment {
                 try {
                     String code =  response.get(Constants.EMRAPI.CODE).toString();
 
-
-                    if(code.equals(Constants.EMRAPI.CODE_401) || code.equals(Constants.EMRAPI.CODE_403)){
-                        // TODO: 2020-01-07 무한 반복될 경우는???
-                        Log.e(TAG,"인증 및 권한오류");
-                        autoGetToken();
-                    }else if(code.equals(Constants.EMRAPI.CODE_200)){
+                    Log.e(TAG,"code = "+code);
+                     if(code.equals(Constants.EMRAPI.CODE_200)){
 
                         patient_list_progressBar.setVisibility(View.INVISIBLE);
 
@@ -391,10 +387,22 @@ public class PatientDialogFragment extends DialogFragment {
 
             }
 
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                super.onFailure(statusCode, headers, responseString, throwable);
+//                Log.w(TAG,"환자검색 실패 = "+responseString);
+//            }
+
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                Log.w(TAG,"환자검색 실패 = "+responseString);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.w(TAG,"환자검색 실패 = "+statusCode);
+
+                if(statusCode == 401 || statusCode == 403){
+                    // TODO: 2020-01-07 무한 반복될 경우는???
+                    Log.e(TAG,"인증 및 권한오류");
+                    autoGetToken();
+                }
             }
         });
     }
@@ -412,7 +420,7 @@ public class PatientDialogFragment extends DialogFragment {
                 try {
                     String code =  response.get(Constants.EMRAPI.CODE).toString();
                     if(!code.equals(Constants.EMRAPI.CODE_200)){
-                        Log.e(TAG,"응답에러");
+                        Log.e(TAG,"응답에러, ID, pw 확인필요");
                     }else{
 
                         try {
@@ -431,12 +439,10 @@ public class PatientDialogFragment extends DialogFragment {
             }
 
 
-
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Log.w(TAG,"실패");
-
             }
         });
     }

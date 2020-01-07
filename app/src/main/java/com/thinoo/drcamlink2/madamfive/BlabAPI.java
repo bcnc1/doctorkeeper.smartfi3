@@ -248,8 +248,11 @@ public class BlabAPI {
 
         requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
 
-        if(searchByChart != null)
+        if(!searchByChart.equals("")){
+            // TODO: 2020-01-07 차트대신 고객번호를 넣어야 한다.
             requestParams.put(Constants.EMRAPI.CUST_NO, searchByChart);
+        }
+            
 
 //
 //        StringBuilder strUrl =  new StringBuilder();
@@ -272,6 +275,7 @@ public class BlabAPI {
         client.get(con, url, requestParams ,responseHandler);
 
     }
+
 
     public static Activity getActivity() {
         return mActivity;

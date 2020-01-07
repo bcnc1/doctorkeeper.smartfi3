@@ -67,6 +67,9 @@ public class PhotoModelService {
 
         String filePath = pm.getFullpath();
         File f = new File(filePath);
+//        if(f.exists()){
+//            Log.w(TAG," 파일 존재");
+//        }
         if(f.delete()){
             Log.d(TAG,"원본파일 삭제 성공");
             isOriDelete = true;
