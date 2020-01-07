@@ -322,7 +322,10 @@ public class PatientDialogFragment extends DialogFragment {
                 String name = selectedPatientInfo.get("name");
                 Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_LONG).show();
 
-                MadamfiveAPI.write_patientInfo();
+                //todo 삭제 예
+                //MadamfiveAPI.write_patientInfo();
+                SmartFiPreference.setPatientId(getActivity(), selectedPatientInfo.get("custNo"));
+                SmartFiPreference.setPatientChart(getActivity(),selectedPatientInfo.get("chartNumber"));
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
