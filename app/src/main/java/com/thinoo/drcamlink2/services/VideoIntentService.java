@@ -76,7 +76,7 @@ public class VideoIntentService extends IntentService {
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
 
-                makeNoti("picture uploading...", 1);
+                makeNoti("video uploading...", 1);
 
                 uploadThumbnail(photoModel);
 
@@ -92,6 +92,7 @@ public class VideoIntentService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
 
+        Log.e(TAG, "비디오 인텐트서비스 종료");
     }
 
 
@@ -172,6 +173,8 @@ public class VideoIntentService extends IntentService {
 
         final String fileName = pm.getFilename();
 
+        Log.w(TAG,"비디오 업로드 시작");
+
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +206,7 @@ public class VideoIntentService extends IntentService {
                         makeNoti("uploading fail",0);
 
                     }else{
-                        Log.d(TAG," 원본 업로드 성공 ");
+                        Log.w(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
                         uploadChain(pm);
 
@@ -223,7 +226,7 @@ public class VideoIntentService extends IntentService {
 
     private void uploadChain(final PhotoModel pm) {
 
-        Log.d(TAG,"uploadChain");
+        Log.w(TAG,"uploadChain");
 
 
         final String fileName = pm.getFilename();
@@ -257,13 +260,13 @@ public class VideoIntentService extends IntentService {
 
 
                     if(!response.isSuccessful()){
-                        Log.d(TAG," 체인 create 싪패 , response code = "+response.code());
+                        Log.w(TAG," 체인 create 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
                         makeNoti("uploading fail",0);
 
                     }else{
-                        Log.d(TAG," 체인 create 성공 ");
+                        Log.w(TAG," 체인 create 성공 ");
                         //pm.setChainUploading(2);
 
                         makeNoti("uploading success",0);

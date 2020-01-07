@@ -73,31 +73,36 @@ public class LaunchVrecordActivity extends Activity {
         if(!hasPermissions(mCon, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
-            //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-            mFileName = DEVICE + "_" + timeStamp + ".mp4";
-            mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
 
+            gotoVideoRecord();
 
-            //mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + mFilename);
-            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-
-            contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
-
-            Log.d(TAG,"contentUri = "+ contentUri);
-
-            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
-            intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
-            intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*MaxMin);
-            grantUriPermission(getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-
-            //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
-            startActivityForResult(intent, VREC_REQUEST);
         }
 
 
+
+    }
+
+    private void gotoVideoRecord() {
+
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        mFileName = DEVICE + "_" + timeStamp + ".mp4";
+        mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
+
+        mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+
+        contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
+
+        Log.d(TAG,"contentUri = "+ contentUri);
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
+        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*MaxMin);
+        grantUriPermission(getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
+        startActivityForResult(intent, VREC_REQUEST);
 
     }
 
@@ -213,6 +218,7 @@ public class LaunchVrecordActivity extends Activity {
         if(requestCode == PERMISSION_ALL){
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED ){
+                gotoVideoRecord();
 
             }else{
                 Toast.makeText(mCon, "요청한 모든 권한사용에 동의하셔야 합니다.!", Toast.LENGTH_SHORT).show();
