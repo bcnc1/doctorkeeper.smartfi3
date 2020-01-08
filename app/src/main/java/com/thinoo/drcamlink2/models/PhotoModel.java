@@ -35,6 +35,7 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
     //private Boolean needUploading = false;
     private Date created;
     private String rawfileName;  //카메라에서 넘어오는 원본 파일명을 저장한다.
+    private Long filesize;
 
 
 
@@ -91,6 +92,14 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
     public void setRawfileName(String filname) {
         this.rawfileName = filname;
+    }
+
+    public void setFileSize(Long size){
+        this.filesize = size;
+    }
+
+    public Long getFilesize(){
+        return filesize;
     }
 
 //    public String getTargetName() {

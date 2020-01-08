@@ -1,11 +1,10 @@
 package com.thinoo.drcamlink2.services;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -15,34 +14,23 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.SyncHttpClient;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
-import cz.msebera.android.httpclient.Header;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import static com.thinoo.drcamlink2.Constants.Storage.BASE_URL;
-import static com.thinoo.drcamlink2.MainActivity.countDownTimer;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -52,14 +40,17 @@ public class PictureIntentService extends IntentService {
 
     private static final String TAG = "PictureIntentService";
     private static final String EXTRA_PICTURE_ID = "com.thinoo.drcamlink2.services.extra.picture.id";
+    //private static final String EXTRA_PICTURE_SIZE = "com.thinoo.drcamlink2.services.extra.picture.size";
 
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;
     private static String mChartNum =  null;
     private static String mMediaType = null;
+    private long mFilesize;
     private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
-    private Messenger mMessenger = null;
+    private Messenger mMessenger = null;  //카메라에서 파일 읽어서 업로드시 진행상황체크를 위해..
+
 
     public PictureIntentService() {
         super("PictureIntentService");
@@ -92,8 +83,8 @@ public class PictureIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
-        //mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
-        mChartNum = "101010";
+        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
+
 
         mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
@@ -125,9 +116,126 @@ public class PictureIntentService extends IntentService {
 
     }
 
+    private void regPhototoEMR(final PhotoModel pm){
+        Log.w(TAG,"regPhototoEMR");
+        final String fileName = pm.getFilename();
+        final long fileSize = pm.getFilesize();
+        pm.setChainUploading(1);
+
+        Thread t2 = new Thread(new Runnable() {
+
+            String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
+
+            @Override
+            public void run() {
+
+                JSONObject jsonObject = new JSONObject();
+                JSONObject data = new JSONObject();
+                JSONArray req_arry = new JSONArray();
+
+                try {
+                    jsonObject.put("userId", SmartFiPreference.getDoctorId(getApplicationContext()));
+                    jsonObject.put("custNo", SmartFiPreference.getSfPatientCustNo(getApplicationContext()));
+                    data.put("phtoFileNm", fileName);
+                    data.put("phtoFilePath", filepath);
+                    data.put("imgSize",fileSize);
+                    req_arry.put(data);
+                    jsonObject.put("photoList", req_arry);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                OkHttpClient client = new OkHttpClient();
+
+
+                RequestBody reqBody = RequestBody.create(
+                        MediaType.parse("application/json; charset=utf-8"),
+                        jsonObject.toString()
+                );
+
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url(url)
+                        .addHeader("Accept","application/json")
+                        .addHeader("X-Auth-Token",mAcccessToken)
+                        .addHeader("Content-Type", "application/json")
+                        .post(reqBody)
+                        .build();
+
+                try {
+                    okhttp3.Response response = client.newCall(request).execute();
+
+
+                    if(!response.isSuccessful()){
+                        Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
+
+                        pm.setChainUploading(3);//업로드실패
+                        makeNoti("uploading fail",0);
+
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
+                    }else{
+                        Log.w(TAG," regPhototoEMR 성공 ");
+
+
+                        makeNoti("uploading success",0);
+                        if(Constants.FILE_N_DB_DELETE){
+                            PhotoModelService.deleteFileNPhotoModel(pm);
+                        }else{
+                            pm.setChainUploading(2);
+                        }
+
+                        Log.w(TAG," mMessenger =  "+mMessenger);
+                        if(mMessenger != null){
+                            Message msg = Message.obtain();
+                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
+
+                            try {
+                                mMessenger.send(msg);
+                            } catch (android.os.RemoteException e1) {
+                                Log.w(getClass().getName(), "Exception sending message", e1);
+                            }
+
+                        }
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    pm.setUploading(3); //업로드실패
+                    makeNoti("uploading fail",0);
+
+                    if(mMessenger != null){
+                        Message msg = Message.obtain();
+                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+
+                        try {
+                            mMessenger.send(msg);
+                        } catch (android.os.RemoteException e1) {
+                            Log.w(getClass().getName(), "Exception sending message", e1);
+                        }
+
+                    }
+                }
+
+            }
+        });
+
+        t2.start();
+    }
+
     private void uploadChain(final PhotoModel pm) {
 
-        Log.d(TAG,"uploadChain");
+        Log.w(TAG,"uploadChain");
 
         final String fileName = pm.getFilename();
         pm.setChainUploading(1);
@@ -283,7 +391,8 @@ public class PictureIntentService extends IntentService {
                     }else{
                         Log.d(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
-                        uploadChain(pm);
+                        //uploadChain(pm);
+                        regPhototoEMR(pm);
 
                     }
 

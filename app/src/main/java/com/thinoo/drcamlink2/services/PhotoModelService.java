@@ -132,6 +132,10 @@ public class PhotoModelService {
     //mode: 카메라(0), dslr(1), 비디오(2)
     public static PhotoModel addPhotoModel( final String sourcePath, final String thumbPath, String filename, final int mode) {
 
+        long filesize;
+        File f = new File(sourcePath);
+        filesize = f.length();
+
         final PhotoModel photoModel = new PhotoModel();
 
         photoModel.setFullpath(sourcePath);
@@ -139,6 +143,7 @@ public class PhotoModelService {
         photoModel.setFilename(filename);
         photoModel.setMode(mode);
         photoModel.setCreated(new Date());
+        photoModel.setFileSize(filesize);
         photoModel.save();
 
         return photoModel;

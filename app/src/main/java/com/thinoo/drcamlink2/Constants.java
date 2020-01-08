@@ -38,6 +38,8 @@ public class Constants {
         public static final String BASE_URL = "http://211.252.87.177:8080";
         public static final String  LOGIN = "/emrmng/api/getLogin";
         public static final String  SEARCH_PATIENT = "/emrmng/api/v1/custs";
+        public static final String  REG_PHOTO = "/emrmng/api/v1/custs/photos";
+
 
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
         public static final String DATA = "data";

@@ -324,7 +324,7 @@ public class PatientDialogFragment extends DialogFragment {
 
                 //todo 삭제 예
                 //MadamfiveAPI.write_patientInfo();
-                SmartFiPreference.setPatientId(getActivity(), selectedPatientInfo.get("custNo"));
+                SmartFiPreference.setSfPatientCustNo(getActivity(), selectedPatientInfo.get("custNo"));
                 SmartFiPreference.setPatientChart(getActivity(),selectedPatientInfo.get("chartNumber"));
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();

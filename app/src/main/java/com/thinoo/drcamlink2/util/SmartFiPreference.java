@@ -14,6 +14,7 @@ public class SmartFiPreference {
     public static final String SF_PATIENT_CHART = "smartfi.patient.chart";
     public static final String SF_DOCTOR_PW = "smartfi.doctor.password";
     public static final String INSERT_PATIENT = "smartfi.patient.insert";
+    public static final String SF_PATIENT_CUST_NO = "smartfi.patient.cust.no";
 
     public static void defaultPreference(Context context){
 
@@ -78,6 +79,14 @@ public class SmartFiPreference {
         setBoolean(con, INSERT_PATIENT, is);
     }
 
+
+    public static final String getSfPatientCustNo(Context con){
+        return getString(con, SF_PATIENT_CUST_NO, "201010");
+    }
+
+    public static void setSfPatientCustNo(Context con, String no){
+        setString(con, SF_PATIENT_CUST_NO, no);
+    }
 
     public static void setInt(Context context, String key, int value){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);

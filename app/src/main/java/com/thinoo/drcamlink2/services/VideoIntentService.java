@@ -21,6 +21,10 @@ import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.LogRecord;
@@ -64,7 +68,7 @@ public class VideoIntentService extends IntentService {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
 
-        mChartNum = "101010";
+        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
 
         mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
@@ -208,7 +212,8 @@ public class VideoIntentService extends IntentService {
                     }else{
                         Log.w(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
-                        uploadChain(pm);
+                        //uploadChain(pm);
+                        regVideoEMR(pm);
 
                     }
 
@@ -222,6 +227,123 @@ public class VideoIntentService extends IntentService {
         });
 
         t1.start();
+    }
+
+    private void regVideoEMR(final PhotoModel pm){
+        Log.w(TAG,"regVideoEMR");
+        final String fileName = pm.getFilename();
+        final long fileSize = pm.getFilesize();
+        pm.setChainUploading(1);
+
+        Thread t2 = new Thread(new Runnable() {
+
+            String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
+
+            @Override
+            public void run() {
+
+                JSONObject jsonObject = new JSONObject();
+                JSONObject data = new JSONObject();
+                JSONArray req_arry = new JSONArray();
+
+                try {
+                    jsonObject.put("userId", SmartFiPreference.getDoctorId(getApplicationContext()));
+                    jsonObject.put("custNo", SmartFiPreference.getSfPatientCustNo(getApplicationContext()));
+                    data.put("phtoFileNm", fileName);
+                    data.put("phtoFilePath", filepath);
+                    data.put("imgSize",fileSize);
+                    req_arry.put(data);
+                    jsonObject.put("photoList", req_arry);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                OkHttpClient client = new OkHttpClient();
+
+
+                RequestBody reqBody = RequestBody.create(
+                        MediaType.parse("application/json; charset=utf-8"),
+                        jsonObject.toString()
+                );
+
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url(url)
+                        .addHeader("Accept","application/json")
+                        .addHeader("X-Auth-Token",mAcccessToken)
+                        .addHeader("Content-Type", "application/json")
+                        .post(reqBody)
+                        .build();
+
+                try {
+                    okhttp3.Response response = client.newCall(request).execute();
+
+
+                    if(!response.isSuccessful()){
+                        Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
+
+                        pm.setChainUploading(3);//업로드실패
+                        makeNoti("uploading fail",0);
+
+//                        if(mMessenger != null){
+//                            Message msg = Message.obtain();
+//                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+//
+//                            try {
+//                                mMessenger.send(msg);
+//                            } catch (android.os.RemoteException e1) {
+//                                Log.w(getClass().getName(), "Exception sending message", e1);
+//                            }
+//
+//                        }
+                    }else{
+                        Log.w(TAG," regVideoEMR 성공 ");
+
+
+                        makeNoti("uploading success",0);
+                        if(Constants.FILE_N_DB_DELETE){
+                            PhotoModelService.deleteFileNPhotoModel(pm);
+                        }else{
+                            pm.setChainUploading(2);
+                        }
+
+//                        Log.w(TAG," mMessenger =  "+mMessenger);
+//                        if(mMessenger != null){
+//                            Message msg = Message.obtain();
+//                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
+//
+//                            try {
+//                                mMessenger.send(msg);
+//                            } catch (android.os.RemoteException e1) {
+//                                Log.w(getClass().getName(), "Exception sending message", e1);
+//                            }
+//
+//                        }
+                    }
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    pm.setUploading(3); //업로드실패
+                    makeNoti("uploading fail",0);
+
+//                    if(mMessenger != null){
+//                        Message msg = Message.obtain();
+//                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+//
+//                        try {
+//                            mMessenger.send(msg);
+//                        } catch (android.os.RemoteException e1) {
+//                            Log.w(getClass().getName(), "Exception sending message", e1);
+//                        }
+//
+//                    }
+                }
+
+            }
+        });
+
+        t2.start();
     }
 
     private void uploadChain(final PhotoModel pm) {
