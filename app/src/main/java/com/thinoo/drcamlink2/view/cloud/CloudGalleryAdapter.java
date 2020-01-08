@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.view.AspectRatioImageView;
@@ -115,6 +117,9 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
         if (holder.photo.get("cameraKind").equals("DSLR")) {                // 1 = DSLR
             holder.dslr.setVisibility(View.VISIBLE);
+        }else if(holder.photo.get("cameraKind").equals("Video")){
+            holder.dslr.setVisibility(View.VISIBLE);
+            holder.dslr.setText("Video");
         }
         else {
             holder.dslr.setVisibility(View.INVISIBLE);
@@ -122,16 +127,27 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
         holder.progressBar.setVisibility(View.INVISIBLE);
 
-        accessToken = MadamfiveAPI.getAccessToken();
+        //이전코드 삭제 예
+//        accessToken = MadamfiveAPI.getAccessToken();
 
-        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
-                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
-        Log.i("Image URL",imageURL);
+//        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
+//                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
+
+
+        String imageURL = Constants.Storage.BASE_URL+"/000000000001$sf-patient"+holder.photo.get("thumurl");
+        Log.e("Image URL",imageURL);
+
+
+
+        
+
+
         Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
         holder.image1.setExpectedDimensions(120, 120);
 
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        String createdDate = df.format(Long.parseLong(holder.photo.get("uploadDate")));
+//        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+//        String createdDate = df.format(Long.parseLong(holder.photo.get("uploadDate")));
+        String createdDate = holder.photo.get("uploadDate");
         holder.date.setText(createdDate);
         holder.done = false;
 

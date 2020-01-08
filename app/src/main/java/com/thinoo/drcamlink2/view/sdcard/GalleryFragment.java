@@ -78,6 +78,9 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * dslr로 부터 이미지를 읽어서 grid view 형태로 보여주기 위해..
+ */
 public class GalleryFragment extends SessionFragment
         implements Camera.StorageInfoListener,
         Camera.RetrieveImageListener,

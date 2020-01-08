@@ -17,6 +17,7 @@ public class Constants {
         public static final String CHAIN_CREATE_FAIL = "chain.create.fail";
         public static final String READ_FILE_UPLOAD_SUCCESS = "파일 업로드 성공";
         public static final String READ_FILE_UPLOAD_FAIL = "파일 업로드 실패";
+
     }
 
     public static final class Storage{
@@ -39,7 +40,8 @@ public class Constants {
         public static final String  LOGIN = "/emrmng/api/getLogin";
         public static final String  SEARCH_PATIENT = "/emrmng/api/v1/custs";
         public static final String  REG_PHOTO = "/emrmng/api/v1/custs/photos";
-
+        public static final String  FIND_PHOTOS = "/emrmng/api/v1/custs/photos";
+        public static final String  FIND_PHOTOS_ALL = "/emrmng/api/v1/custs/photos/all";
 
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
         public static final String DATA = "data";
@@ -54,11 +56,13 @@ public class Constants {
         public static final String UID = "userId";
         public static final String CUST_NO = "custNo";
         public static final String CHART_NO = "chrtNo";
-
+        public static final String P_IDX = "pageIdx";
+        public static final String P_SIZE = "pageSize";
 
     }
 
     public static final long DELAY_TIME_MILLIS = 3000;
     public static final boolean FILE_N_DB_DELETE = true;
     public static final String MESSENGER = "com.thinoo.drcamlink2.services.extra.picture.messenger";
+    public static boolean PATIENT_HAS_MANY_IMAGES = false;
 }

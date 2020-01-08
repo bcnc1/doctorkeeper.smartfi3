@@ -276,6 +276,53 @@ public class BlabAPI {
 
     }
 
+    public static void getPatientImages(Context con, int page, int pageSize, String custNo, ResponseHandlerInterface responseHandler){
+        if(!getNetworkStatus(con)){
+            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+            return;
+        }
+
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.FIND_PHOTOS;
+
+        RequestParams requestParams = new RequestParams();
+
+        requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
+        requestParams.put(Constants.EMRAPI.P_IDX, Integer.toString(page));
+        requestParams.put(Constants.EMRAPI.P_SIZE, Integer.toString(pageSize));
+        requestParams.put(Constants.EMRAPI.CUST_NO, custNo);
+
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", SmartFiPreference.getSfToken(con));
+
+
+        client.get(con, url, requestParams ,responseHandler);
+
+    }
+
+    public static void getPatientImagesAll(Context con,  String custNo, ResponseHandlerInterface responseHandler){
+        if(!getNetworkStatus(con)){
+            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+            return;
+        }
+
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.FIND_PHOTOS_ALL;
+
+        RequestParams requestParams = new RequestParams();
+
+        requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
+        requestParams.put(Constants.EMRAPI.CUST_NO, custNo);
+
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", SmartFiPreference.getSfToken(con));
+
+
+        client.get(con, url, requestParams ,responseHandler);
+
+    }
 
     public static Activity getActivity() {
         return mActivity;
