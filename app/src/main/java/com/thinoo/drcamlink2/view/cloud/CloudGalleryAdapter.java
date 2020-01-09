@@ -2,7 +2,6 @@ package com.thinoo.drcamlink2.view.cloud;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,25 +15,17 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
-import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.AspectRatioImageView;
 
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.Route;
 
 public class CloudGalleryAdapter extends BaseAdapter {
 
