@@ -17,6 +17,7 @@ package com.thinoo.drcamlink2.view.cloud;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,12 +29,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.BaseFragment;
 
+import java.io.IOException;
 import java.net.URLEncoder;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class CloudPictureFragment extends BaseFragment
 //        implements GestureHandler
@@ -45,7 +55,7 @@ public class CloudPictureFragment extends BaseFragment
         Bundle args = new Bundle();
         args.putInt("handle", objectHandle);
         args.putString("imageUrl", imageUrl);
-        args.putString("imageGuid",imageGuid);
+//        args.putString("imageGuid",imageGuid);
         CloudPictureFragment f = new CloudPictureFragment();
         f.setArguments(args);
         return f;
@@ -78,7 +88,7 @@ public class CloudPictureFragment extends BaseFragment
 //        handler = new Handler();
 //        objectHandle = getArguments().getInt("handle");
         imageUrl = getArguments().getString("imageUrl");
-        imageGuid = getArguments().getString("imageGuid");
+//        imageGuid = getArguments().getString("imageGuid");
 
         Log.i(TAG, "imageUrl = "+imageUrl);
         Log.i(TAG, "imageGuid = "+imageGuid);
@@ -96,19 +106,64 @@ public class CloudPictureFragment extends BaseFragment
             }
         });
 
-        accessToken = MadamfiveAPI.getAccessToken();
+        //이전코드 삭제 예정
+//        accessToken = MadamfiveAPI.getAccessToken();
+//
+//        imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageUrl+
+//                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
+//
+//        Picasso.get().load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+//            @Override
+//            public void onSuccess() {
+//                //do smth when picture is loaded successfully
+//                progressBar.setVisibility(View.GONE);
+//            }
+//            @Override
+//            public void onError(Exception e) {
+//            }
+//        });
 
-        imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageUrl+
-                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
+        String box = SmartFiPreference.getHospitalId(getActivity())+"$"+SmartFiPreference.getSfPatientCustNo(getActivity());
+        imageURL = Constants.Storage.BASE_URL+"/"+box+imageUrl;
 
-        Picasso.get().load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+
+        Log.e(TAG,"imageURL = " +imageURL);
+
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Interceptor.Chain chain) throws IOException {
+                        Request newRequest = chain.request().newBuilder()
+                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(getActivity()))
+                                .build();
+                        return chain.proceed(newRequest);
+                    }
+                })
+                .build();
+
+        Picasso picasso = new Picasso.Builder(getActivity())
+        .downloader(new OkHttp3Downloader(client))
+        .listener(new Picasso.Listener() {
+            @Override
+            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                exception.printStackTrace();
+            }
+        })
+        .build();
+
+
+        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
             @Override
             public void onSuccess() {
                 //do smth when picture is loaded successfully
+                Log.w(TAG,"로딩 성공");
                 progressBar.setVisibility(View.GONE);
             }
+
             @Override
             public void onError(Exception e) {
+                Log.w(TAG,"로딩 실");
             }
         });
 

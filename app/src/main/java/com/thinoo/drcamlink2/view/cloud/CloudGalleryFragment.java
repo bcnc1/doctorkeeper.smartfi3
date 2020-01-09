@@ -114,10 +114,10 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         pictureMap = new HashMap<>();
         pictureMap = cloudGalleryAdapter.getItem(position);
         String imageUrl = pictureMap.get("url");
-        String imageGuid = pictureMap.get("guid");
+      //  String imageGuid = pictureMap.get("guid");
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl,imageGuid), null);
+        ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl, null /*imageGuid*/), null);
         ft.addToBackStack(null);
         ft.commit();
 

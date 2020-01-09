@@ -70,7 +70,7 @@ public class VideoIntentService extends IntentService {
 
         mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
 
-        mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
+        mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
         if (intent != null) {

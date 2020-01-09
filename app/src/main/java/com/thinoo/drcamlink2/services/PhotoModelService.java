@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.orm.query.Select;
 import com.thinoo.drcamlink2.models.PhotoModel;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 
 import java.io.File;
@@ -130,7 +131,7 @@ public class PhotoModelService {
     }
 
     //mode: 카메라(0), dslr(1), 비디오(2)
-    public static PhotoModel addPhotoModel( final String sourcePath, final String thumbPath, String filename, final int mode) {
+    public static PhotoModel addPhotoModel( final  Context con , final String sourcePath, final String thumbPath, String filename, final int mode) {
 
         long filesize;
         File f = new File(sourcePath);
@@ -144,6 +145,7 @@ public class PhotoModelService {
         photoModel.setMode(mode);
         photoModel.setCreated(new Date());
         photoModel.setFileSize(filesize);
+        photoModel.setCustNo(SmartFiPreference.getSfPatientCustNo(con));
         photoModel.save();
 
         return photoModel;

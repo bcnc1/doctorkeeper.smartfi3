@@ -163,7 +163,7 @@ public class LaunchCameraActivity extends Activity {
                                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
 
                     if(path != null){
-                        PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 0);
+                        PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, mFile.toString(),path, mFileName, 0);
                         //startPictureUpload();
                         Long id = photoModel.getId();
                         PictureIntentService.startUploadPicture(mCon, id);

@@ -462,7 +462,7 @@ public class DSLRFragment extends SessionFragment implements
 
 
         if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 1);
+            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
             Long id = photoModel.getId();
             PictureIntentService.startUploadPicture(getActivity(), id);
 
@@ -470,46 +470,6 @@ public class DSLRFragment extends SessionFragment implements
             Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
 
         }
-
-//        PhotoModelService.makeDir(getActivity(), "/thumbnail/");
-//
-//        String root = getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString();
-//        String oriPath = root+ File.separator +mFileName;
-//
-//        String thumbPath = root+ File.separator +"thumbnail"+File.separator+mFileName;
-//
-//        try {
-//            FileOutputStream outSource = new FileOutputStream(oriPath); //파일저장
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outSource);
-//            outSource.close();
-//
-//            FileOutputStream outThumb = new FileOutputStream(thumbPath); //파일저장
-//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumb);
-//            outThumb.close();
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        final PhotoModel photoModel = PhotoModelService.addPhotoModel(oriPath, thumbPath, mFileName,1);
-//
-//        new UploadManager(getActivity(), photoModel);
-
-// 기존 코드 삭제 예
-//        Log.i(TAG,"sendPhoto ==> SAVED");
-//
-//
-//        HashMap<String,Object> taskInfo = new HashMap<>();
-//        taskInfo.put("filename",info.filename);
-//        taskInfo.put("photoModel",photoModel);
-//
-//        Message msg = uploadHandler.obtainMessage();
-//        msg.obj = taskInfo;
-//        uploadHandler.sendMessage(msg);
-//        Log.i(TAG,"sendPhoto => Finished");
-
 
     }
 

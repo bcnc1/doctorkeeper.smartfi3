@@ -214,7 +214,7 @@ public class UploadService extends Service {
         String upUrl, fromDevice, captureType;
 
         mHospitalId = SmartFiPreference.getHospitalId(mCon);
-        mPatientId = SmartFiPreference.getPatientId(mCon);
+        mPatientId = SmartFiPreference.getSfPatientCustNo(mCon);
         mMedicalChart = SmartFiPreference.getPatientChart(mCon);
 
         Log.d(TAG, "mHospitalId = "+mHospitalId+ " "+"mPatientId = "+mPatientId);

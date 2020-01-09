@@ -36,6 +36,8 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
     private Date created;
     private String rawfileName;  //카메라에서 넘어오는 원본 파일명을 저장한다.
     private Long filesize;
+    private String custNo; //업로드 중에 환자가 바뀔 수 있음으로 db에 저장
+
 
 
 
@@ -117,6 +119,15 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 //    public void setTargetId(String targetId) {
 //        this.targetId = targetId;
 //    }
+
+
+    public String getCustNo() {
+        return custNo;
+    }
+
+    public void setCustNo(String custNo) {
+        this.custNo = custNo;
+    }
 
     public Boolean getUploaded() {
         return uploaded;

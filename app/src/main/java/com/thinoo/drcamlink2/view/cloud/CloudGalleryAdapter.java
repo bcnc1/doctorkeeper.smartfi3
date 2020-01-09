@@ -1,6 +1,8 @@
 package com.thinoo.drcamlink2.view.cloud;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +17,24 @@ import com.squareup.picasso.Picasso;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.AspectRatioImageView;
 
+import java.io.IOException;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+
+import okhttp3.Credentials;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 
 public class CloudGalleryAdapter extends BaseAdapter {
 
@@ -133,16 +147,42 @@ public class CloudGalleryAdapter extends BaseAdapter {
 //        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
 //                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
 
-
-        String imageURL = Constants.Storage.BASE_URL+"/000000000001$sf-patient"+holder.photo.get("thumurl");
+        String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
+        String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
         Log.e("Image URL",imageURL);
 
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Interceptor.Chain chain) throws IOException {
+                        Request newRequest = chain.request().newBuilder()
+                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(mContext))
+                                .build();
+                        return chain.proceed(newRequest);
+                    }
+                })
+                .build();
+
+//        OkHttpClient client = new OkHttpClient();
+//        okhttp3.Request request = new okhttp3.Request.Builder()
+//                .url(imageURL)
+//                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(mContext))
+//                .get()
+//                .build();
+
+        Picasso picasso = new Picasso.Builder(mContext)
+                .downloader(new OkHttp3Downloader(client))
+                .listener(new Picasso.Listener() {
+                    @Override
+                    public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                        exception.printStackTrace();
+                    }
+                })
+                .build();
 
 
-        
 
-
-        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
+        picasso /*.get()*/.load(imageURL).resize(120,120).centerCrop().into(holder.image1);
         holder.image1.setExpectedDimensions(120, 120);
 
 //        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -153,6 +193,5 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
         return view;
     }
-
 
 }

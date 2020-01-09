@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -26,6 +27,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -45,7 +48,7 @@ public class PictureIntentService extends IntentService {
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;
-    private static String mChartNum =  null;
+    private static String mDate =  null;
     private static String mMediaType = null;
     private long mFilesize;
     private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
@@ -83,11 +86,14 @@ public class PictureIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
-        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
+       // mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
 
 
-        mPatientId = SmartFiPreference.getPatientId(getApplicationContext());
+        //mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
+
+        mDate = new SimpleDateFormat("yyyyMM").format(new Date());
+        Log.w(TAG,"mdate = "+mDate);
 
         if (intent != null) {
             Bundle extras = intent.getExtras();
@@ -99,6 +105,8 @@ public class PictureIntentService extends IntentService {
 
                 makeNoti("picture uploading...", 1);
 
+                mPatientId = photoModel.getCustNo();
+                Log.w(TAG, "mPatientId = "+mPatientId);
                 uploadThumbnail(photoModel);
 
 
@@ -125,7 +133,7 @@ public class PictureIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {
@@ -243,7 +251,7 @@ public class PictureIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String urlproof = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {
@@ -359,7 +367,7 @@ public class PictureIntentService extends IntentService {
 
                 okhttp3.Request request = new okhttp3.Request.Builder()
                         .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName))
+                                "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName))
                         .put(file_body)
                         .addHeader("X-Auth-Token",mAcccessToken)
                         .build();
@@ -449,7 +457,7 @@ public class PictureIntentService extends IntentService {
 
                 okhttp3.Request request = new okhttp3.Request.Builder()
                         .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/thumbnail"+"/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName))
+                                "/thumbnail"+"/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName))
                         .put(file_body)
                         .addHeader("X-Auth-Token",mAcccessToken)
                         .build();

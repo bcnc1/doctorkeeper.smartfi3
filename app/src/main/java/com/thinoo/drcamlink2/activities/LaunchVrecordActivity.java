@@ -187,7 +187,7 @@ public class LaunchVrecordActivity extends Activity {
                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileNameThumb);
 
             if(path != null){
-                PhotoModel photoModel = PhotoModelService.addPhotoModel(mFile.toString(),path, mFileName, 2);
+                PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, mFile.toString(),path, mFileName, 2);
 
                 Long id = photoModel.getId();
                 VideoIntentService.startUploadVideo(mCon, id);
