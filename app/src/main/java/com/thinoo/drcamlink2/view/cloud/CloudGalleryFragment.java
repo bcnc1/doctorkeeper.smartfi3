@@ -127,7 +127,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
             ft.addToBackStack(null);
             ft.commit();
         }
-        
+
     }
 
     @Override

@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.thinoo.drcamlink2.BuildConfig;
 import com.thinoo.drcamlink2.activities.LaunchCameraActivity;
 import com.thinoo.drcamlink2.activities.LaunchVrecordActivity;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.doctor.DoctorDialogFragment;
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
@@ -283,9 +284,12 @@ public class PhoneCameraFragment extends BaseFragment {
         };
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);
-        if(selectedPatientInfo!=null){
-            patient_name.setText(selectedPatientInfo.get("name"));
-        }
+        //삭제예정
+//        if(selectedPatientInfo!=null){
+//            patient_name.setText(selectedPatientInfo.get("name"));
+//        }
+
+        patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
 
         MadamfiveAPI.read_doctorSelectExtraOption();
         doctor_name = (TextView)view.findViewById(R.id.doctor_name);

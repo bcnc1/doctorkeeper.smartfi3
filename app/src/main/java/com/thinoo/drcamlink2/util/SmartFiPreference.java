@@ -15,6 +15,7 @@ public class SmartFiPreference {
     public static final String SF_DOCTOR_PW = "smartfi.doctor.password";
     public static final String INSERT_PATIENT = "smartfi.patient.insert";
     public static final String SF_PATIENT_CUST_NO = "smartfi.patient.cust.no";
+    public static final String SF_PATIENT_NAME = "smartfi.patient.name";
 
     public static void defaultPreference(Context context){
 
@@ -81,11 +82,19 @@ public class SmartFiPreference {
 
 
     public static final String getSfPatientCustNo(Context con){
-        return getString(con, SF_PATIENT_CUST_NO, "201010");
+        return getString(con, SF_PATIENT_CUST_NO, "");
     }
 
     public static void setSfPatientCustNo(Context con, String no){
         setString(con, SF_PATIENT_CUST_NO, no);
+    }
+
+    public static final String getSfPatientName(Context con){
+        return getString(con, SF_PATIENT_NAME, "");
+    }
+
+    public static void setSfPatientName(Context con, String name){
+        setString(con, SF_PATIENT_NAME, name);
     }
 
     public static void setInt(Context context, String key, int value){

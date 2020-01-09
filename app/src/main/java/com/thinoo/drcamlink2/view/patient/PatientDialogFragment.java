@@ -141,7 +141,7 @@ public class PatientDialogFragment extends DialogFragment {
                 searchPatient(name, chartNumber);
 
 
-                // TODO: 2020-01-06 죽음으로 수정해야 한다.
+                // TODO: 2020-01-06 삭제예정
 //                MadamfiveAPI.searchPatient(keyword, searchName, new JsonHttpResponseHandler() {
 //                    @Override
 //                    public void onStart() {
@@ -326,6 +326,7 @@ public class PatientDialogFragment extends DialogFragment {
                 //MadamfiveAPI.write_patientInfo();
                 SmartFiPreference.setSfPatientCustNo(getActivity(), selectedPatientInfo.get("custNo"));
                 SmartFiPreference.setPatientChart(getActivity(),selectedPatientInfo.get("chartNumber"));
+                SmartFiPreference.setSfPatientName(getActivity(),name);
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());

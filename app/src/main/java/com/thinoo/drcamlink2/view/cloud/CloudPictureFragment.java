@@ -152,20 +152,48 @@ public class CloudPictureFragment extends BaseFragment
         })
         .build();
 
+        if(imageURL.contains("phone")){    //화먄이 90도 회전되어 있어서..
+            picasso.load(imageURL).rotate(90).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    //do smth when picture is loaded successfully
+                    Log.w(TAG,"로딩 성공");
+                    progressBar.setVisibility(View.GONE);
+                }
 
-        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                //do smth when picture is loaded successfully
-                Log.w(TAG,"로딩 성공");
-                progressBar.setVisibility(View.GONE);
-            }
+                @Override
+                public void onError(Exception e) {
+                    Log.w(TAG,"로딩 실");
+                }
+            });
+        }else{
+            picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    //do smth when picture is loaded successfully
+                    Log.w(TAG,"로딩 성공");
+                    progressBar.setVisibility(View.GONE);
+                }
 
-            @Override
-            public void onError(Exception e) {
-                Log.w(TAG,"로딩 실");
-            }
-        });
+                @Override
+                public void onError(Exception e) {
+                    Log.w(TAG,"로딩 실");
+                }
+            });
+        }
+//        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+//            @Override
+//            public void onSuccess() {
+//                //do smth when picture is loaded successfully
+//                Log.w(TAG,"로딩 성공");
+//                progressBar.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Log.w(TAG,"로딩 실");
+//            }
+//        });
 
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
 
