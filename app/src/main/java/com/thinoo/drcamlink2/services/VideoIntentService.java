@@ -27,6 +27,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.LogRecord;
 
 import okhttp3.FormBody;
@@ -41,7 +43,7 @@ public class VideoIntentService extends IntentService {
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;
-    private static String mChartNum =  null;
+    private static String mDate =  null;
     private static String mMediaType = null;
     private static int mNotiId = Constants.Notification.NOTIFICATION_VIDEO_ID;
 
@@ -68,9 +70,10 @@ public class VideoIntentService extends IntentService {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
 
-        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
-
-        mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
+//        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
+//
+//        mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
+        mDate = new SimpleDateFormat("yyyyMM").format(new Date());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
         if (intent != null) {
@@ -79,6 +82,8 @@ public class VideoIntentService extends IntentService {
                 long id = extras.getLong(EXTRA_VIDEO_ID);
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
+
+                mPatientId = photoModel.getCustNo();
 
                 makeNoti("video uploading...", 1);
 
@@ -128,7 +133,7 @@ public class VideoIntentService extends IntentService {
 
                 okhttp3.Request request = new okhttp3.Request.Builder()
                         .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/thumbnail"+"/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mChartNum+"/"+ fileName))
+                                "/thumbnail"+"/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mDate+"/"+ fileName))
                         .put(file_body)
                         .addHeader("X-Auth-Token",mAcccessToken)
                         .build();
@@ -193,7 +198,7 @@ public class VideoIntentService extends IntentService {
 
                 okhttp3.Request request = new okhttp3.Request.Builder()
                         .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mChartNum+"/"+ fileName))
+                                "/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mDate+"/"+ fileName))
                         .put(file_body)
                         .addHeader("X-Auth-Token",mAcccessToken)
                         .build();
@@ -238,7 +243,7 @@ public class VideoIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mChartNum+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {
@@ -357,7 +362,7 @@ public class VideoIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String urlproof = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mChartNum+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {

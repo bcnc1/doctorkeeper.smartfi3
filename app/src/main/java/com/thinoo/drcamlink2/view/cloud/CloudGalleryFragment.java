@@ -13,6 +13,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.Constants;
@@ -113,14 +114,20 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 
         pictureMap = new HashMap<>();
         pictureMap = cloudGalleryAdapter.getItem(position);
-        String imageUrl = pictureMap.get("url");
-      //  String imageGuid = pictureMap.get("guid");
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl, null /*imageGuid*/), null);
-        ft.addToBackStack(null);
-        ft.commit();
+        if(pictureMap.get("cameraKind") == "Video"){
+            Toast.makeText(getActivity(), "비디오파일은 미리보기가 제공되지 않습니다!", Toast.LENGTH_SHORT).show();
+        } else{
+            String imageUrl = pictureMap.get("url");
 
+            //  String imageGuid = pictureMap.get("guid");
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl, null /*imageGuid*/), null);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+        
     }
 
     @Override

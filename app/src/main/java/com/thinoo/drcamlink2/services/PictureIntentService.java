@@ -43,14 +43,13 @@ public class PictureIntentService extends IntentService {
 
     private static final String TAG = "PictureIntentService";
     private static final String EXTRA_PICTURE_ID = "com.thinoo.drcamlink2.services.extra.picture.id";
-    //private static final String EXTRA_PICTURE_SIZE = "com.thinoo.drcamlink2.services.extra.picture.size";
 
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;
     private static String mDate =  null;
     private static String mMediaType = null;
-    private long mFilesize;
+
     private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
     private Messenger mMessenger = null;  //카메라에서 파일 읽어서 업로드시 진행상황체크를 위해..
 
