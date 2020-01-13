@@ -33,6 +33,7 @@ public class Constants {
         public static final String NOTIFICATION_TITLE = "File Upload";
         public static final int  NOTIFICATION_PICTURE_ID = 2010;
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
+        public static final int  NOTIFICATION_RETRY_ID = 201;
     }
 
     public static final class EMRAPI{
@@ -62,7 +63,8 @@ public class Constants {
     }
 
     public static final long DELAY_TIME_MILLIS = 3000;
-    public static final boolean FILE_N_DB_DELETE = true;
+    public static final boolean FILE_N_DB_DELETE = false;  //디버그, 파일 및 db 안지우기..
     public static final String MESSENGER = "com.thinoo.drcamlink2.services.extra.picture.messenger";
+    public static final String MESSENGER_RETRY = "com.thinoo.drcamlink2.services.extra.picture.messenger.retry";
     public static boolean PATIENT_HAS_MANY_IMAGES = false;
 }

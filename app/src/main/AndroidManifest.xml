@@ -12,13 +12,14 @@
         android:normalScreens="true"
         android:smallScreens="false"
         android:xlargeScreens="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name="com.orm.SugarApp"
@@ -29,12 +30,20 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:icon">
         <service
-            android:name=".services.PictureIntentService"
+            android:name=".services.RetryUploadIntentService"
             android:exported="false"></service>
+        <service
+            android:name=".services.ErrorFileUploadService"
+            android:exported="false" />
+
+        <activity android:name=".activities.FileExploreActivity" />
 
         <service
+            android:name=".services.PictureIntentService"
+            android:exported="false" />
+        <service
             android:name=".services.VideoIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
@@ -64,11 +73,7 @@
             android:label="@string/activity_app_settings_title"
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".activities.LaunchCameraActivity" />
-        <activity android:name=".activities.LaunchVrecordActivity" />
-
-
-
-        <!-- <activity -->
+        <activity android:name=".activities.LaunchVrecordActivity" /> <!-- <activity -->
         <!-- android:name="org.acra.CrashReportDialog" -->
         <!-- android:excludeFromRecents="true" -->
         <!-- android:finishOnTaskLaunch="true" -->

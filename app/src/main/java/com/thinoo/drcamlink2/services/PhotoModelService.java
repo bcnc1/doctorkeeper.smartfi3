@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 
+import com.orm.query.Condition;
 import com.orm.query.Select;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
@@ -61,6 +62,21 @@ public class PhotoModelService {
         PhotoModel photoModel = PhotoModel.findById(PhotoModel.class, id);
         long id1 = photoModel.getId();
         return photoModel;
+    }
+
+
+    public static Long getPhotoModelIdByName(String fileName){
+        Log.w(TAG," 서치값 = "+fileName);
+        //List<PhotoModel> photoModel = PhotoModel.findWithQuery(PhotoModel.class, "Select * from PhotoModel where filename = ?",fileName);
+        List<PhotoModel> photoModel = Select.from(PhotoModel.class)
+                .where(Condition.prop("filename").eq(fileName))
+                .list();
+
+        if(photoModel.size() >0){
+            Log.w(TAG,"id : "+photoModel.get(0).getId());
+            return photoModel.get(0).getId();
+        }
+        return Long.valueOf(-1);
     }
 
     public static void  deleteFileNPhotoModel(PhotoModel pm){

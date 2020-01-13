@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.LogRecord;
@@ -184,6 +185,7 @@ public class VideoIntentService extends IntentService {
 
         Log.w(TAG,"비디오 업로드 시작");
 
+       // OutputStreamWriter osw = new OutputStreamWriter(buffer.outputStream(), CHARSET);
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {

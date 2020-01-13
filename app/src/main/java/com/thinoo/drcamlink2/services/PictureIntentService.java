@@ -3,6 +3,7 @@ package com.thinoo.drcamlink2.services;
 import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.util.Log;
 
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.activities.FileExploreActivity;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
@@ -49,6 +51,7 @@ public class PictureIntentService extends IntentService {
     private static String mHospitalId = null;
     private static String mDate =  null;
     private static String mMediaType = null;
+    private static Context mCon;
 
     private static int mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
     private Messenger mMessenger = null;  //카메라에서 파일 읽어서 업로드시 진행상황체크를 위해..
@@ -66,17 +69,19 @@ public class PictureIntentService extends IntentService {
      * @see IntentService
      */
     public static void startUploadPicture(Context context, long id) {
+        mCon = context;
         Intent intent = new Intent(context, PictureIntentService.class);
         intent.putExtra(EXTRA_PICTURE_ID, id);
-        context.startService(intent);
+        mCon.startService(intent);
         Log.w(TAG,"startUploadPicture 호출");
     }
 
     public static void startUploadPicture(Context context, long id, Parcelable value) {
+        mCon = context;
         Intent intent = new Intent(context, PictureIntentService.class);
         intent.putExtra(EXTRA_PICTURE_ID, id);
         intent.putExtra(Constants.MESSENGER, value);
-        context.startService(intent);
+        mCon.startService(intent);
         Log.w(TAG,"startUploadPicture 호출");
     }
 
@@ -539,9 +544,9 @@ public class PictureIntentService extends IntentService {
 
     private void makeNoti(String message, int id) {
 
-        Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
+        //Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
 
-        Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+        //Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
 
         String CHANNEL_ID = "picture_upload_channel";
 
@@ -565,18 +570,23 @@ public class PictureIntentService extends IntentService {
             }
         }
 
+        Intent intent= new Intent(this, FileExploreActivity.class);
+
+        PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         // Create the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.smartfi_icon)
                 .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pending)
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis());
 
 
-        Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
-        // Show the notification
+        //Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+        // Show the notification, if add noti please NOTIFICATION_PICTURE_ID to change pm id
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_PICTURE_ID, builder.build());
 
 
