@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.services.PhotoModelService;
@@ -45,31 +46,36 @@ public class FileExploreActivity extends AppCompatActivity {
     private int numberOfSendPhoto;
     private ProgressBar multi_image_uploading_progressbar_ex;
     private FrameLayout mframelayout;
+   // private int selectedImageNumber;
 
     private Handler msgHandler = new Handler(new Handler.Callback() {
         int uploadCount = 0;
         @Override
         public boolean handleMessage(Message msg) {
             Object path = msg.obj;
-            Log.w(TAG,"msgHandler 호출..");
-            if(GalleryFragment.getInstance() != null){
+            Log.w(TAG,"msgHandler 호출..path = "+path.toString());
+            if(path.toString().equals(Constants.Upload.FILE_UPLOAD_SUCCESS)){
                 uploadCount++;
                 numberOfSendPhoto++;
                 multi_image_uploading_progressbar_ex.setProgress(uploadCount);
 
-//                if(numberOfSendPhoto==selectedObjectHandles.size()){  //마지막 값이면..
-//                    multi_image_uploading_progressbar_ex.setVisibility(View.INVISIBLE);
-//                    //Log.e(TAG,"완료.. => progressBarPortionSum = "+progressBarPortionSum + "  numberOfSendPhoto = "+numberOfSendPhoto);
-//
-////                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-////                    ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
-////                    ft.addToBackStack(null);
-////                    ft.commit();
-//                    // TODO: 2020-01-13 완료되면 맨 처음 화면으로??? 또는 종료
-//                }
+                if(uploadCount == mUploadList.size()){
+                    Log.w(TAG,"파일 업로드 완료.");
+     //               mframelayout.setVisibility(View.GONE);
+                    finish();
+//                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                    ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
+//                    ft.addToBackStack(null);
+//                    ft.commit();
+                }else{
+                    startUpload(uploadCount);
+                }
 
             }else{
-                Log.w(TAG,"back key 누른 경우..");
+                Log.w(TAG,"업로드실패");
+    //            mframelayout.setVisibility(View.GONE);
+                multi_image_uploading_progressbar_ex.setVisibility(View.GONE);
+                Toast.makeText(mCon, mCon.getText(R.string.upload_fail_etc),Toast.LENGTH_SHORT).show();
             }
             // TODO: 2020-01-04 프로그래스브 바 처리 , 메모리 릭 유의, tost메세지 유무확인 필요!!
             //Toast.makeText(getActivity().getBaseContext(), path.toString(), Toast.LENGTH_LONG).show();
@@ -88,6 +94,7 @@ public class FileExploreActivity extends AppCompatActivity {
         mRoot = mCon.getExternalFilesDir(Environment.getExternalStorageState());
         Log.w(TAG,"mFile = "+mRoot.toString());
 
+       // selectedImageNumber = 0;
         initUI();
 
 
@@ -96,7 +103,11 @@ public class FileExploreActivity extends AppCompatActivity {
 
         if(result == false){
             Log.e(TAG,"업로드 실패 파일 없음");
-            return;
+            finish();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
+            ft.addToBackStack(null);
+            ft.commit();
         }
 
     }
@@ -107,10 +118,10 @@ public class FileExploreActivity extends AppCompatActivity {
 
         mBtnUpload = findViewById(R.id.btn_upload);
         mBtnSelectAll = findViewById(R.id.btn_selectAll);
-        multi_image_uploading_progressbar_ex = (ProgressBar)findViewById(R.id.multi_image_uploading_progressbar);
+        multi_image_uploading_progressbar_ex = (ProgressBar)findViewById(R.id.multi_image_uploading_progressbar_ex);
 
         mFileList = findViewById(R.id.filelist);
-        mframelayout = findViewById(R.id.bg_progress);
+       // mframelayout = findViewById(R.id.bg_progress);
 
 
         files = new ArrayList<>();
@@ -153,8 +164,9 @@ public class FileExploreActivity extends AppCompatActivity {
                 }
 
                 if(mUploadList.size() > 0){
-                    startUpload();
-
+                    multi_image_uploading_progressbar_ex.setVisibility(View.VISIBLE);
+                    multi_image_uploading_progressbar_ex.setMax(mUploadList.size());
+                    startUpload(0);
                 }
                 else{
                     Toast.makeText(mCon,"선택된 파일이 없습니다.",Toast.LENGTH_SHORT).show();
@@ -162,14 +174,26 @@ public class FileExploreActivity extends AppCompatActivity {
             }
         });
 
+
+        mBtnSelectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = mFileList.getCount();
+                for(int i=0; i< count ; i++){
+                    mFileList.setItemChecked(i, true);
+                }
+
+                listAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
-    private void startUpload() {
+    private void startUpload(int idx) {
         Messenger messenger = new Messenger(msgHandler);
-
-        RetryUploadIntentService.startRetryUpload(mCon, mUploadList.get(0),messenger);
-        mframelayout.setVisibility(View.VISIBLE);
-
+        RetryUploadIntentService.startRetryUpload(mCon, mUploadList.get(idx),messenger);
+   //     mframelayout.setVisibility(View.VISIBLE);
+//        multi_image_uploading_progressbar_ex.setVisibility(View.VISIBLE);
+//        multi_image_uploading_progressbar_ex.setMax(mUploadList.size());
     }
 
     private boolean getDirFiles(File root) {
@@ -181,6 +205,9 @@ public class FileExploreActivity extends AppCompatActivity {
         }else{
 
             for(int i =0; i<fileList.length; i++){
+                if(fileList[i].equals("thumbnail")){
+                    continue;
+                }
                 files.add(fileList[i]);
             }
         }

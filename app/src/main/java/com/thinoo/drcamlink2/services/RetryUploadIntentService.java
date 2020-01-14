@@ -52,7 +52,7 @@ public class RetryUploadIntentService extends IntentService {
         mCon = context;
         Intent intent = new Intent(context, RetryUploadIntentService.class);
         intent.putExtra(EXTRA_RETRY_UPLOAD_ID, id);
-        intent.putExtra(Constants.MESSENGER, value);
+        intent.putExtra(Constants.MESSENGER_RETRY, value);
         mCon.startService(intent);
         Log.w(TAG,"startRetryUpload 호출");
     }
@@ -133,7 +133,7 @@ public class RetryUploadIntentService extends IntentService {
                         Log.w(TAG," mMessenger =  "+mMessenger);
                         if(mMessenger != null){
                             Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                            msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                             try {
                                 mMessenger.send(msg);
@@ -160,7 +160,7 @@ public class RetryUploadIntentService extends IntentService {
                     Log.w(TAG," mMessenger =  "+mMessenger);
                     if(mMessenger != null){
                         Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                        msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                         try {
                             mMessenger.send(msg);
@@ -221,7 +221,7 @@ public class RetryUploadIntentService extends IntentService {
                         Log.w(TAG," mMessenger =  "+mMessenger);
                         if(mMessenger != null){
                             Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                            msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                             try {
                                 mMessenger.send(msg);
@@ -235,7 +235,7 @@ public class RetryUploadIntentService extends IntentService {
                         Log.d(TAG," 원본 업로드 성공 ");
                         pm.setUploading(2);
                         //uploadChain(pm);
-                        regPhototoEMR(pm);
+                        regEMR(pm);
 
                     }
 
@@ -248,7 +248,7 @@ public class RetryUploadIntentService extends IntentService {
                     Log.w(TAG," mMessenger =  "+mMessenger);
                     if(mMessenger != null){
                         Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                        msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                         try {
                             mMessenger.send(msg);
@@ -265,8 +265,8 @@ public class RetryUploadIntentService extends IntentService {
     }
 
 
-    private void regPhototoEMR(final PhotoModel pm){
-        Log.w(TAG,"regPhototoEMR");
+    private void regEMR(final PhotoModel pm){
+        Log.w(TAG,"regEMR");
         final String fileName = pm.getFilename();
         final long fileSize = pm.getFilesize();
         pm.setChainUploading(1);
@@ -274,7 +274,7 @@ public class RetryUploadIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/"+ mMediaType+"/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {
@@ -316,14 +316,14 @@ public class RetryUploadIntentService extends IntentService {
 
 
                     if(!response.isSuccessful()){
-                        Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
+                        Log.w(TAG," regEMR 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
                         //makeNoti("uploading fail",0);
 
                         if(mMessenger != null){
                             Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                            msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                             try {
                                 mMessenger.send(msg);
@@ -333,7 +333,7 @@ public class RetryUploadIntentService extends IntentService {
 
                         }
                     }else{
-                        Log.w(TAG," regPhototoEMR 성공 ");
+                        Log.w(TAG," regEMR 성공 ");
 
 
                         //makeNoti("uploading success",0);
@@ -346,7 +346,7 @@ public class RetryUploadIntentService extends IntentService {
                         Log.w(TAG," mMessenger =  "+mMessenger);
                         if(mMessenger != null){
                             Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
+                            msg.obj = Constants.Upload.FILE_UPLOAD_SUCCESS;
 
                             try {
                                 mMessenger.send(msg);
@@ -365,7 +365,7 @@ public class RetryUploadIntentService extends IntentService {
 
                     if(mMessenger != null){
                         Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
+                        msg.obj = Constants.Upload.FILE_UPLOAD_FAIL;
 
                         try {
                             mMessenger.send(msg);
