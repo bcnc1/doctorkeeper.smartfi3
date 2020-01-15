@@ -192,10 +192,10 @@ public class BlabAPI {
 
     public static void loginEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
 
-        if(!getNetworkStatus(con)){
-            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
-            return;
-        }
+//        if(!getNetworkStatus(con)){
+//            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+//            return;
+//        }
 
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
         StringEntity jsonEntity = null;
@@ -468,7 +468,7 @@ public class BlabAPI {
         }
     }
 
-    private static boolean getNetworkStatus(Context con){
+    public static boolean getNetworkStatus(Context con){
 
         ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
@@ -479,6 +479,17 @@ public class BlabAPI {
         }else{
             return false;
         }
+
+//        ConnectivityManager cm = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo ni = cm.getActiveNetworkInfo();
+//
+//        if (ni != null && ( ni.getType() == ConnectivityManager.TYPE_WIFI || ni.getType() == ConnectivityManager.TYPE_MOBILE))
+//        {
+//            return true;
+//        }else{
+//            return false;
+//        }
+
 
     }
 }

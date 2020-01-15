@@ -1,21 +1,15 @@
 package com.thinoo.drcamlink2.activities;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -37,13 +31,10 @@ import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getActivity;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getContext;
 
@@ -73,11 +64,6 @@ public class LaunchCameraActivity extends Activity {
 
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
-
-
-
-        //File f = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/tempImage.jpg");
-        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "com.thinoo.drcamlink2", f));
 
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
@@ -121,50 +107,12 @@ public class LaunchCameraActivity extends Activity {
 
                 if(imageToUploadUri != null) {
 
-//                    Bitmap srcBmp = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageToUploadUri), null, null);
-//
-//                    int orientationValue = orientationListener.rotation;
-//                    srcBmp = rotateImage(srcBmp, orientationValue);
-//
-//                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//                    srcBmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-////            photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-//                    byte[] imageData = bos.toByteArray();  //이미지데이터가 바이트로 직렬화
-//
-//                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//                    String filename = "DRCAM_" + timeStamp + "_";
-//                    Log.i(TAG, "카메라 파일명 ===:" + filename);
-//
-//
-//                    savePhoto(imageData, "phone", filename);
-//
-////                    deleteGalleryFile();
-//
-//                    Intent intent = new Intent(getApplication(), MainActivity.class);
-//                    intent.putExtra("fragment", "phonefragment");
-//                    startActivity(intent);
-
-                    //미디어db에서..
-//                    String wholeID = DocumentsContract.getDocumentId(imageToUploadUri);
-//                    String id = wholeID.split(":")[1];
-//                    Long origId = Long.parseLong(id);
-//                    Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(
-//
-//                            getContentResolver(), origId,
-//
-//                            MediaStore.Images.Thumbnails.MINI_KIND, null );
-//
-//                    FileOutputStream outStream = new FileOutputStream(mFile.toString()+"tmpimg001.jpg"); //파일저장
-//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//                    outStream.close();
-
                     //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                     String path = DisplayUtil.storeThumbPtictureImage(mFile.toString(),
                                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
 
                     if(path != null){
                         PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, mFile.toString(),path, mFileName, 0);
-                        //startPictureUpload();
                         Long id = photoModel.getId();
                         PictureIntentService.startUploadPicture(mCon, id);
 
@@ -172,9 +120,6 @@ public class LaunchCameraActivity extends Activity {
                         Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
 
                     }
-
-//                    Intent intent = new Intent(getApplication(), MainActivity.class);
-//                    startActivity(intent);
 
                 }
             }catch (Exception e){
@@ -187,30 +132,6 @@ public class LaunchCameraActivity extends Activity {
         startActivity(intent);
     }
 
-    private void startPictureUpload() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            String CHANNEL_ID = "picture_upload_channel";
-//            CharSequence name = mCon.getString(R.string.notification_file_upload)
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel channel =
-//                    new NotificationChannel(CHANNEL_ID, name, importance);
-//
-//            // Add the channel
-//            NotificationManager notificationManager =
-//                    (NotificationManager) mCon.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//            if (notificationManager != null) {
-//                notificationManager.createNotificationChannel(channel);
-//            }
-//
-//
-//        }
-//
-//        //startForegroundService(1)
-//        mCon.startForegroundService(1);
-
-
-    }
 
     private void savePhoto(byte[] bytes, String cameraKind, String filePath) {
 

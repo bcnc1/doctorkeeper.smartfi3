@@ -10,15 +10,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.usb.UsbManager;
 import android.media.MediaActionSound;
-import android.net.Uri;
 import android.os.Bundle;
-
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,49 +28,45 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.thinoo.drcamlink2.BuildConfig;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.activities.LaunchCameraActivity;
 import com.thinoo.drcamlink2.activities.LaunchVrecordActivity;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.models.PhotoModel;
+import com.thinoo.drcamlink2.services.PhotoModelService;
+import com.thinoo.drcamlink2.services.PictureIntentService;
+import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
+import com.thinoo.drcamlink2.view.BaseFragment;
+import com.thinoo.drcamlink2.view.cloud.CloudFragment;
 import com.thinoo.drcamlink2.view.doctor.DoctorDialogFragment;
+import com.thinoo.drcamlink2.view.dslr.DSLRFragment;
+import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
+import com.thinoo.drcamlink2.view.sdcard.SDCardFragment;
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
 import com.wonderkiln.camerakit.CameraKitEventListener;
 import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.thinoo.drcamlink2.R;
-import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
-import com.thinoo.drcamlink2.models.PhotoModel;
-import com.thinoo.drcamlink2.services.PhotoModelService;
-import com.thinoo.drcamlink2.view.BaseFragment;
-import com.thinoo.drcamlink2.view.dslr.DSLRFragment;
-import com.thinoo.drcamlink2.view.cloud.CloudFragment;
-import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
-import com.thinoo.drcamlink2.view.sdcard.SDCardFragment;
 
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_doctorSelectExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
 
 public class PhoneCameraFragment extends BaseFragment {
@@ -92,7 +84,6 @@ public class PhoneCameraFragment extends BaseFragment {
     private Animation rotate3Animation;
     private Animation rotate4Animation;
 
-//    private boolean listviewFlag;
     private Handler saveHandler;
     private HandlerThread saveHandlerThread;
 
@@ -100,6 +91,11 @@ public class PhoneCameraFragment extends BaseFragment {
     private TextView patient_name;
     private TextView doctor_name;
     private VrecordInterface mVrecInterface;
+
+    private final String  DEVICE = "phone";
+    private String mFileName;
+
+    private MediaActionSound mSound;
 
     public interface VrecordInterface{
         public void startRecord();
@@ -120,9 +116,6 @@ public class PhoneCameraFragment extends BaseFragment {
     @BindView(R.id.button_sdcard)
     ImageButton btnSDCard;
 
-//    @BindView(R.id.btn_hide_listview)
-//    Button btnHideListview;
-
     @BindView(R.id.btn_launch_cameraApp)
     Button btnLaunchCameraApp;
 
@@ -135,10 +128,6 @@ public class PhoneCameraFragment extends BaseFragment {
 
     @BindView(R.id.button_doctor)
     ImageButton btnDoctor;
-
-
-//    @BindView(R.id.textview_patient_name)
-//    TextView textview_patient_name;
 
 
     private OrientationListener orientationListener;
@@ -212,6 +201,7 @@ public class PhoneCameraFragment extends BaseFragment {
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
+                Log.w(TAG, "type = "+cameraKitEvent.getType());
                 switch (cameraKitEvent.getType()) {
                     case CameraKitEvent.TYPE_CAMERA_OPEN:
 //                        canTakePicture = true;
@@ -230,11 +220,19 @@ public class PhoneCameraFragment extends BaseFragment {
 
             @Override
             public void onImage(CameraKitImage cameraKitImage) {
-                byte[] picture = cameraKitImage.getJpeg();
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String filename = "DRCAM_" + timeStamp + "_";
-                Log.i("CAMERA", "===:" + filename);
-                savePhoto(picture, "phone",filename);
+                Log.w(TAG,"onImage");
+                //이전코드 삭제예
+//                byte[] picture = cameraKitImage.getJpeg();
+//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//                String filename = "DRCAM_" + timeStamp + "_";
+//                Log.w("CAMERA", "===:" + filename);
+//                savePhoto(picture, "phone",filename);정
+                //end
+                mSound.release();
+                Bitmap picture = cameraKitImage.getBitmap();
+                String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+                mFileName = DEVICE + "_" + timeStamp+".jpg";
+                savePhotoNUpload(picture, "phone",mFileName);
 
             }
 
@@ -265,24 +263,25 @@ public class PhoneCameraFragment extends BaseFragment {
         orientationListener = new OrientationListener(MadamfiveAPI.getContext());
         orientationListener.enable();
 
+        //이전코드 삭제 예
         // HandlerThread를 이용하여 업로드를 별도 thread에서 처리
-        saveHandlerThread = new HandlerThread("imageUploadThread");
-        saveHandlerThread.start();
-        saveHandler = new Handler(saveHandlerThread.getLooper()){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
-                String filename = hashMap.get("filename").toString();
-                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
-
-                uploadImage(filename);
-
-                photoModel.setUploaded(true);
-                photoModel.save();
-            }
-        };
-
+//        saveHandlerThread = new HandlerThread("imageUploadThread");
+//        saveHandlerThread.start();
+//        saveHandler = new Handler(saveHandlerThread.getLooper()){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
+//                String filename = hashMap.get("filename").toString();
+//                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
+//
+//                uploadImage(filename);
+//
+//                photoModel.setUploaded(true);
+//                photoModel.save();
+//            }
+//        };
+ //end
         patient_name = (TextView)view.findViewById(R.id.patient_name);
         //삭제예정
 //        if(selectedPatientInfo!=null){
@@ -291,21 +290,26 @@ public class PhoneCameraFragment extends BaseFragment {
 
         patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
 
-        MadamfiveAPI.read_doctorSelectExtraOption();
-        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
-        if(!MadamfiveAPI.doctorSelectExtraOption){
-            btnDoctor.setVisibility(View.INVISIBLE);
-            doctor_name.setVisibility(View.INVISIBLE);
-        }
-        MadamfiveAPI.read_doctorInfo();
-        if(selectedDoctor!=null){
-            doctor_name.setText(selectedDoctor.get("name"));
-        }
-        MadamfiveAPI.read_ShootingImageDisplayExtraOption();
-        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
-        if(MadamfiveAPI.shootingImageDisplayExtraOption){
-            photo_container.setVisibility(View.VISIBLE);
-        }
+        //이전코드 삭제예정
+//        MadamfiveAPI.read_doctorSelectExtraOption();
+//        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
+//        if(!MadamfiveAPI.doctorSelectExtraOption){
+//            btnDoctor.setVisibility(View.INVISIBLE);
+//            doctor_name.setVisibility(View.INVISIBLE);
+//        }
+//        MadamfiveAPI.read_doctorInfo();
+//        if(selectedDoctor!=null){
+//            doctor_name.setText(selectedDoctor.get("name"));
+//        }
+        //end
+
+        //이전코드 삭제예
+//        MadamfiveAPI.read_ShootingImageDisplayExtraOption();
+//        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
+//        if(MadamfiveAPI.shootingImageDisplayExtraOption){
+//            photo_container.setVisibility(View.VISIBLE);
+//        }
+//end정
 
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
@@ -320,6 +324,8 @@ public class PhoneCameraFragment extends BaseFragment {
 
         return view;
     }
+
+
 
     @Override
     public void onResume() {
@@ -356,8 +362,28 @@ public class PhoneCameraFragment extends BaseFragment {
 //        cameraView.stop();
     }
 
+    private void savePhotoNUpload(Bitmap picture, String phone, String mFileName) {
+        Log.w(TAG,"savePhotoNUpload");
+        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+
+        String srcPath = file.toString();
+        String path = DisplayUtil.storePtictureNThumbImage(srcPath,
+                getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, picture);
+
+        if(path != null){
+            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), srcPath,path, mFileName, 0);
+            Long id = photoModel.getId();
+            PictureIntentService.startUploadPicture(getActivity(), id);
+
+        }else{
+            Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+
+        }
+    }
+
     public void savePhoto(byte[] bytes, String cameraKind, String filePath) {
 
+        Log.w(TAG,"savePhoto");
         int filePathLength = filePath.length();
         String filename = filePath.substring(0,filePathLength-1);
         filename = filename + ".JPG";
@@ -379,7 +405,7 @@ public class PhoneCameraFragment extends BaseFragment {
         Message msg = saveHandler.obtainMessage();
         msg.obj = taskInfo;
         saveHandler.sendMessage(msg);
-        Log.i("sendPhoto","Finished");
+        Log.w("sendPhoto","Finished");
         // thread 처리 end
 
     }
@@ -407,11 +433,12 @@ public class PhoneCameraFragment extends BaseFragment {
     @OnClick(R.id.button_capture)
     public void onTakePhoto(View view) {
         if(cameraIsReady) {
-
-            MediaActionSound sound = new MediaActionSound();
-            sound.play(MediaActionSound.SHUTTER_CLICK);
+            Log.w(TAG,"카메라촬영, 셔터음");
+            mSound = new MediaActionSound();
+            mSound.play(MediaActionSound.SHUTTER_CLICK);
             cameraView.captureImage();
-            cameraIsReady = false;
+
+//            cameraIsReady = false;
 //            btnCamera.setClickable(false);
         }
     }
@@ -651,15 +678,13 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private void uploadImage(String filename){
-        Log.i(TAG,"uploadImage => Started");
-//        String imagePath = Environment.getExternalStorageDirectory() + "/drcam/" + filename;
+        Log.w(TAG,"uploadImage => Started");
+
         File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 
-//        Bitmap bitmap = null;
-//        File f = new File(imagePath);
         byte[] bytes = null;
         try{
-//            FileInputStream fis = new FileInputStream(imagePath);
+
             FileInputStream fis = new FileInputStream(file.getAbsolutePath()+filename);
             int nCount = fis.available();
             if(nCount > 0){
@@ -683,8 +708,7 @@ public class PhoneCameraFragment extends BaseFragment {
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                 Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-//                        photoModel.setUploaded(true);
-//                        photoModel.save();
+
             }
 
             @Override

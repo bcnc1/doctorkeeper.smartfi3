@@ -103,11 +103,12 @@ public class FileExploreActivity extends AppCompatActivity {
 
         if(result == false){
             Log.e(TAG,"업로드 실패 파일 없음");
+            Toast.makeText(mCon, "업로드 실패, 파일이 없습니다.", Toast.LENGTH_SHORT).show();
             finish();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
-            ft.addToBackStack(null);
-            ft.commit();
+//            FragmentTransaction ft = getFragmentManager().beginTransaction();
+//            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
+//            ft.addToBackStack(null);
+//            ft.commit();
         }
 
     }
@@ -200,9 +201,11 @@ public class FileExploreActivity extends AppCompatActivity {
         String[] fileList = root.list();
 
         if(fileList == null){
-            Toast.makeText(mCon, "항목이 없습니다.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mCon, "항목이 없습니다.", Toast.LENGTH_SHORT).show();
             return false;
-        }else{
+        } else if(fileList.length == 1 && fileList[0].equals("thumbnail")){
+            return false;
+        } else{
 
             for(int i =0; i<fileList.length; i++){
                 if(fileList[i].equals("thumbnail")){

@@ -88,7 +88,7 @@ public class DisplayUtil {
         }
 
         try {
-            Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
+            //Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
             FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
 
             //bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 90, outStream);
@@ -107,6 +107,55 @@ public class DisplayUtil {
         }
 
 
+    }
+
+    public static String storePtictureNThumbImage(String storeOriPath, File storeThumbPath, String fileName, Bitmap ori){
+        String path = null;
+
+        File file = new File(storeThumbPath, "/thumbnail/");
+
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
+
+        //store source image
+        try{
+            FileOutputStream outPicStream = new FileOutputStream(storeOriPath);
+            ori.compress(Bitmap.CompressFormat.JPEG, 100, outPicStream);
+            outPicStream.close();
+
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+            return path;
+        }catch (IOException e){
+            e.printStackTrace();
+            return path;
+        }
+
+        //store thumb image
+        Bitmap source = BitmapFactory.decodeFile(storeOriPath);
+
+        Bitmap bitmapThumb = ThumbnailUtils.extractThumbnail(source, THUMB_WIDTH, THUMB_HEIGHT,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
+        Bitmap rotateThumb = rotate(bitmapThumb, 90);//90도회전
+
+        try {
+
+            FileOutputStream outThumbStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
+
+            rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumbStream); //
+            outThumbStream.close();
+
+            path = file.getAbsolutePath()+ File.separator +fileName;
+            return path;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return path;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return path;
+        }
     }
 
     public static String storeDslrImage(String storeOriPath, File storeThumbPath, String fileName, Bitmap ori, Bitmap thumb){
