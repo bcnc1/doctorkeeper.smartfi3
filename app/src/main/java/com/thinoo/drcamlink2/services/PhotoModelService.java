@@ -167,7 +167,11 @@ public class PhotoModelService {
         return photoModel;
     }
 
-    public static PhotoModel addPhotoModelWithRawName( final String sourcePath, final String thumbPath, String filename, String rawName, final int mode) {
+    public static PhotoModel addPhotoModelWithRawName( final  Context con , final String sourcePath, final String thumbPath, String filename, String rawName, final int mode) {
+
+        long filesize;
+        File f = new File(sourcePath);
+        filesize = f.length();
 
         final PhotoModel photoModel = new PhotoModel();
 
@@ -177,6 +181,8 @@ public class PhotoModelService {
         photoModel.setRawfileName(rawName);
         photoModel.setMode(mode);
         photoModel.setCreated(new Date());
+        photoModel.setFileSize(filesize);
+        photoModel.setCustNo(SmartFiPreference.getSfPatientCustNo(con));
         photoModel.save();
 
         return photoModel;

@@ -201,7 +201,7 @@ public class PhoneCameraFragment extends BaseFragment {
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
-                Log.w(TAG, "type = "+cameraKitEvent.getType());
+                //Log.w(TAG, "type = "+cameraKitEvent.getType());
                 switch (cameraKitEvent.getType()) {
                     case CameraKitEvent.TYPE_CAMERA_OPEN:
 //                        canTakePicture = true;

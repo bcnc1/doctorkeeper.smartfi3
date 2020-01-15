@@ -15,12 +15,10 @@
  */
 package com.thinoo.drcamlink2.view.sdcard;
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -46,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
@@ -65,9 +64,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -158,10 +154,14 @@ public class GalleryFragment extends SessionFragment
         public boolean handleMessage(Message msg) {
             Object path = msg.obj;
             Log.w(TAG,"msgHandler 호출..");
-            if(GalleryFragment.getInstance() != null){
+            if(GalleryFragment.getInstance() != null){ //업로드 실패던 성공하던 프로그래시브바는 진행..
                 uploadCount++;
                 numberOfSendPhoto++;
                 multi_image_uploading_progressbar.setProgress(uploadCount);
+
+                if(path.toString().equals(Constants.Upload.READ_FILE_UPLOAD_FAIL)){
+                    Log.e(TAG, "파일업로드 실패, 다음파일 진행");
+                }
 
                 if(numberOfSendPhoto==selectedObjectHandles.size()){  //마지막 값이면..
                     multi_image_uploading_progressbar.setVisibility(View.INVISIBLE);
@@ -251,7 +251,7 @@ public class GalleryFragment extends SessionFragment
 
 
     private void retrieveDirection(ArrayList<Integer> list){
-        Log.w(TAG,"retrieveDirection => 카메라에게..이미지 요청");
+        Log.w(TAG,"retrieveDirection => 카메라에게..이미지 요청 갯수 = "+list.size());
         for(int h : list) {
             camera().retrieveImage(this, h);
         }
@@ -377,7 +377,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void capturedPictureReceived(int objectHandle, String filename, Bitmap thumbnail, Bitmap bitmap) {
-        Log.i(TAG, "BITMAP:capturedPictureReceived:" + bitmap.getWidth() + "x" + bitmap.getHeight());
+        Log.w(TAG, "BITMAP:capturedPictureReceived:" + bitmap.getWidth() + "x" + bitmap.getHeight());
     }
 
     @Override
@@ -386,7 +386,7 @@ public class GalleryFragment extends SessionFragment
 
         if (camera() != null) {
             if (format == PtpConstants.ObjectFormat.EXIF_JPEG) {
-                Log.i(TAG, "OBJECT:retrieveImage:");
+                Log.w(TAG, "OBJECT:retrieveImage:");
 //                camera().retrieveImage(this, handle);
             }
         }
@@ -448,7 +448,7 @@ public class GalleryFragment extends SessionFragment
 
     @Override
     public void onImageHandlesRetrieved(final int[] handles) {
-        Log.d(TAG, "onImageHandlesRetrieved");
+        Log.w(TAG, "onImageHandlesRetrieved");
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -458,7 +458,7 @@ public class GalleryFragment extends SessionFragment
                 if (handles.length == 0) {
 //                    emptyView.setText(getString(R.string.gallery_empty));
                 }
-                Log.i(TAG, "onImageHandlesRetrieved:" + handles.length);
+                Log.w(TAG, "onImageHandlesRetrieved:" + handles.length);
 
                 galleryAdapter.setHandles(handles);
 
@@ -472,7 +472,7 @@ public class GalleryFragment extends SessionFragment
     @Override
     public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
 
-        Log.i(TAG, "갤러러, 이미지 정보  ==> onImageInfoRetrieved");
+       // Log.w(TAG, "갤러러, 이미지 정보  ==> onImageInfoRetrieved");
         handler.post(new Runnable() {
 
             @Override
@@ -499,7 +499,7 @@ public class GalleryFragment extends SessionFragment
 
                     Log.d(TAG,"child :"+child);
                     if (child == null) {
-                        Log.d(TAG,"child is null !!");
+                        Log.w(TAG,"child is null !!");
                         continue;
                     }
                     final ViewHolder holder = (ViewHolder) child.getTag();
@@ -530,14 +530,15 @@ public class GalleryFragment extends SessionFragment
                             //end
                         }
 //                        PhotoModel pm = PhotoModel.findById(PhotoModel.class,photoModelLists.get(0).getId());
-                        if(uploadCheck==true) {
-                            Log.d(TAG,"업로드 된 이미지표시 :"); //그런데 제대로 동작 안하는듯..
-                            holder.sdcard_image_upload_check.setVisibility(View.VISIBLE);
-                        }
+                        //삭제예
+//                        if(uploadCheck==true) {
+//                            Log.d(TAG,"업로드 된 이미지표시 :"); //그런데 제대로 동작 안하는듯.. 이건 구현 안하기로..
+//                            holder.sdcard_image_upload_check.setVisibility(View.VISIBLE);
+//                        }
 
                         if (!"".equals(objectInfo.captureDate)) {
 
-                            Log.d(TAG,"캡쳐??? :");
+                            Log.w(TAG,"캡쳐??? :");
                             try {
                                 Date date = formatParser.parse(objectInfo.captureDate);
                                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -730,7 +731,7 @@ public class GalleryFragment extends SessionFragment
                 getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, currentBitmap, thumb);
 
         if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(mFile.toString(),path, mFileName, currentObjectInfo, 1);
+            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(getActivity(), mFile.toString(),path, mFileName, currentObjectInfo, 1);
             Long id = photoModel.getId();
 
             Messenger messenger = new Messenger(msgHandler);
@@ -773,7 +774,7 @@ public class GalleryFragment extends SessionFragment
 
     private void uploadSelectedHandles(){
 
-        Log.i(TAG,"uploadSelectedHandles");
+        Log.w(TAG,"uploadSelectedHandles");
 
         Message msg = saveHandler.obtainMessage();
         msg.obj = selectedObjectHandles;

@@ -90,10 +90,8 @@ public class PictureIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
-       // mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
 
-
-        //mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
+        Log.e(TAG,"현재토큰 = "+mAcccessToken);
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
         mDate = new SimpleDateFormat("yyyyMM").format(new Date());
@@ -434,7 +432,6 @@ public class PictureIntentService extends IntentService {
     }
 
     private void uploadThumbnail(final PhotoModel pm) {
-
 
 
         final String filePath = pm.getThumbpath();
