@@ -1,7 +1,9 @@
 package com.thinoo.drcamlink2.view.patient;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,7 +36,7 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
 
 public class PatientDialogFragment extends DialogFragment {
@@ -48,7 +50,8 @@ public class PatientDialogFragment extends DialogFragment {
     private boolean patientInsertExtraOption = false;
     private String name;
     private String chartNumber;
-
+    private TextView nameTextView;
+    private TextView chartNumberTextView;
 
     public static PatientDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -76,9 +79,6 @@ public class PatientDialogFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.activity_search_patient, container, false);
 
         PatientDialogFragment.this.getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        final TextView nameTextView;
-        final TextView chartNumberTextView;
 
         nameTextView = (TextView) view.findViewById(R.id.search_name);
         chartNumberTextView = (TextView) view.findViewById(R.id.search_chartNumber);
@@ -130,15 +130,14 @@ public class PatientDialogFragment extends DialogFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 HashMap<String, String> patientInfo = (HashMap<String, String>) adapterView.getItemAtPosition(i);
-                selectedPatientInfo = patientInfo;
+               // selectedPatientInfo = patientInfo;
 
-                String name = selectedPatientInfo.get("name");
+                //String name = selectedPatientInfo.get("name");
+                String name = patientInfo.get("name");
                 Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_LONG).show();
 
-                //todo 삭제 예
-                //MadamfiveAPI.write_patientInfo();
-                SmartFiPreference.setSfPatientCustNo(getActivity(), selectedPatientInfo.get("custNo"));
-                SmartFiPreference.setPatientChart(getActivity(),selectedPatientInfo.get("chartNumber"));
+                SmartFiPreference.setSfPatientCustNo(getActivity(), patientInfo.get("custNo"));
+                SmartFiPreference.setPatientChart(getActivity(),patientInfo.get("chartNumber"));
                 SmartFiPreference.setSfPatientName(getActivity(),name);
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -153,7 +152,7 @@ public class PatientDialogFragment extends DialogFragment {
         return view;
     }
 
-    private void searchPatient(String searchName, final String searchChart) {
+    private void searchPatient(final String searchName, final String searchChart) {
         BlabAPI.searchPatient(getActivity(), searchName, searchChart, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -175,17 +174,41 @@ public class PatientDialogFragment extends DialogFragment {
 
                             JSONArray patientInfo = response.getJSONArray((Constants.EMRAPI.DATA));
 
-                            for (int i = 0; i < patientInfo.length(); i++) {
-                                JSONObject patient = patientInfo.getJSONObject(i);
+                            Log.w(TAG,"검색결과 = "+patientInfo.length());
+                            if(patientInsertExtraOption == true && patientInfo.length() == 0){
+                                // TODO: 2020-01-16 환자추가.
+                                addParientInfo(searchName, searchChart);
+                            } else{
+                                if(patientInfo.length() == 0){
+                                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.CENTER, 0, -100);
+                                    toast.show();
+                                }
 
-                                HashMap<String, String> patientElement = new HashMap<>();
+                                for (int i = 0; i < patientInfo.length(); i++) {
+                                    JSONObject patient = patientInfo.getJSONObject(i);
 
-                                patientElement.put("custNo",patient.getString("custNo"));
-                                patientElement.put("name",patient.getString("custNm"));
-                                patientElement.put("chartNumber",patient.getString("chrtNo"));
+                                    HashMap<String, String> patientElement = new HashMap<>();
 
-                                patientInfoList.add(patientElement);
+                                    patientElement.put("custNo",patient.getString("custNo"));
+                                    patientElement.put("name",patient.getString("custNm"));
+                                    patientElement.put("chartNumber",patient.getString("chrtNo"));
+
+                                    patientInfoList.add(patientElement);
+                                }
                             }
+
+//                            for (int i = 0; i < patientInfo.length(); i++) {
+//                                JSONObject patient = patientInfo.getJSONObject(i);
+//
+//                                HashMap<String, String> patientElement = new HashMap<>();
+//
+//                                patientElement.put("custNo",patient.getString("custNo"));
+//                                patientElement.put("name",patient.getString("custNm"));
+//                                patientElement.put("chartNumber",patient.getString("chrtNo"));
+//
+//                                patientInfoList.add(patientElement);
+//                            }
 
                             adapter.setItems(patientInfoList);
                             adapter.notifyDataSetChanged();
@@ -201,11 +224,6 @@ public class PatientDialogFragment extends DialogFragment {
 
             }
 
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                super.onFailure(statusCode, headers, responseString, throwable);
-//                Log.w(TAG,"환자검색 실패 = "+responseString);
-//            }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -213,12 +231,100 @@ public class PatientDialogFragment extends DialogFragment {
                 Log.w(TAG,"환자검색 실패 = "+statusCode);
 
                 if(statusCode == 401 || statusCode == 403){
-                    // TODO: 2020-01-07 무한 반복될 경우는???
                     Log.e(TAG,"인증 및 권한오류");
                     autoGetToken();
                 }
             }
         });
+    }
+
+    private void addParientInfo(String inputName, String inputChart) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("스마트파이");
+        builder.setMessage("해당 환자가 없습니다. 추가하시겠습니까?");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(final DialogInterface dialog, int which) {
+                final String name = nameTextView.getText().toString();
+                final String chartNumber = chartNumberTextView.getText().toString();
+
+                if (name == null || name.length() == 0) {
+                    Toast.makeText(getActivity(), "이름을 입력해 주세요", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    return;
+                }
+
+                if (chartNumber == null || chartNumber.length() == 0) {
+                    Toast.makeText(getActivity(), "차트번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    return;
+                }
+
+                BlabAPI.insertPatientForEMR(getActivity(), name, chartNumber, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                       // super.onSuccess(statusCode, headers, response);
+
+                        try {
+                            String code =  response.get(Constants.EMRAPI.CODE).toString();
+
+                            if(code.equals(Constants.EMRAPI.CODE_200)){
+                                Log.e(TAG,"응답 = "+response);
+
+                                JSONObject patientInfo = response.getJSONObject((Constants.EMRAPI.DATA));
+
+//                                HashMap<String, String> patientInfo = new HashMap<>();
+//                                patientInfo.put("name", name);
+//                                patientInfo.put("chartNumber", chartNumber);
+
+                               // selectedPatientInfo = patientInfo;
+
+                                SmartFiPreference.setSfPatientCustNo(getActivity(), patientInfo.getString("custNo"));
+                                SmartFiPreference.setSfPatientName(getActivity(), patientInfo.getString("custNm"));
+                                SmartFiPreference.setPatientChart(getActivity(),patientInfo.getString("chrtNo"));
+                                SmartFiPreference.setSfPatientName(getActivity(),name);
+
+                                Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
+                                dismiss();
+                                dialog.dismiss();
+
+                                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
+                                ft.commit();
+                            }else{
+                                Log.e(TAG,"환자입력에러 !!");
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                       // super.onFailure(statusCode, headers, throwable, errorResponse);
+                        Log.e(TAG,"환자입력에러 code = "+statusCode);
+                        dialog.dismiss();
+                    }
+
+                });
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 
@@ -235,6 +341,10 @@ public class PatientDialogFragment extends DialogFragment {
                     String code =  response.get(Constants.EMRAPI.CODE).toString();
                     if(!code.equals(Constants.EMRAPI.CODE_200)){
                         Log.e(TAG,"응답에러, ID, pw 확인필요");
+                        //강제로그아웃 후 재로그인하게..
+                        //makeAutoLogout();
+                        showLoginDialog();
+
                     }else{
 
                         try {
@@ -261,6 +371,16 @@ public class PatientDialogFragment extends DialogFragment {
         });
     }
 
+//    private void makeAutoLogout() {
+//        SmartFiPreference.setDoctorId(getActivity(), Constants.EMRAPI.UNDEFINED);
+//        SmartFiPreference.setSfDoctorPw(getActivity(),Constants.EMRAPI.UNDEFINED);
+//
+//        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+//        LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();
+//        changelogTx.add(loginDialogFragment, "Login");
+//        changelogTx.commit();
+//    }
+
 
     public void onResume() {
         super.onResume();
@@ -273,6 +393,9 @@ public class PatientDialogFragment extends DialogFragment {
     }
 
     private void showLoginDialog() {
+
+        SmartFiPreference.setDoctorId(getActivity(), Constants.EMRAPI.UNDEFINED);
+        SmartFiPreference.setSfDoctorPw(getActivity(),Constants.EMRAPI.UNDEFINED);
 
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();

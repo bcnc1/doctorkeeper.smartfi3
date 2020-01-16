@@ -64,7 +64,7 @@ public class SmartFiPreference {
 
 
     public static final String getSfDoctorPw(Context con){
-        return getString(con, SF_DOCTOR_PW, "7777777");
+        return getString(con, SF_DOCTOR_PW, "");
     }
 
     public static void setSfDoctorPw(Context con, String pw){

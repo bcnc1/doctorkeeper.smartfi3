@@ -43,6 +43,7 @@ public class Constants {
         public static final String  REG_PHOTO = "/emrmng/api/v1/custs/photos";
         public static final String  FIND_PHOTOS = "/emrmng/api/v1/custs/photos";
         public static final String  FIND_PHOTOS_ALL = "/emrmng/api/v1/custs/photos/all";
+        public static final String  INSERT_PATIENT = "/emrmng/api/v1/custs";
 
         public static final int  NOTIFICATION_VIDEO_ID = 1010;
         public static final String DATA = "data";
@@ -59,6 +60,7 @@ public class Constants {
         public static final String CHART_NO = "chrtNo";
         public static final String P_IDX = "pageIdx";
         public static final String P_SIZE = "pageSize";
+        public static final String CUST_NM = "custNm";
 
     }
 

@@ -9,20 +9,9 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
-//import com.android.volley.AuthFailureError;
-//import com.android.volley.Cache;
-//import com.android.volley.DefaultRetryPolicy;
-//import com.android.volley.Network;
-//import com.android.volley.NetworkResponse;
-//import com.android.volley.Request;
-//import com.android.volley.RequestQueue;
-//import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
-//import com.android.volley.toolbox.Volley;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
@@ -39,12 +28,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 import okhttp3.Cache;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -52,17 +44,10 @@ import okhttp3.RequestBody;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.thinoo.drcamlink2.MainActivity.countDownTimer;
-import android.widget.Toast;
 
-//https://stackoverflow.com/questions/52149016/how-to-upload-video-in-android-using-volley(비디오업로드 참고)
-//https://stackoverflow.com/questions/49166938/record-and-upload-audio-and-video-files-to-the-server-in-android
-//http://www.itsalif.info/content/android-volley-tutorial-http-get-post-put 멀티파트리퀘스트 사용불가
-//https://www.youtube.com/watch?v=K48jnbM8yS4 large file 동영
-//file:///Users/kimcy/dev/kt-storage/ucloudstorage-sdk%20(1)/java_docs/index.html kt sdk 문서
 
 public class BlabAPI {
     private static final String TAG = BlabAPI.class.getSimpleName();
-   // private static final String BASE_URL = "https://ssproxy.ucloudbiz.olleh.com/v1/AUTH_10b1107b-ce24-4cb4-a066-f46c53b474a3";
 
     private static String mAcccessToken = null;
 
@@ -235,6 +220,14 @@ public class BlabAPI {
     }
 
 
+    /**
+     * 환자명에 대해서는 like검색까지 지원한다.
+     * 전체검색, like검
+     * @param con
+     * @param searchByName
+     * @param searchByChart
+     * @param responseHandler
+     */
     public static void searchPatient(Context con, String searchByName, String searchByChart, ResponseHandlerInterface responseHandler){
 
         if(!getNetworkStatus(con)){
@@ -249,23 +242,16 @@ public class BlabAPI {
         requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
 
         if(!searchByChart.equals("")){
-            // TODO: 2020-01-07 차트대신 고객번호를 넣어야 한다.
-            requestParams.put(Constants.EMRAPI.CUST_NO, searchByChart);
+            Log.w(TAG,"입력된 차트는 = "+searchByChart);
+            requestParams.put(Constants.EMRAPI.CHART_NO, searchByChart);
         }
-            
 
-//
-//        StringBuilder strUrl =  new StringBuilder();
-//        strUrl.append(Constants.EMRAPI.BASE_URL);
-//        strUrl.append(Constants.EMRAPI.SEARCH_PATIENT);
-//        strUrl.append("?");
-//        strUrl.append("userId=");
-//        strUrl.append(SmartFiPreference.getDoctorId(con));
-//
-//        if(searchByChart != null){
-//            strUrl.append("&custNo=");
-//            strUrl.append(searchByChart);
-//        }
+        if(!searchByName.equals("")){
+            // TODO: 2020-01-16 인코딩 필요??
+            Log.w(TAG,"입력된 환자는 = "+searchByName);
+            requestParams.put(Constants.EMRAPI.CUST_NM, searchByName);
+        }
+
 
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
@@ -275,6 +261,42 @@ public class BlabAPI {
         client.get(con, url, requestParams ,responseHandler);
 
     }
+
+    public static void insertPatientForEMR(Context con, String Name, String Chart, ResponseHandlerInterface responseHandler){
+
+
+        if(!getNetworkStatus(con)){
+            Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
+            return;
+        }
+
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.INSERT_PATIENT;
+
+        StringEntity jsonEntity = null;
+
+
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+
+
+            jsonParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
+            jsonParams.put(Constants.EMRAPI.CUST_NM, Name);
+            jsonParams.put(Constants.EMRAPI.CHART_NO, Chart);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        jsonEntity = new StringEntity(jsonParams.toString(),HTTP.UTF_8);
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", SmartFiPreference.getSfToken(con));
+        client.post(con, url, jsonEntity, "application/json",responseHandler);
+
+    }
+
 
     public static void getPatientImages(Context con, int page, int pageSize, String custNo, ResponseHandlerInterface responseHandler){
         if(!getNetworkStatus(con)){
@@ -406,38 +428,6 @@ public class BlabAPI {
         getActivity().startService(it);
 
     }
-
-
-//    public static void createPost(ByteArrayOutputStream baos, String cameraKind, JsonHttpResponseHandler responseHandler) {
-//        final byte[] imageBytes = baos.toByteArray();
-//        createPost(imageBytes, cameraKind, responseHandler);
-//    }
-
-
-
-    /**
-     * 파일 패스 기반의 업로드, 파일패스를 받아 바이트arry
-     * @param fileName
-     * @param cameraKind
-     * @param responseHandler
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-//    public static void createPost(String fileName, String cameraKind, JsonHttpResponseHandler responseHandler) throws FileNotFoundException,
-//            IOException {
-//
-//        byte[] buffer = new byte[4096];
-//        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName));
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        int bytes = 0;
-//        while ((bytes = bis.read(buffer, 0, buffer.length)) > 0) {
-//            baos.write(buffer, 0, bytes);
-//        }
-//        createPost(baos, cameraKind, responseHandler);
-//        baos.close();
-//        bis.close();
-//
-//    }
 
     /**
      *  이미지삭제
