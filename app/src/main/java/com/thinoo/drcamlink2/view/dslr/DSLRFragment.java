@@ -93,8 +93,6 @@ public class DSLRFragment extends SessionFragment implements
     @BindView(R.id.dslr_btn_back)
     Button backBtn;
 
-//    @BindView(R.id.dslr_btn_liveview)
-//    Button liveViewBtn;
 
     @BindView(R.id.dslr_upload_Notice)
     TextView upload_Notice;
@@ -116,12 +114,11 @@ public class DSLRFragment extends SessionFragment implements
     private Fragment displayPictureFragment;
     private Fragment galleryFragment;
 
-//    private MyAsyncTask myAsyncTask;
     private Handler uploadHandler;
     private HandlerThread uploadHandlerThread;
 
     private int objectHandleNumber = 0;
-//    private boolean isD5500=false;
+
 
     public static DSLRFragment newInstance() {
         DSLRFragment f = new DSLRFragment();
@@ -150,29 +147,6 @@ public class DSLRFragment extends SessionFragment implements
 
         enableUi(false);
 //        enableUi(true);
-
-// HandlerThread를 이용하여 업로드를 별도 thread에서 처리
-         // 기존코드 삭제 예
-//        uploadHandlerThread = new HandlerThread("imageUploadThread");
-//        uploadHandlerThread.start();
-//        uploadHandler = new Handler(uploadHandlerThread.getLooper()){
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
-//                String filename = hashMap.get("filename").toString();
-//                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
-//
-//                Log.d(TAG,"dslr 파일패스 = "+photoModel.getFullpath());
-//                //uploadImage(filename);
-//                uploadDslrImage(photoModel.getFullpath(), filename);
-//
-//                photoModel.setUploaded(true);  //db에 업로드 했다는, 비동기라 아직 업로드 전인데 이걸 먼저해도 되나?
-//                photoModel.save();  //kimcy 왜 한번 더 저장하지?? 위에서 저렇게 하고 나서 기록하는...
-//            }
-//        };
-// ===> end
-
 
         return view;
     }
@@ -340,7 +314,7 @@ public class DSLRFragment extends SessionFragment implements
     @Override
     public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
 
-        Log.d(TAG,"dslr받음 => onImageInfoRetrieved");
+        //Log.d(TAG,"dslr받음 => onImageInfoRetrieved");
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -351,7 +325,7 @@ public class DSLRFragment extends SessionFragment implements
 
                 if (currentObjectHandle == objectHandle) {
 
-                    Log.i(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
+                    //Log.i(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
 
 
                     camera_ready_Notice.setVisibility(View.GONE);
@@ -428,30 +402,9 @@ public class DSLRFragment extends SessionFragment implements
 
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
         Log.d(TAG, "sendPhoto");
-        //기존코드 사용(추후 삭제예정)
-//        currentObjectHandle = 0;
-//        Log.d(TAG,"sendPhoto ObjectInfo = "+info +" Bitmap = "+thumb.getByteCount());
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//
-//        try {
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//        }catch(Exception e){
-//            Log.d(TAG,e.toString());
-//            int nh = (int) ( bitmap.getHeight() * (3072.0 / bitmap.getWidth()) );
-//            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 3072, nh, true);
-//            scaled.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//        }
-//        Log.i(TAG,"COMPRESSED");
-//        final byte[] bytes = baos.toByteArray();
-//        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, info.filename, 1);
-//        Log.d(TAG, "저장된 id  = "+photoModel.getId());
-//        Log.d(TAG, "업로딩  = "+photoModel.getUploading());
-
-
 
         currentObjectHandle = 0;
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
         mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);

@@ -179,7 +179,8 @@ public class GalleryFragment extends SessionFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        formatParser = new SimpleDateFormat("yyyyMMdd'T'HHmmss.S");
+        //formatParser = new SimpleDateFormat("yyyyMMdd'T'HHmmss.S");
+        formatParser = new SimpleDateFormat("yyyy-MM-dd-HHmmss.S");
         currentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 
         View view = inflater.inflate(R.layout.gallery_frag, container, false);
@@ -703,7 +704,7 @@ public class GalleryFragment extends SessionFragment
        //sendPhoto(currentObjectInfo, currentBitmap);
 
 
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
         mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
@@ -723,33 +724,6 @@ public class GalleryFragment extends SessionFragment
             Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
 
         }
-
-        //test code, 삭제 예정
-//        Bitmap thumb = (Bitmap) pictureMap.get(objectHandle+"_data");
-//        File mFile = new File((getActivity().getExternalFilesDir(Environment.getExternalStorageState()).toString()));
-//        File file = new File(mFile, "/camera/");
-//
-//        if (!file.isDirectory()) {
-//            file.mkdir();
-//        }
-//
-//        try{
-//            FileOutputStream oriPath = new FileOutputStream(file.getAbsolutePath()+ File.separator +"camera-ori.jpg"); //파일저장
-//            currentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, oriPath);
-//            oriPath.close();
-//
-//
-//            FileOutputStream tPath = new FileOutputStream(file.getAbsolutePath()+ File.separator +"camera-thumb.jpg"); //파일저장
-//            thumb.compress(Bitmap.CompressFormat.JPEG, 100, tPath);
-//            tPath.close();
-//
-//        }catch (FileNotFoundException e){
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        //end
 
     }
 

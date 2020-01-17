@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -122,7 +121,6 @@ public class PictureIntentService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy, notiId = "+mNotiId);
-       // mNotiId = Constants.Notification.NOTIFICATION_PICTURE_ID;
 
     }
 
@@ -436,11 +434,11 @@ public class PictureIntentService extends IntentService {
 
         final String filePath = pm.getThumbpath();
 
-        if(pm.getMode() == 0 || pm.getMode() == 1){
-            mMediaType = "pictures";
-        }else if(pm.getMode() == 2){
-            mMediaType = "videos";
-        }
+//        if(pm.getMode() == 0 || pm.getMode() == 1){
+//            mMediaType = "pictures";
+//        }else if(pm.getMode() == 2){
+//            mMediaType = "videos";
+//        }
 
         final String fileName = pm.getFilename();
 
@@ -525,15 +523,7 @@ public class PictureIntentService extends IntentService {
 
 
     private static String getAbsoluteUrl(String relativeUrl) {
-//        String encString =  null;
-//
-//        try {
-//            encString = URLEncoder.encode(Constants.Storage.BASE_URL + "/" + relativeUrl, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return encString;
+
         return Constants.Storage.BASE_URL + "/" + relativeUrl;
     }
 
@@ -552,11 +542,11 @@ public class PictureIntentService extends IntentService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             CharSequence name = "Picture Upload";
-            //String description = Constants.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION;
+
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel =
                     new NotificationChannel(CHANNEL_ID, name, importance);
-            //channel.setDescription(description);
+
 
             // Add the channel
             NotificationManager notificationManager =

@@ -29,6 +29,8 @@ import okhttp3.Response;
 
 public class CloudGalleryAdapter extends BaseAdapter {
 
+    private static final String TAG = "CloudGalleryAdapter";
+
     public static class ViewHolder {
         HashMap<String,String> photo;
         AspectRatioImageView image1;
@@ -172,6 +174,7 @@ public class CloudGalleryAdapter extends BaseAdapter {
                 .build();
 
 
+        Log.w(TAG,"imageURL = "+imageURL);
 
         picasso /*.get()*/.load(imageURL).resize(120,120).centerCrop().into(holder.image1);
         holder.image1.setExpectedDimensions(120, 120);

@@ -84,11 +84,11 @@ public class PhoneCameraFragment extends BaseFragment {
     private Animation rotate4Animation;
 
     private Handler saveHandler;
-    private HandlerThread saveHandlerThread;
+    //private HandlerThread saveHandlerThread;
 
     private boolean cameraIsReady;
     private TextView patient_name;
-    private TextView doctor_name;
+   // private TextView doctor_name;
     private VrecordInterface mVrecInterface;
 
     private final String  DEVICE = "phone";
@@ -138,7 +138,7 @@ public class PhoneCameraFragment extends BaseFragment {
     private final BroadcastReceiver usbOnReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            Log.i(TAG,"intent === "+intent);
+            Log.w(TAG,"usbOnReciever === "+intent);
             new android.os.Handler().postDelayed(
                     new Runnable() {
                         public void run() {
@@ -154,7 +154,7 @@ public class PhoneCameraFragment extends BaseFragment {
     private final BroadcastReceiver usbOffReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            Log.i(TAG,"intent === "+intent);
+            Log.w(TAG,"usbOffReciever === "+intent);
             btnDslr.setVisibility(View.INVISIBLE);
             btnSDCard.setVisibility(View.INVISIBLE);
             MadamfiveAPI.isCameraOn = true;
@@ -199,14 +199,12 @@ public class PhoneCameraFragment extends BaseFragment {
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
-                //Log.w(TAG, "type = "+cameraKitEvent.getType());
+
                 switch (cameraKitEvent.getType()) {
                     case CameraKitEvent.TYPE_CAMERA_OPEN:
-//                        canTakePicture = true;
                         break;
 
                     case CameraKitEvent.TYPE_CAMERA_CLOSE:
-//                        canTakePicture = false;
                         break;
                 }
             }
@@ -219,16 +217,10 @@ public class PhoneCameraFragment extends BaseFragment {
             @Override
             public void onImage(CameraKitImage cameraKitImage) {
                 Log.w(TAG,"onImage");
-                //이전코드 삭제예
-//                byte[] picture = cameraKitImage.getJpeg();
-//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//                String filename = "DRCAM_" + timeStamp + "_";
-//                Log.w("CAMERA", "===:" + filename);
-//                savePhoto(picture, "phone",filename);정
-                //end
+
                 mSound.release();
                 Bitmap picture = cameraKitImage.getBitmap();
-                String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+                String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
                 mFileName = DEVICE + "_" + timeStamp+".jpg";
                 savePhotoNUpload(picture, "phone",mFileName);
 
@@ -389,12 +381,29 @@ public class PhoneCameraFragment extends BaseFragment {
     public void onTakePhoto(View view) {
         if(cameraIsReady) {
             Log.w(TAG,"카메라촬영, 셔터음");
-            mSound = new MediaActionSound();
-            mSound.play(MediaActionSound.SHUTTER_CLICK);
-            cameraView.captureImage();
+
+            if(isInsertPatient()){
+                mSound = new MediaActionSound();
+                mSound.play(MediaActionSound.SHUTTER_CLICK);
+                cameraView.captureImage();
+            }else{
+
+                Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+            }
+//            mSound = new MediaActionSound();
+//            mSound.play(MediaActionSound.SHUTTER_CLICK);
+//            cameraView.captureImage();
 
 //            cameraIsReady = false;
 //            btnCamera.setClickable(false);
+        }
+    }
+
+    private boolean isInsertPatient() {
+        if(SmartFiPreference.getSfPatientName(getActivity()).equals("")){
+            return false;
+        }else{
+            return true;
         }
     }
 
@@ -416,40 +425,68 @@ public class PhoneCameraFragment extends BaseFragment {
 
     @OnClick(R.id.button_list)
     public void onToggleList(View view) {
+        if(isInsertPatient()){
+            try {
+                cameraView.stop();
+            }catch(Exception e){
+                Log.e(TAG,"ERROR~~~"+e);
+            }
 
-        try {
-            cameraView.stop();
-        }catch(Exception e){
-            Log.i(TAG,"ERROR~~~"+e);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, CloudFragment.newInstance(), null);
+            ft.addToBackStack(null);
+            ft.commit();
+        }else{
+            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, CloudFragment.newInstance(), null);
-        ft.addToBackStack(null);
-        ft.commit();
+//        try {
+//            cameraView.stop();
+//        }catch(Exception e){
+//            Log.e(TAG,"ERROR~~~"+e);
+//        }
+//
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        ft.replace(R.id.fragment_container, CloudFragment.newInstance(), null);
+//        ft.addToBackStack(null);
+//        ft.commit();
 
     }
 
     @OnClick(R.id.btn_launch_cameraApp)
     public void launchCameraApp(View view) {
+        if(isInsertPatient()){
+            try {
+                cameraView.stop();
+            }catch(Exception e){
+                Log.e(TAG,"ERROR~~~"+e);
+            }
 
-        try {
-            cameraView.stop();
-        }catch(Exception e){
-            Log.i(TAG,"ERROR~~~"+e);
+            Intent intent = new Intent(getActivity(), LaunchCameraActivity.class);
+            startActivity(intent);
+        }else{
+            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent(getActivity(), LaunchCameraActivity.class);
-        startActivity(intent);
 
     }
 
     @OnClick(R.id.btn_launch_videoApp)
     public void launchVideoApp(View view) {
-        Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
-        startActivity(intent);
+        if(isInsertPatient()){
+            try {
+                cameraView.stop();
+            }catch(Exception e){
+                Log.e(TAG,"ERROR~~~"+e);
+            }
 
-        mVrecInterface.startRecord();
+            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
+            startActivity(intent);
+
+            mVrecInterface.startRecord();
+        }else{
+            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 

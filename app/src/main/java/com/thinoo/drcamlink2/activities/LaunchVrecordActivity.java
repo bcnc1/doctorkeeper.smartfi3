@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,21 +21,13 @@ import com.thinoo.drcamlink2.MainActivity;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.services.PhotoModelService;
-import com.thinoo.drcamlink2.services.PictureIntentService;
-import com.thinoo.drcamlink2.services.UploadService;
 import com.thinoo.drcamlink2.services.VideoIntentService;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_KIND;
-import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_NAME;
-import static com.thinoo.drcamlink2.Constants.Invoke.UPLOAD_FILE_PATH;
 import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 
 
@@ -84,7 +74,7 @@ public class LaunchVrecordActivity extends Activity {
 
     private void gotoVideoRecord() {
 
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp + ".mp4";
         mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
 
@@ -110,78 +100,15 @@ public class LaunchVrecordActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
 
         if(requestCode == VREC_REQUEST && resultCode == Activity.RESULT_OK){
 
-            if(contentUri != null){
-
-            }
-
-            //서비스로 구현
-//            Intent it = new Intent(mCon, UploadService.class);
-//            it.putExtra(UPLOAD_FILE_PATH, mFile.toString());
-//            it.putExtra(UPLOAD_FILE_KIND, "video");
-//            it.putExtra(UPLOAD_FILE_NAME, mFilename);
-
-
-            //썸네일 테스트
-//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mFile.toString(), MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-//            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
+//            if(contentUri != null){
 //
-//            File file = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()), "/thumbnail/");
-//            if (!file.isDirectory()) {
-//                file.mkdir();
-//            }
-//            try {
-//
-//
-//               // FileOutputStream outStream = new FileOutputStream(mCon.getExternalFilesDir(Environment.getExternalStorageState())+ File.separator +"videoThumb.jpg"); //파일저장
-//                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-//                outStream.close();
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
 //            }
 
 
-
-            // 비디오 썸 테스트 end
-
-           // startService(it);
-
-            //using uploadmanager
-            //1. data 저장.
-
-
-            //kimcy 업로드 테스트
-//            BlabAPI.ktStoreObject(mFile.toString(),"video", mFilename, new JsonHttpResponseHandler(){
-//                @Override
-//                public void onStart() {
-//                    super.onStart();
-//                    Log.i(TAG, "video-Uploading => 시작");
-//                }
-//
-//
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//                    super.onSuccess(statusCode, headers, responseString);
-//                    Log.i(TAG, "video-Uploading => 성공");
-//                }
-//
-//
-//                @Override
-//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    super.onFailure(statusCode, headers, responseString, throwable);
-//                    Log.i(TAG, "video-Uploading => 실패");
-//                }
-//
-//                @Override
-//                public void onRetry(int retryNo) {
-//                    super.onRetry(retryNo);
-//                }
-//            }  );
 
             String path = DisplayUtil.storeThumbVideoImage(mFile.toString(),
                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileNameThumb);
@@ -197,9 +124,7 @@ public class LaunchVrecordActivity extends Activity {
 
             }
 
-//            Intent intent = new Intent(getApplication(), MainActivity.class);
-//            intent.putExtra(VIDEO_RECORD, false);
-//            startActivity(intent);
+
         }else{
             Log.e(TAG,"비디오에서 못 돌아옴");
         }

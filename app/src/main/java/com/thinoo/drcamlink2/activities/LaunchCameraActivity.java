@@ -65,7 +65,7 @@ public class LaunchCameraActivity extends Activity {
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
 
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
 
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
@@ -142,51 +142,29 @@ public class LaunchCameraActivity extends Activity {
         filename = filename + ".JPG";
         final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, filename, 0);
 
-        // 화일 업로드
-//        Log.i("Upload Image","Started");
+        Log.d(TAG, "카메라업로드시작:" );
+        BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", filename, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                Log.i("AsyncTask", "Uploading");
+            }
 
-//        MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
-//            @Override
-//            public void onStart() {
-//                Log.i("AsyncTask", "Uploading");
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-//                Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-//                // If the response is JSONObject instead of expected JSONArray
-//                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-//            }
-//        });
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                Log.d("AsyncTask", "이미지 업로드 완료:" + statusCode + responseString);
+                LaunchCameraActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-
-            Log.d(TAG, "카메라업로드시작:" );
-            BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", filename, new JsonHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    Log.i("AsyncTask", "Uploading");
-                }
-
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                    Log.d("AsyncTask", "이미지 업로드 완료:" + statusCode + responseString);
-                    LaunchCameraActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-                }
-            });
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
+            }
+        });
 
         Log.i(TAG,"Finished");
     }

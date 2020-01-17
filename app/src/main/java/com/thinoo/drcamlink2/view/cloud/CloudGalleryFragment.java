@@ -79,7 +79,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         cloudGalleryAdapter = new CloudGalleryAdapter(getActivity());
 
         getImagesList();
-        accessToken = MadamfiveAPI.getAccessToken();
+       // accessToken = MadamfiveAPI.getAccessToken();
 
         enableUi(true);
 
