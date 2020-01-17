@@ -36,8 +36,6 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
-//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
-
 
 public class PatientDialogFragment extends DialogFragment {
 

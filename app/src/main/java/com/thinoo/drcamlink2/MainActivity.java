@@ -15,8 +15,6 @@
  */
 package com.thinoo.drcamlink2;
 
-import java.io.File;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
@@ -33,7 +31,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,26 +41,26 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.activities.AppSettingsActivity;
 import com.thinoo.drcamlink2.madamfive.BlabAPI;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.ptp.Camera;
 import com.thinoo.drcamlink2.ptp.Camera.CameraListener;
 import com.thinoo.drcamlink2.ptp.PtpService;
 import com.thinoo.drcamlink2.ptp.model.LiveViewData;
-import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.PackageUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
-import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
-import com.thinoo.drcamlink2.view.patient.PatientDialogFragment;
-import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 import com.thinoo.drcamlink2.view.SessionActivity;
 import com.thinoo.drcamlink2.view.SessionView;
 import com.thinoo.drcamlink2.view.WebViewDialogFragment;
+import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
+import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
 import cz.msebera.android.httpclient.Header;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 import static com.thinoo.drcamlink2.Constants.Invoke.VIDEO_RECORD;
 
 
@@ -162,30 +159,13 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         ptp = PtpService.Singleton.getInstance(this);
 
-        //todo 이전코드 삭제 예정
-//        if (MadamfiveAPI.getAccessToken() == null || MadamfiveAPI.getBoardId() == null) {
-//            showLoginDialog();
-//        }else{
-//            MadamfiveAPI.read_patientInfo();
-//            if(selectedPatientInfo==null) {
-//                if (getFragmentManager() != null) {
-//                    FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
-//                    PatientDialogFragment patientDialogFragment = PatientDialogFragment.newInstance();
-//                    changelogTx.add(patientDialogFragment, "환자검색");
-//                    changelogTx.commit();
-//                }
-//            }
-//            if(MadamfiveAPI.doctorSelectExtraOption){
-//                MadamfiveAPI.read_doctorInfo();
-//            }
-//        }
-//end
 
         if(SmartFiPreference.getDoctorId(this).equals(Constants.EMRAPI.UNDEFINED)
             || SmartFiPreference.getSfToken(this).equals(Constants.EMRAPI.UNDEFINED)){
             Log.w(TAG,"로그인되어 있지 않음");
             showLoginDialog();
         }else {
+            Log.w(TAG,"자동로그인");
             //자동 로그인
             autoGetToken();
         }

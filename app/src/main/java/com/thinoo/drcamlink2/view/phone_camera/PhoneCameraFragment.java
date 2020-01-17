@@ -73,7 +73,6 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private final String TAG = PhoneCameraFragment.class.getSimpleName();
 
-    //@BindView(R.id.camera)
     private CameraView cameraView;
     private ArrayList<PhotoModel> photoList;
     private PhoneCameraPhotoAdapter phoneCameraPhotoAdapter;
@@ -101,7 +100,6 @@ public class PhoneCameraFragment extends BaseFragment {
         public void startRecord();
     }
 
-    //@BindView(R.id.listview_photo)
     RecyclerView listviewPhoto;
 
     @BindView(R.id.button_list)
@@ -263,53 +261,10 @@ public class PhoneCameraFragment extends BaseFragment {
         orientationListener = new OrientationListener(MadamfiveAPI.getContext());
         orientationListener.enable();
 
-        //이전코드 삭제 예
-        // HandlerThread를 이용하여 업로드를 별도 thread에서 처리
-//        saveHandlerThread = new HandlerThread("imageUploadThread");
-//        saveHandlerThread.start();
-//        saveHandler = new Handler(saveHandlerThread.getLooper()){
-//            @Override
-//            public void handleMessage(Message msg) {
-//                super.handleMessage(msg);
-//                HashMap<String,Object> hashMap = (HashMap<String, Object>) msg.obj;
-//                String filename = hashMap.get("filename").toString();
-//                PhotoModel photoModel = (PhotoModel) hashMap.get("photoModel");
-//
-//                uploadImage(filename);
-//
-//                photoModel.setUploaded(true);
-//                photoModel.save();
-//            }
-//        };
- //end
         patient_name = (TextView)view.findViewById(R.id.patient_name);
-        //삭제예정
-//        if(selectedPatientInfo!=null){
-//            patient_name.setText(selectedPatientInfo.get("name"));
-//        }
 
         patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
 
-        //이전코드 삭제예정
-//        MadamfiveAPI.read_doctorSelectExtraOption();
-//        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
-//        if(!MadamfiveAPI.doctorSelectExtraOption){
-//            btnDoctor.setVisibility(View.INVISIBLE);
-//            doctor_name.setVisibility(View.INVISIBLE);
-//        }
-//        MadamfiveAPI.read_doctorInfo();
-//        if(selectedDoctor!=null){
-//            doctor_name.setText(selectedDoctor.get("name"));
-//        }
-        //end
-
-        //이전코드 삭제예
-//        MadamfiveAPI.read_ShootingImageDisplayExtraOption();
-//        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
-//        if(MadamfiveAPI.shootingImageDisplayExtraOption){
-//            photo_container.setVisibility(View.VISIBLE);
-//        }
-//end정
 
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
@@ -489,41 +444,19 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
-    //https://stackoverflow.com/questions/17004705/why-is-the-file-saving-here
     @OnClick(R.id.btn_launch_videoApp)
     public void launchVideoApp(View view) {
         Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
         startActivity(intent);
 
         mVrecInterface.startRecord();
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String filename = "DRCAM_" + timeStamp + ".mp4";
-//
-//
-//        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + "drcam" + File.separator + filename);
-//
-//        Uri contentUri = FileProvider.getUriForFile(this.getActivity(), BuildConfig.APPLICATION_ID , file);
-//
-//        Log.d(TAG,"contentUri = "+ contentUri);
-//
-//        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-//        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
-//        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
-//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*10);  //10분
-//        this.getActivity().grantUriPermission(this.getActivity().getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-////        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
-//
-////        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
-////        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION );
-//        //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
-//        startActivity(intent);
 
     }
 
 
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){
+        //로그아웃 후에는 로그인 화면부터 나와야 함.
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         PatientDialogFragment patientDialogFragment = PatientDialogFragment.newInstance();
         changelogTx.add(patientDialogFragment, "환자검색");

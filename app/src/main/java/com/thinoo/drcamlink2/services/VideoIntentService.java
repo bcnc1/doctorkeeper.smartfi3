@@ -211,7 +211,7 @@ public class VideoIntentService extends IntentService {
 
 
                     if(!response.isSuccessful()){
-                        Log.d(TAG," 원본, response code = "+response.code());
+                        Log.w(TAG," 원본, response code = "+response.code());
 
                         pm.setUploading(3);//업로드실패
                         makeNoti("uploading fail",0);
@@ -434,10 +434,10 @@ public class VideoIntentService extends IntentService {
 
     private void makeNoti(String message, int id) {
 
-        Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
-
-
-        Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+//        Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
+//
+//
+//        Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
 
         String CHANNEL_ID = "video_upload_channel";
 
@@ -471,7 +471,7 @@ public class VideoIntentService extends IntentService {
                 .setWhen(System.currentTimeMillis());
 
 
-        Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+ //       Log.w(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
         // Show the notification
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_VIDEO_ID, builder.build());
 

@@ -104,15 +104,11 @@ public class GalleryFragment extends SessionFragment
     private int currentScrollState;
     public HashMap<String,Object> pictureMap;
 
-//    @BindView(R.id.empty_textview)
-//    TextView emptyView;
-
     private int currentObjectHandle;
     private Bitmap currentBitmap;
     private final String TAG = GalleryFragment.class.getSimpleName();
 
     private ArrayList<PhotoModel> photoModelLists;
-//    private HashMap<Integer,Boolean> multiSelectionMap;
 
     private ArrayList<Integer> selectedObjectHandles;
     private int selectedImageNumber;
@@ -136,10 +132,7 @@ public class GalleryFragment extends SessionFragment
     private final int PROGRESS_VALUE_INIT  = 2;
 
     public static GalleryFragment newInstance() {
-     //이전 코드 삭제 예정
-//        GalleryFragment f = new GalleryFragment();
-//        return f;
-//end
+
         mGalleryFragment = new GalleryFragment();
         return mGalleryFragment;
     }
@@ -514,27 +507,15 @@ public class GalleryFragment extends SessionFragment
                         Boolean uploadCheck=false;
                         for(int d = 0 ;d < photoModelLists.size();d++){
                             PhotoModel p = photoModelLists.get(d);
-                            //이전코드
-//                            if(objectInfo.filename.equals(p.getFilename())){
-//                                Log.w(TAG,"업로드 상태 체크 :");
-//                                uploadCheck = p.getUploaded();
-//                                break;
-//                            }
-                            //end
-                            //변경코드
+
                             if(objectInfo.filename.equals(p.getRawfileName())){
                                 Log.w(TAG,"업로드 상태 체크 :");
                                 uploadCheck = p.getUploaded();
                                 break;
                             }
-                            //end
+
                         }
-//                        PhotoModel pm = PhotoModel.findById(PhotoModel.class,photoModelLists.get(0).getId());
-                        //삭제예
-//                        if(uploadCheck==true) {
-//                            Log.d(TAG,"업로드 된 이미지표시 :"); //그런데 제대로 동작 안하는듯.. 이건 구현 안하기로..
-//                            holder.sdcard_image_upload_check.setVisibility(View.VISIBLE);
-//                        }
+
 
                         if (!"".equals(objectInfo.captureDate)) {
 

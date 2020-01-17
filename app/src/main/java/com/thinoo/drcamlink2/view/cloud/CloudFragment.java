@@ -113,6 +113,8 @@ public class CloudFragment extends BaseFragment
     public void logoutBtnClicked(){
         SmartFiPreference.setDoctorId(getActivity(), Constants.EMRAPI.UNDEFINED);
         SmartFiPreference.setSfDoctorPw(getActivity(),Constants.EMRAPI.UNDEFINED);
+        SmartFiPreference.setSfToken(getActivity(), Constants.EMRAPI.UNDEFINED);
+        SmartFiPreference.setSfPatientName(getActivity(),"");
 
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         LoginDialogFragment loginDialogFragment = LoginDialogFragment.newInstance();
