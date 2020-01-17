@@ -41,7 +41,7 @@ public class RetryUploadIntentService extends IntentService {
     private static String mMediaType = null;
     private static Context mCon;
 
-    private static int mNotiId = Constants.Notification.NOTIFICATION_RETRY_ID;
+    //private static int mNotiId = Constants.Notification.NOTIFICATION_RETRY_ID;
     private Messenger mMessenger = null;
 
     public RetryUploadIntentService() {

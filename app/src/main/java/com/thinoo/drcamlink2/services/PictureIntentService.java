@@ -104,7 +104,7 @@ public class PictureIntentService extends IntentService {
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
 
-                makeNoti("picture uploading...", 1);
+                makeNoti("picture uploading...", 0);
 
                 mPatientId = photoModel.getCustNo();
                 Log.w(TAG, "mPatientId = "+mPatientId);
@@ -178,7 +178,7 @@ public class PictureIntentService extends IntentService {
                         Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
                         if(mMessenger != null){
                             Message msg = Message.obtain();
@@ -220,7 +220,7 @@ public class PictureIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
 
                     if(mMessenger != null){
                         Message msg = Message.obtain();
@@ -279,7 +279,7 @@ public class PictureIntentService extends IntentService {
                         Log.w(TAG," 체인 create 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
                         if(mMessenger != null){
                             Message msg = Message.obtain();
@@ -321,7 +321,7 @@ public class PictureIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
 
                     if(mMessenger != null){
                         Message msg = Message.obtain();
@@ -381,7 +381,7 @@ public class PictureIntentService extends IntentService {
                         Log.d(TAG," 원본, response code = "+response.code());
 
                         pm.setUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
                         Log.w(TAG," mMessenger =  "+mMessenger);
                         if(mMessenger != null){
@@ -408,7 +408,7 @@ public class PictureIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
 
                     Log.w(TAG," mMessenger =  "+mMessenger);
                     if(mMessenger != null){
@@ -472,7 +472,7 @@ public class PictureIntentService extends IntentService {
 
                         pm.setThumbUploading(3);
 
-                        makeNoti("uploading fail", 0);
+                        makeNoti("uploading fail", 1);
 
                         Log.w(TAG," mMessenger =  "+mMessenger);
                         if(mMessenger != null){
@@ -499,7 +499,7 @@ public class PictureIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setThumbUploading(3); //업로드실패
-                    makeNoti("uploading fail. please check network", 0);
+                    makeNoti("uploading fail. please check network", 1);
 
                     Log.w(TAG," mMessenger =  "+mMessenger);
                     if(mMessenger != null){
@@ -528,12 +528,16 @@ public class PictureIntentService extends IntentService {
     }
 
 
+    /**
+     *
+     * @param message
+     * @param id 파일업로드실패일때만 fileexplore호출되게
+     */
 
     private void makeNoti(String message, int id) {
 
-        //Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
 
-        //Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+        NotificationCompat.Builder builder;
 
         String CHANNEL_ID = "picture_upload_channel";
 
@@ -557,19 +561,45 @@ public class PictureIntentService extends IntentService {
             }
         }
 
-        Intent intent= new Intent(this, FileExploreActivity.class);
+        if(id == 1){
+            Intent intent= new Intent(this, FileExploreActivity.class);
 
-        PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Create the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.smartfi_icon)
-                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pending)
-                .setAutoCancel(true)
-                .setWhen(System.currentTimeMillis());
+            // Create the notification
+            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.smartfi_icon)
+                    .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+                    .setContentText(message)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(pending)
+                    .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis());
+        } else{
+
+            // Create the notification
+            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.smartfi_icon)
+                    .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+                    .setContentText(message)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis());
+        }
+
+//        Intent intent= new Intent(this, FileExploreActivity.class);
+//
+//        PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        // Create the notification
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+//                .setSmallIcon(R.drawable.smartfi_icon)
+//                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+//                .setContentText(message)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setContentIntent(pending)
+//                .setAutoCancel(true)
+//                .setWhen(System.currentTimeMillis());
 
 
         //Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);

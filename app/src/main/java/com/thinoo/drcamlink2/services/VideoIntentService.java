@@ -3,13 +3,11 @@ package com.thinoo.drcamlink2.services;
 import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -17,6 +15,7 @@ import android.util.Log;
 
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.activities.FileExploreActivity;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
@@ -27,10 +26,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.LogRecord;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -46,7 +43,8 @@ public class VideoIntentService extends IntentService {
     private static String mHospitalId = null;
     private static String mDate =  null;
     private static String mMediaType = null;
-    private static int mNotiId = Constants.Notification.NOTIFICATION_VIDEO_ID;
+    //private static int mNotiId = Constants.Notification.NOTIFICATION_VIDEO_ID;
+    private static Context mCon;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -59,6 +57,7 @@ public class VideoIntentService extends IntentService {
 
 
     public static void startUploadVideo(Context context, long id) {
+        mCon = context;
         Intent intent = new Intent(context, VideoIntentService.class);
         intent.putExtra(EXTRA_VIDEO_ID, id);
         context.startService(intent);
@@ -70,10 +69,6 @@ public class VideoIntentService extends IntentService {
 
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
-
-//        mChartNum = SmartFiPreference.getPatientChart(getApplicationContext());
-//
-//        mPatientId = SmartFiPreference.getSfPatientCustNo(getApplicationContext());
         mDate = new SimpleDateFormat("yyyyMM").format(new Date());
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
@@ -86,7 +81,7 @@ public class VideoIntentService extends IntentService {
 
                 mPatientId = photoModel.getCustNo();
 
-                makeNoti("video uploading...", 1);
+                makeNoti("video uploading...", 0);
 
                 uploadThumbnail(photoModel);
 
@@ -150,7 +145,7 @@ public class VideoIntentService extends IntentService {
 
                         pm.setThumbUploading(3);
 
-                        makeNoti("uploading fail", 0);
+                        makeNoti("uploading fail", 1);
 
                     }else{
 
@@ -164,7 +159,7 @@ public class VideoIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setThumbUploading(3); //업로드실패
-                    makeNoti("uploading fail. please check network", 0);
+                    makeNoti("uploading fail. please check network", 1);
                 }
             }
         });
@@ -185,7 +180,6 @@ public class VideoIntentService extends IntentService {
 
         Log.w(TAG,"비디오 업로드 시작");
 
-       // OutputStreamWriter osw = new OutputStreamWriter(buffer.outputStream(), CHARSET);
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -214,7 +208,7 @@ public class VideoIntentService extends IntentService {
                         Log.w(TAG," 원본, response code = "+response.code());
 
                         pm.setUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
                     }else{
                         Log.w(TAG," 원본 업로드 성공 ");
@@ -228,7 +222,7 @@ public class VideoIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
                 }
             }
         });
@@ -290,7 +284,7 @@ public class VideoIntentService extends IntentService {
                         Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
 //                        if(mMessenger != null){
 //                            Message msg = Message.obtain();
@@ -332,7 +326,7 @@ public class VideoIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
 
 //                    if(mMessenger != null){
 //                        Message msg = Message.obtain();
@@ -392,7 +386,7 @@ public class VideoIntentService extends IntentService {
                         Log.w(TAG," 체인 create 싪패 , response code = "+response.code());
 
                         pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",0);
+                        makeNoti("uploading fail",1);
 
                     }else{
                         Log.w(TAG," 체인 create 성공 ");
@@ -410,7 +404,7 @@ public class VideoIntentService extends IntentService {
                 } catch (IOException e) {
                     e.printStackTrace();
                     pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",0);
+                    makeNoti("uploading fail",1);
                 }
 
             }
@@ -420,24 +414,13 @@ public class VideoIntentService extends IntentService {
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
-//        String encString =  null;
-//
-//        try {
-//            encString = URLEncoder.encode(Constants.Storage.BASE_URL + "/" + relativeUrl, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return encString;
+
         return Constants.Storage.BASE_URL + "/" + relativeUrl;
     }
 
     private void makeNoti(String message, int id) {
 
-//        Log.d(TAG, "makeNoti => id :  "+mNotiId + "input id = "+id);
-//
-//
-//        Log.d(TAG, "after ==> makeNoti => id :  "+mNotiId + "input id = "+id);
+        NotificationCompat.Builder builder;
 
         String CHANNEL_ID = "video_upload_channel";
 
@@ -461,14 +444,40 @@ public class VideoIntentService extends IntentService {
             }
         }
 
+        if(id == 1){
+            Intent intent= new Intent(this, FileExploreActivity.class);
+
+            PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // Create the notification
+            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.smartfi_icon)
+                    .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+                    .setContentText(message)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(pending)
+                    .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis());
+        } else{
+
+            // Create the notification
+            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setSmallIcon(R.drawable.smartfi_icon)
+                    .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+                    .setContentText(message)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setWhen(System.currentTimeMillis());
+        }
+
         // Create the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.smartfi_icon)
-                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setWhen(System.currentTimeMillis());
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+//                .setSmallIcon(R.drawable.smartfi_icon)
+//                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
+//                .setContentText(message)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setAutoCancel(true)
+//                .setWhen(System.currentTimeMillis());
 
 
  //       Log.w(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
