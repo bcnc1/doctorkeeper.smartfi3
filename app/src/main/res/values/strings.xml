@@ -136,5 +136,6 @@
     <string name="check_network">네트워크 상태를 체크해 주세요!!</string>
     <string name="upload_fail_etc">네트워크등의 문제로 업로드를 실패했습니다.</string>
     <string name="p_insert_patient">환자입력이 필요합니다!</string>
+    <string name="upload_success">업로드가 완료되었습니다.!</string>
 
 </resources>

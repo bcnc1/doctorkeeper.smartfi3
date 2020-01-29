@@ -13,7 +13,6 @@ import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -88,7 +87,7 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private boolean cameraIsReady;
     private TextView patient_name;
-   // private TextView doctor_name;
+
     private VrecordInterface mVrecInterface;
 
     private final String  DEVICE = "phone";
@@ -255,6 +254,7 @@ public class PhoneCameraFragment extends BaseFragment {
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);
 
+        Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(getActivity()));
         patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
 
 

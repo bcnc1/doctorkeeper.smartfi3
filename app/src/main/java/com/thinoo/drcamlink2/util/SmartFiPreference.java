@@ -68,7 +68,7 @@ public class SmartFiPreference {
     }
 
     public static void setSfDoctorPw(Context con, String pw){
-        setString(con, SF_PATIENT_CHART, pw);
+        setString(con, SF_DOCTOR_PW, pw);
     }
 
 

@@ -1,5 +1,6 @@
 package com.thinoo.drcamlink2.services;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,10 +13,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.activities.FileExploreActivity;
+import com.thinoo.drcamlink2.madamfive.BlabAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
@@ -29,6 +33,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cz.msebera.android.httpclient.Header;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -83,7 +88,7 @@ public class VideoIntentService extends IntentService {
 
                 makeNoti("video uploading...", 0);
 
-                uploadThumbnail(photoModel);
+                uploadThumbnail(photoModel, false);
 
 
             }
@@ -101,7 +106,7 @@ public class VideoIntentService extends IntentService {
     }
 
 
-    private void uploadThumbnail(final PhotoModel pm) {
+    private void uploadThumbnail(final PhotoModel pm, final boolean isRetry) {
 
 
 
@@ -140,8 +145,14 @@ public class VideoIntentService extends IntentService {
 
 
                     if(!response.isSuccessful()){
-                        // throw new IOException("Error : "+response);
+
                         Log.d(TAG, " 썸네일, response = "+response.code());
+                        if(response.code() == 401 && ! isRetry){
+                            Log.w(TAG, " 신규토큰 필요 ");
+
+                            getTokenNupLoad(pm);
+                            return;
+                        }
 
                         pm.setThumbUploading(3);
 
@@ -165,6 +176,55 @@ public class VideoIntentService extends IntentService {
         });
 
         t.start();
+    }
+
+    private void getTokenNupLoad(final PhotoModel pm) {
+        String id = SmartFiPreference.getDoctorId(mCon);
+        String pw = SmartFiPreference.getSfDoctorPw(mCon);
+
+        Log.w(TAG,"id =  "+id);
+        Log.w(TAG,"pw =  "+pw);
+        BlabAPI.loginSyncEMR(mCon, id,pw, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                try {
+                    String code =  response.get(Constants.EMRAPI.CODE).toString();
+                    if(!code.equals(Constants.EMRAPI.CODE_200)){
+                        Log.w(TAG,"응답실패 ");
+                        //todo 신규로그인이 필요
+                        pm.setThumbUploading(3);
+
+                        makeNoti("로그인이 필요합니다.", 0);
+
+
+                    }else{
+
+                        try {
+
+                            JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
+                            SmartFiPreference.setSfToken(mCon,data.getString("token"));
+
+                            uploadThumbnail(pm, true);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e(TAG," 응답에러");
+                        }
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.w(TAG,"실패");
+            }
+        });
     }
 
     private void uploadVideo(final PhotoModel pm) {
@@ -418,7 +478,7 @@ public class VideoIntentService extends IntentService {
         return Constants.Storage.BASE_URL + "/" + relativeUrl;
     }
 
-    private void makeNoti(String message, int id) {
+    private void makeNoti(final String message, int id) {
 
         NotificationCompat.Builder builder;
 
@@ -442,6 +502,15 @@ public class VideoIntentService extends IntentService {
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
+        }else{
+            Activity activity = (Activity) mCon;
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mCon, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+
         }
 
         if(id == 1){
@@ -470,17 +539,7 @@ public class VideoIntentService extends IntentService {
                     .setWhen(System.currentTimeMillis());
         }
 
-        // Create the notification
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-//                .setSmallIcon(R.drawable.smartfi_icon)
-//                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
-//                .setContentText(message)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setAutoCancel(true)
-//                .setWhen(System.currentTimeMillis());
 
-
- //       Log.w(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
         // Show the notification
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_VIDEO_ID, builder.build());
 

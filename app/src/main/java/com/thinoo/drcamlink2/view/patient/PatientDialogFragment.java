@@ -282,7 +282,7 @@ public class PatientDialogFragment extends DialogFragment {
                                 SmartFiPreference.setSfPatientCustNo(getActivity(), patientInfo.getString("custNo"));
                                 SmartFiPreference.setSfPatientName(getActivity(), patientInfo.getString("custNm"));
                                 SmartFiPreference.setPatientChart(getActivity(),patientInfo.getString("chrtNo"));
-                                SmartFiPreference.setSfPatientName(getActivity(),name);
+//                                SmartFiPreference.setSfPatientName(getActivity(),name);
 
                                 Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
                                 dismiss();
@@ -327,9 +327,11 @@ public class PatientDialogFragment extends DialogFragment {
 
 
     private void autoGetToken() {
-        Log.w(TAG,"autoGetToken");
+
         String id = SmartFiPreference.getDoctorId(getActivity());
         String pw = SmartFiPreference.getSfDoctorPw(getActivity());
+        Log.w(TAG,"autoGetToken id = "+ id+" "+"pw = "+pw);
+
         BlabAPI.loginEMR(getActivity(), id,pw, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -348,6 +350,7 @@ public class PatientDialogFragment extends DialogFragment {
                         try {
 
                             JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
+                            Log.w(TAG,"신규토큰 = "+data.getString("token"));
                             SmartFiPreference.setSfToken(getActivity(),data.getString("token"));
 
                         } catch (JSONException e) {

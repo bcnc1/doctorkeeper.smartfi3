@@ -15,6 +15,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
+import com.loopj.android.http.SyncHttpClient;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
@@ -219,6 +220,34 @@ public class BlabAPI {
 //        });
     }
 
+
+    public static void loginSyncEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
+
+        SyncHttpClient syncClient = new SyncHttpClient();
+
+        String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
+        StringEntity jsonEntity = null;
+
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("userId", id);
+            jsonParams.put("pwd", pw);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonEntity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        syncClient.addHeader("Accept", "application/json");
+        syncClient.addHeader("Content-Type", "application/json");
+        syncClient.post(con, url, jsonEntity, "application/json",responseHandler);
+
+    }
 
     /**
      * 환자명에 대해서는 like검색까지 지원한다.

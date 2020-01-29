@@ -142,7 +142,7 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
         String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
         String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
-        Log.e("Image URL",imageURL);
+        //Log.e("Image URL",imageURL);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
