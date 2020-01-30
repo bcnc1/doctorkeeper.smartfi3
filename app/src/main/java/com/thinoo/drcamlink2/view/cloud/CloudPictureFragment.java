@@ -17,8 +17,11 @@ package com.thinoo.drcamlink2.view.cloud;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,7 +31,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.thinoo.drcamlink2.Constants;
@@ -98,6 +109,11 @@ public class CloudPictureFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
 //        pictureView = (PictureView) view.findViewById(R.id.cloud_image);
+        if(cloud_image_picasso != null){
+            Log.w(TAG,"이미지뷰 초기화");
+            ((BitmapDrawable)cloud_image_picasso.getDrawable()).getBitmap().recycle();
+        }
+
         cloud_image_picasso = (ImageView) view.findViewById(R.id.cloud_image_picasso);
         progressBar = (ProgressBar) view.findViewById(R.id.cloud_progress);
 
@@ -116,28 +132,29 @@ public class CloudPictureFragment extends BaseFragment {
 
         Log.e(TAG,"imageURL = " +imageURL);
 
+        imageLoadingGlide(imageURL);
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Interceptor.Chain chain) throws IOException {
-                        Request newRequest = chain.request().newBuilder()
-                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(getActivity()))
-                                .build();
-                        return chain.proceed(newRequest);
-                    }
-                })
-                .build();
-
-        Picasso picasso = new Picasso.Builder(getActivity())
-        .downloader(new OkHttp3Downloader(client))
-        .listener(new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                exception.printStackTrace();
-            }
-        })
-        .build();
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .addInterceptor(new Interceptor() {
+//                    @Override
+//                    public Response intercept(Interceptor.Chain chain) throws IOException {
+//                        Request newRequest = chain.request().newBuilder()
+//                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(getActivity()))
+//                                .build();
+//                        return chain.proceed(newRequest);
+//                    }
+//                })
+//                .build();
+//
+//        final Picasso picasso = new Picasso.Builder(getActivity())
+//        .downloader(new OkHttp3Downloader(client))
+//        .listener(new Picasso.Listener() {
+//            @Override
+//            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+//                exception.printStackTrace();
+//            }
+//        })
+//        .build();
 
         // TODO: 2020-01-17 이미지회전이 필요할 경우
 //        if(imageURL.contains("phone")){    //화먄이 90도 회전되어 있어서..
@@ -171,19 +188,23 @@ public class CloudPictureFragment extends BaseFragment {
 //        }
 
 
-        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                //do smth when picture is loaded successfully
-                Log.w(TAG,"로딩 성공");
-                progressBar.setVisibility(View.GONE);
-            }
 
-            @Override
-            public void onError(Exception e) {
-                Log.w(TAG,"로딩 실");
-            }
-        });
+//        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+//            @Override
+//            public void onSuccess() {
+//                //do smth when picture is loaded successfully
+//                Log.w(TAG,"로딩 성공");
+//                progressBar.setVisibility(View.GONE);
+//
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Log.w(TAG,"로딩 실패");
+//                Toast.makeText(getActivity(),"이미지를 가져오는데 실패했습니다. 다시 시도해주세요",Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
 
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
 
@@ -219,24 +240,39 @@ public class CloudPictureFragment extends BaseFragment {
             }
         });
 
-
-//        DownloadImageAsyncTask task = new DownloadImageAsyncTask();
-//        task.execute();
-
-//        pictureView.setPicture(bitmap);
-
-//        gestureDetector = new GestureDetector(getActivity(), this);
-//        pictureView.setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                gestureDetector.onTouch(event);
-//                return true;
-//            }
-//        });
-
-//        enableUi(true);
-
         return view;
+    }
+
+    private void imageLoadingGlide(String imgUrl) {
+        String token = SmartFiPreference.getSfToken(getActivity());
+
+        Glide.with(getActivity())
+                .load(new Headers().getUrlWithHeaders(imgUrl, token))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(cloud_image_picasso);
+
+
+    }
+
+    class Headers {
+
+
+        GlideUrl getUrlWithHeaders(String url , String token){
+            return new GlideUrl(url, new LazyHeaders.Builder()
+                    .addHeader("X-Auth-Token", token)
+                    .build());
+        }
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -251,67 +287,12 @@ public class CloudPictureFragment extends BaseFragment {
         }
     }
 
-//    private class DownloadImageAsyncTask extends AsyncTask <String,Integer,String>{
-//        @Override
-//        protected String doInBackground(String... strings) {
-//
-//            Log.i("Download Async","START =========>");
-//            Log.i("Cloud clicked Image URL",imageURL);
-//
-//            try {
-//                bitmap = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
-//            }catch (Exception e){
-////                Log.i(TAG,"IMage URL"+e.toString());
-//                bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-//            }
-//
-//            Log.i("Download Async","FINISH =========>");
-//
-//            return "DONE";
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String s) {
-//            super.onPostExecute(s);
-//            pictureView.setPicture(bitmap);
-//            progressBar.setVisibility(View.GONE);
-//        }
-//    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
 
-//    public void enableUi(boolean enabled) {
-//
-//        cloudBtnBack.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                getActivity().getFragmentManager().popBackStack();
-//            }
-//        });
-//
-//    }
-//
-//    @Override
-//    public void onLongTouch(float posx, float posy) {
-//
-//    }
-//
-//    @Override
-//    public void onPinchZoom(float pX, float pY, float distInPixel) {
-//        pictureView.zoomAt(pX, pY, distInPixel);
-//    }
-//
-//    @Override
-//    public void onTouchMove(float dx, float dy) {
-//        pictureView.pan(dx, dy);
-//    }
-//
-//    @Override
-//    public void onFling(float velx, float vely) {
-//        pictureView.fling(velx, vely);
-//    }
-//
-//    @Override
-//    public void onStopFling() {
-//        pictureView.stopFling();
-//    }
+        cloud_image_picasso.setImageDrawable(null);
+    }
+
 
 }
