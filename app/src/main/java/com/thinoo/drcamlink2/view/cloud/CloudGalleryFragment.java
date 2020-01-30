@@ -120,10 +120,11 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         } else{
             String imageUrl = pictureMap.get("url");
 
-            //  String imageGuid = pictureMap.get("guid");
+            // TODO: 2020-01-30 삭제예정
+            String imageGuid = pictureMap.get("guid");
 
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl, null /*imageGuid*/), null);
+            ft.replace(R.id.cloud_detail_container, CloudPictureFragment.newInstance(cloudGalleryAdapter.getItemHandle(position), imageUrl, imageGuid), null);
             ft.addToBackStack(null);
             ft.commit();
         }
@@ -162,8 +163,8 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     private void getImagesList(){
 
         imageInfoList = new ArrayList<HashMap<String, String>>();
-
-        // TODO: 2020-01-08 환자 사진이 극단적으로 많을 경우 페이징조회를 구현 필요..
+//
+//        // TODO: 2020-01-08 환자 사진이 극단적으로 많을 경우 페이징조회를 구현 필요..
         if(Constants.PATIENT_HAS_MANY_IMAGES){
             BlabAPI.getPatientImages(getActivity(),mPageIdx, mPageSize, SmartFiPreference.getSfPatientCustNo(getActivity()), new JsonHttpResponseHandler(){
                 @Override
@@ -244,8 +245,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         }
 
 
-
-
+// TODO: 2020-01-30 please delete
 //        MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
 //
 //            @Override
@@ -265,8 +265,6 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 //
 //                    for(int i=0;i<imagesArray.length();i++){
 //                        JSONObject imagesObject = imagesArray.getJSONObject(i);
-////                        Log.i(TAG,"Inside JSON Array");
-////                        Log.i(TAG,"Inside value : "+ imagesObject.get("id").toString());
 //
 //                        HashMap<String,String> imageInfo = new HashMap<>();
 //                        imageInfo.put("url",imagesObject.getString("id"));
@@ -296,18 +294,18 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 //
 //                }catch (Exception e){
 //                }
-////                photoModel.setUploaded(true);
-////                photoModel.save();
-////                galleryAdapter.notifyDataSetChanged();
+//
 //            }
 //
 //            @Override
 //            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
 //                // If the response is JSONObject instead of expected JSONArray
 //                Log.d("CLoud", "HTTP22:" + statusCode + response.toString());
-////                galleryAdapter.notifyDataSetChanged();
 //            }
 //        });
+
+        //end..
+
         Log.i("List in CloudFragment",imageInfoList.size()+"");
     }
 

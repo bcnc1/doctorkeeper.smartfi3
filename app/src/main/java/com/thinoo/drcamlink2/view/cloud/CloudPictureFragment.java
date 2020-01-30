@@ -45,9 +45,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CloudPictureFragment extends BaseFragment
-//        implements GestureHandler
-{
+/**
+ * Expended View 화면 구현...
+ */
+public class CloudPictureFragment extends BaseFragment {
 
     private final String TAG = CloudPictureFragment.class.getSimpleName();
 
@@ -55,7 +56,8 @@ public class CloudPictureFragment extends BaseFragment
         Bundle args = new Bundle();
         args.putInt("handle", objectHandle);
         args.putString("imageUrl", imageUrl);
-//        args.putString("imageGuid",imageGuid);
+        // TODO: 2020-01-30 please delete : imageGuid
+        args.putString("imageGuid",imageGuid);
         CloudPictureFragment f = new CloudPictureFragment();
         f.setArguments(args);
         return f;
@@ -88,7 +90,8 @@ public class CloudPictureFragment extends BaseFragment
 //        handler = new Handler();
 //        objectHandle = getArguments().getInt("handle");
         imageUrl = getArguments().getString("imageUrl");
-//        imageGuid = getArguments().getString("imageGuid");
+        // TODO: 2020-01-30 please delete  imageGuid
+        imageGuid = getArguments().getString("imageGuid");
 
         Log.i(TAG, "imageUrl = "+imageUrl);
         Log.i(TAG, "imageGuid = "+imageGuid);
@@ -106,22 +109,6 @@ public class CloudPictureFragment extends BaseFragment
             }
         });
 
-        //이전코드 삭제 예정
-//        accessToken = MadamfiveAPI.getAccessToken();
-//
-//        imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageUrl+
-//                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
-//
-//        Picasso.get().load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-//            @Override
-//            public void onSuccess() {
-//                //do smth when picture is loaded successfully
-//                progressBar.setVisibility(View.GONE);
-//            }
-//            @Override
-//            public void onError(Exception e) {
-//            }
-//        });
 
         String box = SmartFiPreference.getHospitalId(getActivity())+"$"+SmartFiPreference.getSfPatientCustNo(getActivity());
         imageURL = Constants.Storage.BASE_URL+"/"+box+imageUrl;

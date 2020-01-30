@@ -333,11 +333,14 @@ public class MadamfiveAPI {
 
     public static void getImageURL (String page, final JsonHttpResponseHandler responseHandler){
 
-        if (mAcccessToken==null) {
-            return;
-        }
+//        if (mAcccessToken==null) {
+//            return;
+//        }
+        mAcccessToken = "cDY1dDlLalpOT2hqRlNzTFRWR3hzVGU0Sk14bW1NcjVHSFRkV01LSHlucFdKeGxFdDBMck9HaFUyYmppeDJEaitURHQ5ZnltVjBUUwpVcGcrUzluQUZ3WlJPVUZxR1B3QnFKQlZhc2hGSCs2N3N0ZTdHQWJOUUgvcUFHdTRBYWJzMVZsLzVVMkxVSzVXMWYxQ3hTWWdDcHpCCjU1Z1FWRHpGNTdhSWtuSXZRdGVnV1FIdlBEUzBucDI3YVRWbWtHbldEVk5FNTRIc3NyUytzMkh3M1pkSW1kNVNaaXJUenpJc28yaEQKRVd0dEJFbz0K.e3jCsTdWF6RceZ0+Z4aakUEdhEHdCEWnMRBRKr39h8s=";
 
-        boardId = getBoardId();
+        //boardId = getBoardId();
+
+        boardId = "SVCBoard_373267389120512";
 
         String queryString = "type=smartfi&fetchTotalCount=true&orderDirection=desc&mode=all";
         queryString = queryString+"&limit=100&page="+page+"&accessToken="+URLEncoder.encode(mAcccessToken);

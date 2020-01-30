@@ -1,31 +1,23 @@
 package com.thinoo.drcamlink2.view.cloud;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
-import com.thinoo.drcamlink2.view.AspectRatioImageView;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class CloudGalleryAdapter extends BaseAdapter {
 
@@ -33,14 +25,15 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         HashMap<String,String> photo;
-        AspectRatioImageView image1;
+        //AspectRatioImageView image1;
+        ImageView image1;
         TextView filename;
         TextView date;
         public TextView dslr;
         boolean done;
 
-        ImageView thumbView;
-        ProgressBar progressBar;
+//        ImageView thumbView;
+//        ProgressBar progressBar;
     }
 
 //    private List<PhotoModel> items;
@@ -63,6 +56,7 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
     public void setItems(List<HashMap<String,String>> items) {
         this.items = items;
+        Log.w(TAG,"갯수 = "+items);
         notifyDataSetChanged();
     }
 
@@ -111,11 +105,12 @@ public class CloudGalleryAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.dslr_item, parent, false);
             ViewHolder holder = new ViewHolder();
             view.setTag(holder);
-            holder.image1 = (AspectRatioImageView) view.findViewById(R.id.image1);
+            //holder.image1 = (AspectRatioImageView) view.findViewById(R.id.image1);
+            holder.image1 =  (ImageView)view.findViewById(R.id.image1);
             holder.filename = (TextView) view.findViewById(R.id.filename_field);
             holder.date = (TextView) view.findViewById(R.id.date_field);
-            holder.progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
-            holder.thumbView = (ImageView) view.findViewById(R.id.thumb_uploaded);
+//            holder.progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
+//            holder.thumbView = (ImageView) view.findViewById(R.id.thumb_uploaded);
             holder.dslr = (TextView) view.findViewById(R.id.textview_dslr);
         }
 
@@ -132,60 +127,52 @@ public class CloudGalleryAdapter extends BaseAdapter {
             holder.dslr.setVisibility(View.INVISIBLE);
         }
 
-        holder.progressBar.setVisibility(View.INVISIBLE);
+       // holder.progressBar.setVisibility(View.INVISIBLE);
 
         //이전코드 삭제 예
 //        accessToken = MadamfiveAPI.getAccessToken();
-
+//
 //        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
 //                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
+//
+//        Log.w(TAG,"imageURL = "+imageURL);
+//
+//        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
+//        holder.image1.setExpectedDimensions(120, 120);
 
+        //for kt cloud
         String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
         String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
-        //Log.e("Image URL",imageURL);
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Interceptor.Chain chain) throws IOException {
-                        Request newRequest = chain.request().newBuilder()
-                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(mContext))
-                                .build();
-                        return chain.proceed(newRequest);
-                    }
-                })
-                .build();
+        imageLoadingGlide(imageURL, holder);
 
-//        OkHttpClient client = new OkHttpClient();
-//        okhttp3.Request request = new okhttp3.Request.Builder()
-//                .url(imageURL)
-//                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(mContext))
-//                .get()
-//                .build();
-
-        Picasso picasso = new Picasso.Builder(mContext)
-                .downloader(new OkHttp3Downloader(client))
-                .listener(new Picasso.Listener() {
-                    @Override
-                    public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                        exception.printStackTrace();
-                    }
-                })
-                .build();
-
-
-        Log.w(TAG,"imageURL = "+imageURL);
-
-        picasso /*.get()*/.load(imageURL).resize(120,120).centerCrop().into(holder.image1);
-        holder.image1.setExpectedDimensions(120, 120);
-
-//        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-//        String createdDate = df.format(Long.parseLong(holder.photo.get("uploadDate")));
-        String createdDate = holder.photo.get("uploadDate");
-        holder.date.setText(createdDate);
-        holder.done = false;
 
         return view;
     }
 
+    private void imageLoadingGlide(String imgUrl, ViewHolder viewHolder) {
+
+        String token = SmartFiPreference.getSfToken(mContext);
+
+
+        Glide.with(mContext)
+                .load(new Headers().getUrlWithHeaders(imgUrl, token))
+                .into(viewHolder.image1);
+
+        String createdDate = viewHolder.photo.get("uploadDate");
+        viewHolder.date.setText(createdDate);
+        viewHolder.done = false;
+    }
+
+
+
+    class Headers {
+
+
+         GlideUrl getUrlWithHeaders(String url , String token){
+            return new GlideUrl(url, new LazyHeaders.Builder()
+                    .addHeader("X-Auth-Token", token)
+                    .build());
+        }
+    }
 }
