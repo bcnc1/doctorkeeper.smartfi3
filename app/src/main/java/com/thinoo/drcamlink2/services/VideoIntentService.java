@@ -299,7 +299,7 @@ public class VideoIntentService extends IntentService {
         Thread t2 = new Thread(new Runnable() {
 
             String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
+            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/videos/"+ mDate+"/"+ fileName;
 
             @Override
             public void run() {
