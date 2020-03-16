@@ -309,6 +309,17 @@ public class PatientDialogFragment extends DialogFragment {
                         dialog.dismiss();
                     }
 
+//                    @Override
+//                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+//                        super.onFailure(statusCode, headers, throwable, errorResponse);
+//                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        Log.e(TAG,"환자입력에러 code = "+statusCode);
+                        dialog.dismiss();
+                    }
                 });
             }
         });

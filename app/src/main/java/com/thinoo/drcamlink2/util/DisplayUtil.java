@@ -78,7 +78,7 @@ public class DisplayUtil {
         Bitmap bitmapThumb = ThumbnailUtils.extractThumbnail(source, THUMB_WIDTH, THUMB_HEIGHT,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
 
-        Bitmap rotateThumb = rotate(bitmapThumb, 90);//90도회전
+       // Bitmap rotateThumb = rotate(bitmapThumb, 90);//90도회전
 
 
         File file = new File(storePath, "/thumbnail/");
@@ -91,8 +91,8 @@ public class DisplayUtil {
             //Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
             FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
 
-            //bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 90, outStream);
-            rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream); //
+            bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            //rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outStream); //
             outStream.close();
 
             path = file.getAbsolutePath()+ File.separator +fileName;
@@ -137,13 +137,15 @@ public class DisplayUtil {
 
         Bitmap bitmapThumb = ThumbnailUtils.extractThumbnail(source, THUMB_WIDTH, THUMB_HEIGHT,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
-        Bitmap rotateThumb = rotate(bitmapThumb, 90);//90도회전
+       // Bitmap rotateThumb = rotate(bitmapThumb, 90);//90도회전
 
         try {
 
             FileOutputStream outThumbStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
 
-            rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumbStream); //
+          //  rotateThumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumbStream); //
+            bitmapThumb.compress(Bitmap.CompressFormat.JPEG, 100, outThumbStream);
+
             outThumbStream.close();
 
             path = file.getAbsolutePath()+ File.separator +fileName;

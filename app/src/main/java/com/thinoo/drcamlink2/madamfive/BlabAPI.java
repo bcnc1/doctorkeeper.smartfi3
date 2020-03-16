@@ -293,7 +293,10 @@ public class BlabAPI {
 
     public static void insertPatientForEMR(Context con, String Name, String Chart, ResponseHandlerInterface responseHandler){
 
-
+        Log.w(TAG,"등록환자명 = "+Name);
+        Log.w(TAG,"차트 = "+Chart);
+        Log.w(TAG,"id = "+SmartFiPreference.getDoctorId(con));
+        Log.w(TAG,"token = "+SmartFiPreference.getSfToken(con));
         if(!getNetworkStatus(con)){
             Toast.makeText(con, con.getString(R.string.check_network), Toast.LENGTH_SHORT);
             return;
