@@ -119,7 +119,6 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         }
 
         mCon = this;
-
         backButtonCount=0;
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -131,13 +130,11 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         } else {
             isLarge = true;
         }
-
         setContentView(R.layout.main);
-
 
         MadamfiveAPI.setContext(this, getApplicationContext());
         //kimcy todo 일단 추가, 추후 삭제 예정
-        BlabAPI.setContext(this, getApplicationContext());
+//        BlabAPI.setContext(this, getApplicationContext());
 
         settings = new AppSettings(this);
 
@@ -159,7 +156,6 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         ptp = PtpService.Singleton.getInstance(this);
 
-
         if(SmartFiPreference.getDoctorId(this).equals(Constants.EMRAPI.UNDEFINED)
             || SmartFiPreference.getSfToken(this).equals(Constants.EMRAPI.UNDEFINED)){
             Log.w(TAG,"로그인되어 있지 않음");
@@ -167,7 +163,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         }else {
             Log.w(TAG,"자동로그인");
             //자동 로그인
-            autoGetToken();
+//            autoGetToken();
         }
 
         countDownTimer = new MyCountDownTimer(startTime, interval);
