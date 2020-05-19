@@ -119,52 +119,6 @@ public class LoginDialogFragment extends DialogFragment {
                         startSelectPatient();
                     }
                 });
-//               if(BlabAPI.getNetworkStatus(getActivity())){
-//                   BlabAPI.loginEMR(getActivity(), usernameTextView.getText().toString(),passwordTextView.getText().toString(), new JsonHttpResponseHandler(){
-//                       @Override
-//                       public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                           super.onSuccess(statusCode, headers, response);
-//                           Log.w(TAG,"성공 = "+response+" code = "+statusCode);
-//                           try {
-//                               String code =  response.get(Constants.EMRAPI.CODE).toString();
-//                               if(!code.equals(Constants.EMRAPI.CODE_200)){
-//                                   Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
-//                                   toast.setGravity(Gravity.CENTER, 0, 0);
-//                                   toast.show();
-//                                   // loginButton.setEnabled(true);
-//                               }else{
-//                                   SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
-//                                   SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
-//                                   try {
-//                                       JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
-//                                       SmartFiPreference.setSfToken(getActivity(),data.getString("token"));
-//                                       SmartFiPreference.setHospitalId(getActivity(),data.getString("hsptId"));
-//                                       dismiss();
-//                                       //   loginButton.setEnabled(true);
-//                                       startSelectPatient();
-//                                   } catch (JSONException e) {
-//                                       e.printStackTrace();
-//                                       Log.e(TAG," 파싱에러");
-//                                   }
-//                               }
-//                           }catch (JSONException e){
-//                               e.printStackTrace();
-//                           }
-//                       }
-//                       @Override
-//                       public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                           super.onFailure(statusCode, headers, throwable, errorResponse);
-//                           Log.w(TAG,"실패");
-//                           Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
-//                           toast.setGravity(Gravity.CENTER, 0, 0);
-//                           toast.show();
-//                           // loginButton.setEnabled(true);
-//                       }
-//                   });
-//               } else{
-//                   Toast.makeText(getActivity(), getString(R.string.check_network), Toast.LENGTH_SHORT).show();
-//               }
-
             }
         });
 
