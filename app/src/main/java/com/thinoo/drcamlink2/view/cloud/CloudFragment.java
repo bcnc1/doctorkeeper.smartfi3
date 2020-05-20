@@ -18,6 +18,7 @@ package com.thinoo.drcamlink2.view.cloud;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,11 +38,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CloudFragment extends BaseFragment
-//        implements OnScrollListener, OnItemClickListener
-{
 
-//    private final Handler handler = new Handler();
+public class CloudFragment extends BaseFragment{
 
     @BindView(R.id.cloud_description)
     TextView cloudTextView;
@@ -57,7 +55,7 @@ public class CloudFragment extends BaseFragment
     Button optionsBtn;
 
     private Fragment cloudGalleryFragment;
-    private int currentScrollState;
+//    private int currentScrollState;
 //    private int currentObjectHandle;
 //    private Bitmap currentBitmap;
 //    private ArrayList<HashMap<String,String>> imageInfoList;
@@ -70,15 +68,14 @@ public class CloudFragment extends BaseFragment
         return f;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        currentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
+//        currentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 
         View view = inflater.inflate(R.layout.cloud_frag, container, false);
         ButterKnife.bind(this, view);
-
+//        Log.i(TAG, "CloudFragment START");
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         cloudGalleryFragment = CloudGalleryFragment.newInstance();
         ft.replace(R.id.cloud_detail_container, cloudGalleryFragment, null);
@@ -97,8 +94,6 @@ public class CloudFragment extends BaseFragment
     public void onStop() {
         super.onStop();
     }
-
-
 
     @OnClick(R.id.btn_back)
     public  void backBtnClicked(){
@@ -121,7 +116,6 @@ public class CloudFragment extends BaseFragment
         changelogTx.add(loginDialogFragment, "Login");
         changelogTx.commit();
     }
-
 
     @OnClick(R.id.btn_options)
     public void optionsBtnClicked(){

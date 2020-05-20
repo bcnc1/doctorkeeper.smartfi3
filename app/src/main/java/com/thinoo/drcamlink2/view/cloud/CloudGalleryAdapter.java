@@ -7,15 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
+import com.squareup.picasso.Picasso;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
+import com.thinoo.drcamlink2.view.AspectRatioImageView;
 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,15 +31,15 @@ public class CloudGalleryAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         HashMap<String,String> photo;
-        //AspectRatioImageView image1;
-        ImageView image1;
+        AspectRatioImageView image1;
+//        ImageView image1;
         TextView filename;
         TextView date;
         public TextView dslr;
         boolean done;
 
-//        ImageView thumbView;
-//        ProgressBar progressBar;
+        ImageView thumbView;
+        ProgressBar progressBar;
     }
 
 //    private List<PhotoModel> items;
@@ -105,12 +111,11 @@ public class CloudGalleryAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.dslr_item, parent, false);
             ViewHolder holder = new ViewHolder();
             view.setTag(holder);
-            //holder.image1 = (AspectRatioImageView) view.findViewById(R.id.image1);
-            holder.image1 =  (ImageView)view.findViewById(R.id.image1);
+            holder.image1 = (AspectRatioImageView) view.findViewById(R.id.image1);
             holder.filename = (TextView) view.findViewById(R.id.filename_field);
             holder.date = (TextView) view.findViewById(R.id.date_field);
-//            holder.progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
-//            holder.thumbView = (ImageView) view.findViewById(R.id.thumb_uploaded);
+            holder.progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
+            holder.thumbView = (ImageView) view.findViewById(R.id.thumb_uploaded);
             holder.dslr = (TextView) view.findViewById(R.id.textview_dslr);
         }
 
@@ -122,29 +127,30 @@ public class CloudGalleryAdapter extends BaseAdapter {
         }else if(holder.photo.get("cameraKind").equals("Video")){
             holder.dslr.setVisibility(View.VISIBLE);
             holder.dslr.setText("Video");
-        }
-        else {
+        }else {
             holder.dslr.setVisibility(View.INVISIBLE);
         }
 
-       // holder.progressBar.setVisibility(View.INVISIBLE);
+        holder.progressBar.setVisibility(View.INVISIBLE);
 
-        //이전코드 삭제 예
-//        accessToken = MadamfiveAPI.getAccessToken();
-//
-//        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
-//                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
-//
+        accessToken = MadamfiveAPI.getAccessToken();
+
+        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
+                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
 //        Log.w(TAG,"imageURL = "+imageURL);
-//
-//        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
-//        holder.image1.setExpectedDimensions(120, 120);
+        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
+        holder.image1.setExpectedDimensions(120, 120);
+
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        String createdDate = df.format(Long.parseLong(holder.photo.get("uploadDate")));
+        holder.date.setText(createdDate);
+        holder.done = false;
 
         //for kt cloud
-        String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
-        String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
-
-        imageLoadingGlide(imageURL, holder);
+//        String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
+//        String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
+//
+//        imageLoadingGlide(imageURL, holder);
 
 
         return view;

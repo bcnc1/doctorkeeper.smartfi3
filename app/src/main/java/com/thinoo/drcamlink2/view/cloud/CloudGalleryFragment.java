@@ -35,9 +35,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-/**
- * 클라우드에 올라간 이미지를 grid view 형태로 보여주기 위해..
- */
 
 public class CloudGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener{
 
@@ -77,10 +74,9 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         ButterKnife.bind(this, view);
 
         cloudGalleryAdapter = new CloudGalleryAdapter(getActivity());
-
+        Log.i(TAG, "CloudGalleryFragment STARTED");
         getImagesList();
        // accessToken = MadamfiveAPI.getAccessToken();
-
         enableUi(true);
 
         return view;
@@ -88,25 +84,21 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 
     public void enableUi(final boolean enabled) {
         galleryView.setEnabled(enabled);
-        Log.i(TAG, "Cloud enableUi..." + enabled);
-
+//        Log.i(TAG, "Cloud enableUi..." + enabled);
         if (getActivity()==null)
             return;
 
         (getActivity()).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+            if (cloudGalleryAdapter==null)
+                return;
 
-            if (cloudGalleryAdapter==null)                    return;
-
-                cloudGalleryAdapter.setItems(imageInfoList);
+            cloudGalleryAdapter.setItems(imageInfoList);
             galleryView.setAdapter(cloudGalleryAdapter);
-
             }
         });
-
         galleryView.setOnItemClickListener(this);
-
     }
 
     @Override
@@ -161,151 +153,120 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     }
 
     private void getImagesList(){
-
+        Log.i(TAG, "CloudGalleryFragment getImagesList");
         imageInfoList = new ArrayList<HashMap<String, String>>();
-//
-//        // TODO: 2020-01-08 환자 사진이 극단적으로 많을 경우 페이징조회를 구현 필요..
-        if(Constants.PATIENT_HAS_MANY_IMAGES){
-            BlabAPI.getPatientImages(getActivity(),mPageIdx, mPageSize, SmartFiPreference.getSfPatientCustNo(getActivity()), new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-                    Log.w(TAG,"목록조회 성공");
 
-                    try{
-                        String code =  response.get(Constants.EMRAPI.CODE).toString();
-                        if(code.equals(Constants.EMRAPI.CODE_200)){
+        MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
 
-                            JSONObject des = (JSONObject) response.get("data");
+            @Override
+            public void onStart() {
+                Log.i("CLoud Approach", "onStart2:");
+            }
 
-                            mCurPage = des.getInt("pageIdx");
-                            mTotalPage = des.getInt("totalPage");  //스크롤할 수 있는 최대값
-                            mTotalImages = des.getInt("totalSize"); //현재 저장된 이미지 전체 갯수
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
 
+                Log.d(TAG, "HTTP21:" + statusCode + responseString);
+
+                try {
+
+                    JSONObject response = new JSONObject(responseString);
+                    JSONArray imagesArray = response.getJSONArray("posts");
+
+                    for(int i=0;i<imagesArray.length();i++){
+                        JSONObject imagesObject = imagesArray.getJSONObject(i);
+//                        Log.i(TAG,"Inside JSON Array");
+                        Log.i(TAG,"Inside value : "+ imagesObject.get("id").toString());
+
+                        HashMap<String,String> imageInfo = new HashMap<>();
+                        imageInfo.put("url",imagesObject.getString("id"));
+                        imageInfo.put("uploadDate",imagesObject.getString("created"));
+
+                        try{
+                            imageInfo.put("cameraKind",imagesObject.getString("title"));
+                        }catch(Exception e){
+                            imageInfo.put("cameraKind","DSLR");
                         }
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        Log.e(TAG," 응답에러");
-                    }
-                }
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
-                    Log.w(TAG,"목록조회 실패 = "+statusCode);
-                }
-            });
-        }else{
-            BlabAPI.getPatientImagesAll(getActivity(), SmartFiPreference.getSfPatientCustNo(getActivity()), new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-
-                    try{
-                        String code =  response.get(Constants.EMRAPI.CODE).toString();
-                        if(code.equals(Constants.EMRAPI.CODE_200)){
-
-                            JSONArray imgInfolist = response.getJSONArray((Constants.EMRAPI.DATA));
-
-                            for(int i=0; i<imgInfolist.length(); i++){
-                                //JSONObject imgObj = imgInfolist.getJSONObject(i);
-                                HashMap<String,String> imageInfo = new HashMap<>();
-                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("updDttm"));
-                                imageInfo.put("thumurl", imgInfolist.getJSONObject(i).getString("thnlFilePath"));
-                                imageInfo.put("url", imgInfolist.getJSONObject(i).getString("phtoFilePath"));
-                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("regDttm"));
-
-                                String fileName = imgInfolist.getJSONObject(i).getString("phtoFileNm");
-                                if(fileName.contains("phone") && fileName.contains(".mp4")){
-                                    imageInfo.put("cameraKind", "Video");
-                                } else if(fileName.contains("dslr")){
-                                    imageInfo.put("cameraKind", "DSLR");
-                                }else{
-                                    imageInfo.put("cameraKind", "Phone");
-                                }
-
-                                imageInfoList.add(imageInfo);
-                            }
-
+                        try {
+                            JSONArray attachmentArray = imagesArray.getJSONObject(i).getJSONArray("attachments");
+                            JSONObject attach = attachmentArray.getJSONObject(0);
+                            imageInfo.put("guid", attach.getString("guid"));
+                        }catch (Exception e){
+                            imageInfo.put("guid", "none");
                         }
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        Log.e(TAG," 응답에러");
+
+                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
+                        imageInfoList.add(imageInfo);
                     }
 
                     cloudGalleryAdapter.setItems(imageInfoList);
                     cloudGalleryAdapter.notifyDataSetChanged();
+                    Log.i("CloudFragment","list received! === length:"+imageInfoList.size());
+
+                }catch (Exception e){
                 }
+//                photoModel.setUploaded(true);
+//                photoModel.save();
+//                galleryAdapter.notifyDataSetChanged();
+            }
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
-                }
-            });
-        }
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d("CLoud", "HTTP22:" + statusCode + response.toString());
+//                galleryAdapter.notifyDataSetChanged();
+            }
+        });
+//
 
-
-// TODO: 2020-01-30 please delete
-//        MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
+//            BlabAPI.getPatientImagesAll(getActivity(), SmartFiPreference.getSfPatientCustNo(getActivity()), new JsonHttpResponseHandler(){
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                    super.onSuccess(statusCode, headers, response);
 //
-//            @Override
-//            public void onStart() {
-//                Log.i("CLoud Approach", "onStart2:");
-//            }
+//                    try{
+//                        String code =  response.get(Constants.EMRAPI.CODE).toString();
+//                        if(code.equals(Constants.EMRAPI.CODE_200)){
 //
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+//                            JSONArray imgInfolist = response.getJSONArray((Constants.EMRAPI.DATA));
 //
-//                Log.d("CLoud", "HTTP21:" + statusCode + responseString);
+//                            for(int i=0; i<imgInfolist.length(); i++){
+//                                //JSONObject imgObj = imgInfolist.getJSONObject(i);
+//                                HashMap<String,String> imageInfo = new HashMap<>();
+//                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("updDttm"));
+//                                imageInfo.put("thumurl", imgInfolist.getJSONObject(i).getString("thnlFilePath"));
+//                                imageInfo.put("url", imgInfolist.getJSONObject(i).getString("phtoFilePath"));
+//                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("regDttm"));
 //
-//                try {
+//                                String fileName = imgInfolist.getJSONObject(i).getString("phtoFileNm");
+//                                if(fileName.contains("phone") && fileName.contains(".mp4")){
+//                                    imageInfo.put("cameraKind", "Video");
+//                                } else if(fileName.contains("dslr")){
+//                                    imageInfo.put("cameraKind", "DSLR");
+//                                }else{
+//                                    imageInfo.put("cameraKind", "Phone");
+//                                }
 //
-//                    JSONObject response = new JSONObject(responseString);
-//                    JSONArray imagesArray = response.getJSONArray("posts");
+//                                imageInfoList.add(imageInfo);
+//                            }
 //
-//                    for(int i=0;i<imagesArray.length();i++){
-//                        JSONObject imagesObject = imagesArray.getJSONObject(i);
-//
-//                        HashMap<String,String> imageInfo = new HashMap<>();
-//                        imageInfo.put("url",imagesObject.getString("id"));
-//                        imageInfo.put("uploadDate",imagesObject.getString("created"));
-//
-//                        try{
-//                            imageInfo.put("cameraKind",imagesObject.getString("title"));
-//                        }catch(Exception e){
-//                            imageInfo.put("cameraKind","DSLR");
 //                        }
-//
-//                        try {
-//                            JSONArray attachmentArray = imagesArray.getJSONObject(i).getJSONArray("attachments");
-//                            JSONObject attach = attachmentArray.getJSONObject(0);
-//                            imageInfo.put("guid", attach.getString("guid"));
-//                        }catch (Exception e){
-//                            imageInfo.put("guid", "none");
-//                        }
-//
-//                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
-//                        imageInfoList.add(imageInfo);
+//                    }catch (JSONException e){
+//                        e.printStackTrace();
+//                        Log.e(TAG," 응답에러");
 //                    }
 //
 //                    cloudGalleryAdapter.setItems(imageInfoList);
 //                    cloudGalleryAdapter.notifyDataSetChanged();
-//                    Log.i("CloudFragment","list received! === length:"+imageInfoList.size());
-//
-//                }catch (Exception e){
 //                }
 //
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-//                // If the response is JSONObject instead of expected JSONArray
-//                Log.d("CLoud", "HTTP22:" + statusCode + response.toString());
-//            }
-//        });
-
-        //end..
-
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                    super.onFailure(statusCode, headers, throwable, errorResponse);
+//                }
+//            });
+//        }
         Log.i("List in CloudFragment",imageInfoList.size()+"");
     }
 

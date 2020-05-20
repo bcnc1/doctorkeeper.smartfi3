@@ -348,7 +348,7 @@ public class PhoneCameraFragment extends BaseFragment {
             }catch(Exception e){
                 Log.e(TAG,"ERROR~~~"+e);
             }
-
+//            Log.i(TAG, "CLoud Btn Clicked");
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, CloudFragment.newInstance(), null);
             ft.addToBackStack(null);

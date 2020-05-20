@@ -135,7 +135,6 @@ public class BlabAPI {
         return Constants.Storage.BASE_URL + "/" + relativeUrl;
     }
 
-
     public static void loginEMR(Context con, String id, String pw){
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.LOGIN;
         StringEntity jsonEntity = null;
@@ -172,7 +171,6 @@ public class BlabAPI {
             }
         });
     }
-
 
     public static void loginEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
 
@@ -217,7 +215,6 @@ public class BlabAPI {
 //            }
 //        });
     }
-
 
     public static void loginSyncEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
 
@@ -326,7 +323,6 @@ public class BlabAPI {
         client.post(con, url, jsonEntity, "application/json",responseHandler);
 
     }
-
 
     public static void getPatientImages(Context con, int page, int pageSize, String custNo, ResponseHandlerInterface responseHandler){
         if(!getNetworkStatus(con)){
@@ -451,41 +447,11 @@ public class BlabAPI {
 
     }
 
-
     public static void S3UploadIntentService(final String filePath, final String cameraKind, final  String fileName, final JsonHttpResponseHandler responseHandler) {
         Intent it = new Intent(getActivity(), VideoIntentService.class);
         //it.putExtra()
         getActivity().startService(it);
 
-    }
-
-    /**
-     *  이미지삭제
-     */
-    public static void deleteImage() {
-
-        File myDir = getActivity().getExternalFilesDir(Environment.getExternalStorageState());
-        if(myDir.exists()&&myDir.isDirectory()){
-            File[] files = myDir.listFiles();
-            int numberOfFiles = files.length;
-            Arrays.sort(files, new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    if(((File)o1).lastModified() > ((File)o2).lastModified()) {
-                        return -1;
-                    }else if(((File)o1).lastModified() < ((File)o2).lastModified()){
-                        return  +1;
-                    }else {
-                        return 0;
-                    }
-                }
-            });
-            for(int i=20;i<numberOfFiles;i++){
-                if(files[i].isFile()==true){
-                    files[i].delete();
-                }
-            }
-        }
     }
 
     public static boolean getNetworkStatus(Context con){
