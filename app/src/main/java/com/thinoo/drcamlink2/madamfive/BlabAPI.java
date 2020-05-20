@@ -64,14 +64,12 @@ public class BlabAPI {
     // Set up the network to use HttpURLConnection as the HTTP client.
     private static Network mNetwork;
 
-    public static HashMap<String,String> selectedPatientInfo;
-    public static HashMap<String,String> selectedDoctor;
-
+//    public static HashMap<String,String> selectedPatientInfo;
+//    public static HashMap<String,String> selectedDoctor;
 
     private static String mPatientId = null;
     private static String mHospitalId = null;
     private static String mCateId = null;
-
 
     public static Boolean patientSearchDisplayExtraOption = false;
     public static Boolean patientInsertExtraOption = false;

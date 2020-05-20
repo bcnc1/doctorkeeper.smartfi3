@@ -30,18 +30,11 @@ import android.widget.Switch;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.doctorSelectExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_ShootingImageDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_doctorSelectExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.shootingImageDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_ShootingImageDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_doctorSelectExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_patientInsertExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.write_patientSearchDisplayExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.doctorSelectExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.shootingImageDisplayExtraOption;
+
 
 public class OptionsDialogFragment extends DialogFragment {
 
@@ -51,6 +44,11 @@ public class OptionsDialogFragment extends DialogFragment {
     private Switch switch_options_patient_insert_activate;
     private Switch switch_options_doctor_insert_activate;
     private Switch switch_options_shooting_image_display;
+
+    private Boolean doctorSelectExtraOption;
+    private Boolean patientInsertExtraOption;
+    private Boolean patientSearchDisplayExtraOption;
+    private Boolean shootingImageDisplayExtraOption;
 
     public static OptionsDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -68,35 +66,36 @@ public class OptionsDialogFragment extends DialogFragment {
 
         OptionsDialogFragment.this.getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        /// Option 1 삭제
-//        switch_options_patient_info = (Switch) view.findViewById(R.id.switch_options_patient_info);
-//        switch_options_patient_info.setChecked(false);
-//
+        /// Option 1
+        switch_options_patient_info = (Switch) view.findViewById(R.id.switch_options_patient_info);
+        switch_options_patient_info.setChecked(false);
+
 //        read_patientSearchDisplayExtraOption();
-//        if(patientSearchDisplayExtraOption){
-//            switch_options_patient_info.setChecked(true);
-//        }
-//
-//        switch_options_patient_info.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//
-//                if(patientSearchDisplayExtraOption){
-//                    patientSearchDisplayExtraOption = false;
-//                    switch_options_patient_info.setChecked(false);
-//                }else {
-//                    patientSearchDisplayExtraOption = true;
-//                    switch_options_patient_info.setChecked(true);
-//                }
+        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(getActivity());
+        if(patientSearchDisplayExtraOption){
+            switch_options_patient_info.setChecked(true);
+        }
+
+        switch_options_patient_info.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(patientSearchDisplayExtraOption){
+                    patientSearchDisplayExtraOption = false;
+                    switch_options_patient_info.setChecked(false);
+                }else {
+                    patientSearchDisplayExtraOption = true;
+                    switch_options_patient_info.setChecked(true);
+                }
 //                write_patientSearchDisplayExtraOption();
-//            }
-//        });
+                SmartFiPreference.setSfDisplayExtraOpt(getActivity(),patientSearchDisplayExtraOption);
+            }
+        });
 
         /// Option 2
         switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
         switch_options_patient_insert_activate.setChecked(false);
 
-        //read_patientInsertExtraOption();
         patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(getActivity());
 
         Log.w(TAG,"patientInsertExtraOption = "+patientInsertExtraOption);
@@ -117,57 +116,60 @@ public class OptionsDialogFragment extends DialogFragment {
                     switch_options_patient_insert_activate.setChecked(true);
                     SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
                 }
-                //write_patientInsertExtraOption();
             }
         });
 
         /// Option 3 삭제
-//        switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
-//        switch_options_doctor_insert_activate.setChecked(false);
-//
+        switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
+        switch_options_doctor_insert_activate.setChecked(false);
+
 //        read_doctorSelectExtraOption();
-//        if(doctorSelectExtraOption){
-//            switch_options_doctor_insert_activate.setChecked(true);
-//        }
-//
-//        switch_options_doctor_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//
-//                if(doctorSelectExtraOption){
-//                    doctorSelectExtraOption = false;
-//                    switch_options_doctor_insert_activate.setChecked(false);
-//                }else {
-//                    doctorSelectExtraOption = true;
-//                    switch_options_doctor_insert_activate.setChecked(true);
-//                }
+        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(getActivity());
+        if(doctorSelectExtraOption){
+            switch_options_doctor_insert_activate.setChecked(true);
+        }
+
+        switch_options_doctor_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(doctorSelectExtraOption){
+                    doctorSelectExtraOption = false;
+                    switch_options_doctor_insert_activate.setChecked(false);
+                }else {
+                    doctorSelectExtraOption = true;
+                    switch_options_doctor_insert_activate.setChecked(true);
+                }
+                SmartFiPreference.setSfInsertDoctorOpt(getActivity(),doctorSelectExtraOption);
 //                write_doctorSelectExtraOption();
-//            }
-//        });
+            }
+        });
 
         /// optins4 삭제
-//        switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
-//        switch_options_shooting_image_display.setChecked(false);
-//
+        switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
+        switch_options_shooting_image_display.setChecked(false);
+
 //        read_ShootingImageDisplayExtraOption();
-//        if(shootingImageDisplayExtraOption){
-//            switch_options_shooting_image_display.setChecked(true);
-//        }
-//
-//        switch_options_shooting_image_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//
-//                if(shootingImageDisplayExtraOption){
-//                    shootingImageDisplayExtraOption = false;
-//                    switch_options_shooting_image_display.setChecked(false);
-//                }else {
-//                    shootingImageDisplayExtraOption = true;
-//                    switch_options_shooting_image_display.setChecked(true);
-//                }
+        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(getActivity());
+        if(shootingImageDisplayExtraOption){
+            switch_options_shooting_image_display.setChecked(true);
+        }
+
+        switch_options_shooting_image_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(shootingImageDisplayExtraOption){
+                    shootingImageDisplayExtraOption = false;
+                    switch_options_shooting_image_display.setChecked(false);
+                }else {
+                    shootingImageDisplayExtraOption = true;
+                    switch_options_shooting_image_display.setChecked(true);
+                }
+                SmartFiPreference.setSfDisplayExtraOpt(getActivity(),shootingImageDisplayExtraOption);
 //                write_ShootingImageDisplayExtraOption();
-//            }
-//        });
+            }
+        });
 
         return view;
     }

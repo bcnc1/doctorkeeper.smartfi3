@@ -132,10 +132,11 @@
     <string name="notification_upload_complete">upload completed successfully!</string>
     <string name="notification_error_during_upload">error during upload</string>
 
-    <string name="make_error_thumbnail">썸네일 이미지 생성 실패!</string>
-    <string name="check_network">네트워크 상태를 체크해 주세요!!</string>
+    <string name="make_error_thumbnail">썸네일 이미지 생성 실패</string>
+    <string name="error_upload_image">이미지 업로드 실패</string>
+    <string name="check_network">네트워크 상태를 체크해 주세요</string>
     <string name="upload_fail_etc">네트워크등의 문제로 업로드를 실패했습니다.</string>
-    <string name="p_insert_patient">환자입력이 필요합니다!</string>
-    <string name="upload_success">업로드가 완료되었습니다.!</string>
+    <string name="p_insert_patient">환자정보 필요</string>
+    <string name="upload_success">업로드 완료</string>
 
 </resources>

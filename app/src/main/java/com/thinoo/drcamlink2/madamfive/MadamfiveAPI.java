@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.util.SSLConnect;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,26 +68,26 @@ public class MadamfiveAPI {
 
     private static final String BASE_URL = "http://api.doctorkeeper.com:7818/v1";
     private static final String mAPIKey = "NTlFUG5qdkNBV1VJWDRjL0tBMU5TMlZOY1UvaTBVQVVVU3h2eW5aRlkwND0K.gXttoBDWfyPc3z92HxRurTXo56s4NBT2khGTsBskfYM=";
-    private static String boardId = null;
 
+    private static String boardId = null;
     private static String mAcccessToken = null;
 
     public static Boolean patientSearchDisplayExtraOption = false;
     public static Boolean patientInsertExtraOption = false;
-    public static Boolean doctorSelectExtraOption = false;
-    public static Boolean shootingImageDisplayExtraOption = false;
+//    public static Boolean doctorSelectExtraOption = false;
+//    public static Boolean shootingImageDisplayExtraOption = false;
 
     public static boolean isCameraOn = false;
 
     public static boolean isListViewOnPhoneCamera = true;
 
     public static String getAccessToken() {
-        mAcccessToken = read_mAcccessToken();
+        mAcccessToken = SmartFiPreference.getSfToken(getActivity());
         return mAcccessToken;
     }
 
     public static String getBoardId() {
-        String boardId = read_boardId();
+        String boardId = SmartFiPreference.getHospitalId(getActivity());
         return boardId;
     }
 
@@ -110,43 +111,35 @@ public class MadamfiveAPI {
     public static void login(String username, String password, final JsonHttpResponseHandler responseHandler) {
 
         HashMap<String, String> params = new HashMap<String, String>();
-
         params.put("username", username);
         params.put("password", password);
         params.put("fetchBoards", "true");
-
         JsonObjectRequest request = new JsonObjectRequest(getAbsoluteUrl("/login"), new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
                             if (response.has("accessToken") == true) {
                                 mAcccessToken = URLDecoder.decode(response.getString("accessToken"));
-
-                                write_mAcccessToken(mAcccessToken);
-
-                                Log.i(TAG, "mAcccessToken : " + mAcccessToken);
+                                SmartFiPreference.setSfToken(getActivity(),mAcccessToken);
+//                                write_mAcccessToken(mAcccessToken);
+//                                Log.i(TAG, "mAcccessToken : " + mAcccessToken);
                                 responseHandler.onSuccess(200, null, response.toString());
-
                                 JSONArray boards = response.getJSONArray("boards");
                                 for(int i=0;i<boards.length();i++){
                                     JSONObject board = boards.getJSONObject(i);
-                                    Log.i(TAG,"Inside JSON Array");
-                                    Log.i(TAG,"Inside type value : "+ board.get("type").toString());
-
                                     if(board.get("type").toString().equals("hospital")){
                                         boardId = board.get("id").toString();
-                                        write_boardId(boardId);
-                                        Log.i(TAG,"Board Id : =========" + boardId);
+                                        SmartFiPreference.setHospitalId(getActivity(),boardId);
+//                                        write_boardId(boardId);
+//                                        Log.i(TAG,"Board Id : =========" + boardId);
                                         break;
                                     }
                                 }
-
                             }else{
                                 responseHandler.onSuccess(400, null, response.toString());
                             }
-                            Log.i(TAG, "Response:%n %s" + response.toString(4));
+//                            Log.i(TAG, "Response:%n %s" + response.toString(4));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -197,7 +190,7 @@ public class MadamfiveAPI {
 
     }
 
-    public static void createPost(Bitmap bitmap, String cameraKind, JsonHttpResponseHandler responseHandler) {
+    public void createPost(Bitmap bitmap, String cameraKind, JsonHttpResponseHandler responseHandler) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -211,13 +204,6 @@ public class MadamfiveAPI {
         createPost(imageBytes, cameraKind, responseHandler);
     }
 
-    /**
-     * 버퍼기간의 업로드
-     * @param imageBytes
-     * @param cameraKind
-     * @param responseHandler
-     */
-    // savePhoto()에서 사용되는 Method =====================================================================================
     public static void createPost(final byte[] imageBytes, final String cameraKind, final JsonHttpResponseHandler responseHandler) {
 
         mAcccessToken = getAccessToken();
@@ -225,17 +211,20 @@ public class MadamfiveAPI {
 
         final Map<String, String> params = new HashMap<String, String>();
 
-        String chartNumber = selectedPatientInfo.get("chartNumber");
+        String chartNumber = SmartFiPreference.getPatientChart(getActivity());
         chartNumber = chartNumber.replace("++++++",""); //환자 차트 번호
         chartNumber.trim();
+
+        final String name = SmartFiPreference.getSfPatientName(getActivity());
+        String categoryId = SmartFiPreference.getPatientId(getActivity());
 
         params.put("title", cameraKind);
         params.put("type", "smartfi");
         params.put("content", URLEncoder.encode(chartNumber));
         params.put("accessToken", mAcccessToken);
         params.put("boardId", boardId);
-        params.put("categories[]", selectedPatientInfo.get("categoryId"));
-        params.put("currency", URLEncoder.encode(selectedPatientInfo.get("name")));
+        params.put("categories[]", categoryId);
+        params.put("currency", URLEncoder.encode(name));
 
         JSONObject attachmentJson = new JSONObject();
         final String fileName = UUID.randomUUID().toString();
@@ -254,15 +243,14 @@ public class MadamfiveAPI {
         JSONObject userDataJson = new JSONObject();
         try {
             if(selectedDoctor!=null) {
-                userDataJson.put("doctorName", URLEncoder.encode(selectedDoctor.get("name")));
+                userDataJson.put("doctorName", URLEncoder.encode(name));
                 userDataJson.put("doctorNumber", URLEncoder.encode(selectedDoctor.get("doctorNumber")));
             }
-            userDataJson.put("patient", URLEncoder.encode(selectedPatientInfo.get("name")));
+            userDataJson.put("patient", URLEncoder.encode(name));
             params.put("userData", userDataJson.toString());
         } catch (JSONException e) {
             Log.i("m5API",e.toString());
         }
-
 
         VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, getAbsoluteUrl("/boards/" + boardId+"/posts"),
                 new Response.Listener<NetworkResponse>() {
@@ -305,8 +293,8 @@ public class MadamfiveAPI {
                 Map<String, DataPart> ImageParams = new HashMap<String, DataPart>();
                 // file name could found file base or direct access from real path
                 // for now just get bitmap data from ImageView
-                Log.i(TAG, "imageBytes.length : " + imageBytes.length);
-                Log.i(TAG, "fileName : " + fileName);
+//                Log.i(TAG, "imageBytes.length : " + imageBytes.length);
+//                Log.i(TAG, "fileName : " + fileName);
                 ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));
 
                 return ImageParams;
@@ -320,7 +308,7 @@ public class MadamfiveAPI {
 
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                Toast.makeText(getActivity(),selectedPatientInfo.get("name")+"님 이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),name+"님 이미지 저장 완료!",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -336,7 +324,7 @@ public class MadamfiveAPI {
 //        if (mAcccessToken==null) {
 //            return;
 //        }
-        mAcccessToken = "cDY1dDlLalpOT2hqRlNzTFRWR3hzVGU0Sk14bW1NcjVHSFRkV01LSHlucFdKeGxFdDBMck9HaFUyYmppeDJEaitURHQ5ZnltVjBUUwpVcGcrUzluQUZ3WlJPVUZxR1B3QnFKQlZhc2hGSCs2N3N0ZTdHQWJOUUgvcUFHdTRBYWJzMVZsLzVVMkxVSzVXMWYxQ3hTWWdDcHpCCjU1Z1FWRHpGNTdhSWtuSXZRdGVnV1FIdlBEUzBucDI3YVRWbWtHbldEVk5FNTRIc3NyUytzMkh3M1pkSW1kNVNaaXJUenpJc28yaEQKRVd0dEJFbz0K.e3jCsTdWF6RceZ0+Z4aakUEdhEHdCEWnMRBRKr39h8s=";
+//        mAcccessToken = "cDY1dDlLalpOT2hqRlNzTFRWR3hzVGU0Sk14bW1NcjVHSFRkV01LSHlucFdKeGxFdDBMck9HaFUyYmppeDJEaitURHQ5ZnltVjBUUwpVcGcrUzluQUZ3WlJPVUZxR1B3QnFKQlZhc2hGSCs2N3N0ZTdHQWJOUUgvcUFHdTRBYWJzMVZsLzVVMkxVSzVXMWYxQ3hTWWdDcHpCCjU1Z1FWRHpGNTdhSWtuSXZRdGVnV1FIdlBEUzBucDI3YVRWbWtHbldEVk5FNTRIc3NyUytzMkh3M1pkSW1kNVNaaXJUenpJc28yaEQKRVd0dEJFbz0K.e3jCsTdWF6RceZ0+Z4aakUEdhEHdCEWnMRBRKr39h8s=";
 
         //boardId = getBoardId();
 
@@ -387,25 +375,24 @@ public class MadamfiveAPI {
 
     }
 
-    public static void searchPatient (String keyword,boolean searchByName, final JsonHttpResponseHandler responseHandler){
+    public static void searchPatient (String searchName,String searchChart, final JsonHttpResponseHandler responseHandler){
 
         mAcccessToken = getAccessToken();
         boardId = getBoardId();
 
         String queryString = "";
-        if(searchByName){
-            queryString = "type=patient&keyword="+URLEncoder.encode(keyword);
+        if(searchChart.isEmpty()){
+            queryString = "type=patient&keyword="+URLEncoder.encode(searchName);
         }else{
-            queryString = "type=patient&keyword="+URLEncoder.encode(keyword)+"&parentId="+URLEncoder.encode(keyword);
+            queryString = "type=patient&keyword="+URLEncoder.encode(searchName)+"&parentId="+URLEncoder.encode(searchChart);
         }
-        queryString = queryString+"&accessToken="+URLEncoder.encode(mAcccessToken);
+//        queryString = queryString+"&accessToken="+URLEncoder.encode(mAcccessToken);
+        queryString = queryString+"&accessToken=" + mAcccessToken;
         String relativeURL = "boards/" + boardId + "/categories/search?" + queryString;
-        if(keyword.isEmpty()) {
-            relativeURL = "boards/" + boardId + "/categories/search?limit=20&" + queryString;
+        if(searchName.isEmpty() && searchChart.isEmpty()) {
+            relativeURL = "boards/" + boardId + "/categories/search?limit=5&" + queryString;
         }
-
         Log.i("URL=====", getAbsoluteUrl(relativeURL).toString());
-
         JsonObjectRequest request = new JsonObjectRequest(getAbsoluteUrl(relativeURL), null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -415,10 +402,8 @@ public class MadamfiveAPI {
                             Log.i(TAG, "Response:%n %s" + response.toString());
 
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.i(TAG, e.toString());
                         }
-
-//                        callBack.onSuccess(imageInfoList);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -433,7 +418,6 @@ public class MadamfiveAPI {
                 params.put("X-Madamfive-APIKey", mAPIKey);
                 return params;
             }
-
         };
 
         request.setRetryPolicy(new DefaultRetryPolicy(10000,
@@ -542,60 +526,6 @@ public class MadamfiveAPI {
 
     }
 
-    private static String read_mAcccessToken (){
-
-        try {
-            FileInputStream input = getActivity().openFileInput("token.txt");
-            byte[] b = new byte[input.available()];
-            input.read(b);
-            mAcccessToken = new String(b);
-            input.close();
-        }catch (Exception e){
-        }
-
-        return mAcccessToken;
-    }
-
-    private static void write_mAcccessToken (String mAcccessToken){
-
-        FileOutputStream outputStream;
-        try {
-            outputStream = getActivity().openFileOutput("token.txt", Context.MODE_PRIVATE);
-            outputStream.write(mAcccessToken.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private static String read_boardId (){
-
-        String boardId = null;
-        try {
-            FileInputStream input = getActivity().openFileInput("board.txt");
-            byte[] b = new byte[input.available()];
-            input.read(b);
-            boardId = new String(b);
-            input.close();
-        }catch (Exception e){
-        }
-
-        return boardId;
-    }
-
-    private static void write_boardId (String boardId){
-
-        FileOutputStream outputStream;
-        try {
-            outputStream = getActivity().openFileOutput("board.txt", Context.MODE_PRIVATE);
-            outputStream.write(boardId.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void write_patientInfo(){
 
         if(selectedPatientInfo!=null) {
@@ -608,19 +538,6 @@ public class MadamfiveAPI {
         }
     }
 
-    public static void read_patientInfo(){
-
-        HashMap<String,String> data = new HashMap<>();
-        try {
-            FileInputStream input = getActivity().openFileInput("patient.txt");
-            ObjectInputStream ois = new ObjectInputStream(input);
-            selectedPatientInfo = (HashMap<String, String>) ois.readObject();
-            ois.close();
-        }catch (Exception e){
-        }
-//        Log.i(TAG,"selectedPatientInfo++++"+selectedPatientInfo);
-    }
-
     public static void write_doctorInfo(){
 
         if(selectedDoctor!=null) {
@@ -631,123 +548,6 @@ public class MadamfiveAPI {
             } catch (Exception e) {
             }
         }
-    }
-
-    public static void read_doctorInfo(){
-
-        HashMap<String,String> data = new HashMap<>();
-        try {
-            FileInputStream input = getActivity().openFileInput("doctor.txt");
-            ObjectInputStream ois = new ObjectInputStream(input);
-            selectedDoctor = (HashMap<String, String>) ois.readObject();
-            ois.close();
-        }catch (Exception e){
-        }
-//        Log.i(TAG,"selectedPatientInfo++++"+selectedPatientInfo);
-    }
-
-    public static void read_patientSearchDisplayExtraOption(){
-        File file = getActivity().getFileStreamPath("option1.txt");
-        if(file.exists()) {
-            try {
-                FileInputStream input = getActivity().openFileInput("option1.txt");
-                ObjectInputStream ois = new ObjectInputStream(input);
-                patientSearchDisplayExtraOption = (Boolean) ois.readObject();
-                ois.close();
-            } catch (Exception e) {
-            }
-        }else{
-            patientSearchDisplayExtraOption = false;
-        }
-
-    }
-
-    public static void write_patientSearchDisplayExtraOption(){
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option1.txt", Context.MODE_PRIVATE));
-            outputStream.writeObject(patientSearchDisplayExtraOption);
-            outputStream.close();
-        } catch (Exception e) {
-        }
-
-    }
-
-    public static void read_patientInsertExtraOption(){
-        File file = getActivity().getFileStreamPath("option2.txt");
-        if(file.exists()) {
-            try {
-                FileInputStream input = getActivity().openFileInput("option2.txt");
-                ObjectInputStream ois = new ObjectInputStream(input);
-                patientInsertExtraOption = (Boolean) ois.readObject();
-                ois.close();
-            } catch (Exception e) {
-            }
-        }else{
-            patientInsertExtraOption = false;
-        }
-
-    }
-
-    public static void write_patientInsertExtraOption(){
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option2.txt", Context.MODE_PRIVATE));
-            outputStream.writeObject(patientInsertExtraOption);
-            outputStream.close();
-        } catch (Exception e) {
-        }
-
-    }
-
-    public static void read_doctorSelectExtraOption(){
-        File file = getActivity().getFileStreamPath("option3.txt");
-        if(file.exists()) {
-            try {
-                FileInputStream input = getActivity().openFileInput("option3.txt");
-                ObjectInputStream ois = new ObjectInputStream(input);
-                doctorSelectExtraOption = (Boolean) ois.readObject();
-                ois.close();
-            } catch (Exception e) {
-            }
-        }else{
-            patientInsertExtraOption = false;
-        }
-
-    }
-
-    public static void write_doctorSelectExtraOption(){
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option3.txt", Context.MODE_PRIVATE));
-            outputStream.writeObject(doctorSelectExtraOption);
-            outputStream.close();
-        } catch (Exception e) {
-        }
-
-    }
-
-    public static void read_ShootingImageDisplayExtraOption(){
-        File file = getActivity().getFileStreamPath("option4.txt");
-        if(file.exists()) {
-            try {
-                FileInputStream input = getActivity().openFileInput("option4.txt");
-                ObjectInputStream ois = new ObjectInputStream(input);
-                shootingImageDisplayExtraOption = (Boolean) ois.readObject();
-                ois.close();
-            } catch (Exception e) {
-            }
-        }else{
-            patientInsertExtraOption = false;
-        }
-
-    }
-
-    public static void write_ShootingImageDisplayExtraOption(){
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("option4.txt", Context.MODE_PRIVATE));
-            outputStream.writeObject(shootingImageDisplayExtraOption);
-            outputStream.close();
-        } catch (Exception e) {
-        }
-
     }
 
     public static void deleteImage() {

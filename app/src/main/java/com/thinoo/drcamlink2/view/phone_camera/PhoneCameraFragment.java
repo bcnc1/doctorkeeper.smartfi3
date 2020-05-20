@@ -82,9 +82,6 @@ public class PhoneCameraFragment extends BaseFragment {
     private Animation rotate3Animation;
     private Animation rotate4Animation;
 
-    private Handler saveHandler;
-    //private HandlerThread saveHandlerThread;
-
     private boolean cameraIsReady;
     private TextView patient_name;
 
@@ -126,7 +123,6 @@ public class PhoneCameraFragment extends BaseFragment {
     @BindView(R.id.button_doctor)
     ImageButton btnDoctor;
 
-
     private OrientationListener orientationListener;
 
     public static PhoneCameraFragment newInstance() {
@@ -160,14 +156,6 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     };
 
-    /**
-     * OnCreateView fragment override
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -175,9 +163,7 @@ public class PhoneCameraFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         cameraIsReady = true;
-
         photoList = new ArrayList<>();
-
         listviewPhoto = (RecyclerView)view.findViewById(R.id.listview_photo);
 
         photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
@@ -194,11 +180,9 @@ public class PhoneCameraFragment extends BaseFragment {
         listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
 
         cameraView = (CameraView) view.findViewById(R.id.camera);
-
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
-
                 switch (cameraKitEvent.getType()) {
                     case CameraKitEvent.TYPE_CAMERA_OPEN:
                         break;
@@ -207,27 +191,20 @@ public class PhoneCameraFragment extends BaseFragment {
                         break;
                 }
             }
-
             @Override
             public void onError(CameraKitError cameraKitError) {
-
             }
-
             @Override
             public void onImage(CameraKitImage cameraKitImage) {
                 Log.w(TAG,"onImage");
-
                 mSound.release();
                 Bitmap picture = cameraKitImage.getBitmap();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
                 mFileName = DEVICE + "_" + timeStamp+".jpg";
                 savePhotoNUpload(picture, "phone",mFileName);
-
             }
-
             @Override
             public void onVideo(CameraKitVideo cameraKitVideo) {
-
             }
         });
 
@@ -257,22 +234,13 @@ public class PhoneCameraFragment extends BaseFragment {
         Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(getActivity()));
         patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
 
-
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
         MadamfiveAPI.getContext().registerReceiver(usbOnReciever,on);
         MadamfiveAPI.getContext().registerReceiver(usbOffReciever,off);
 
-//        if(MadamfiveAPI.isListViewOnPhoneCamera){
-//            photo_container.setVisibility(View.VISIBLE);
-//        }else{
-//            photo_container.setVisibility(View.INVISIBLE);
-//        }
-
         return view;
     }
-
-
 
     @Override
     public void onResume() {
@@ -323,59 +291,9 @@ public class PhoneCameraFragment extends BaseFragment {
             PictureIntentService.startUploadPicture(getActivity(), id);
 
         }else{
-            Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
-
+            Toast.makeText(getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
     }
-
-    public void savePhoto(byte[] bytes, String cameraKind, String filePath) {
-
-        Log.w(TAG,"savePhoto");
-        int filePathLength = filePath.length();
-        String filename = filePath.substring(0,filePathLength-1);
-        filename = filename + ".JPG";
-
-        int orientationValue = orientationListener.rotation;
-        byte[] rotatedBytes = rotateImage(bytes,orientationValue);
-
-        final PhotoModel photoModelRotated = PhotoModelService.savePhoto(rotatedBytes, filename, 0);
-        photoList.add(0, photoModelRotated);
-
-        phoneCameraPhotoAdapter.notifyDataSetChanged();
-        cameraIsReady = true;
-
-        // THread 처리위한 부분
-        HashMap<String,Object> taskInfo = new HashMap<>();
-        taskInfo.put("filename",photoModelRotated.getFilename());
-        taskInfo.put("photoModel",photoModelRotated);
-//        taskInfo.put("bitmap",bitmap);
-        Message msg = saveHandler.obtainMessage();
-        msg.obj = taskInfo;
-        saveHandler.sendMessage(msg);
-        Log.w("sendPhoto","Finished");
-        // thread 처리 end
-
-    }
-
-//    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//    String filename = "DRCAM_" + timeStamp + ".mp4";
-//    File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
-//
-//    private File createVideoFile() throws IOException {
-//        // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "DRCAM_" + timeStamp + "_";
-//        File storageDir = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
-//        File image = File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-//
-//        // Save a file: path for use with ACTION_VIEW intents
-//        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-//        return image;
-//    }
 
     @OnClick(R.id.button_capture)
     public void onTakePhoto(View view) {
@@ -407,7 +325,6 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     }
 
-    //dslr 버튼을 누를때 프레그먼트 생성
     @OnClick(R.id.button_dslr)
     public void onShowDslr(View view) {
 
@@ -490,7 +407,6 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
-
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){
         //로그아웃 후에는 로그인 화면부터 나와야 함.
@@ -522,29 +438,6 @@ public class PhoneCameraFragment extends BaseFragment {
         ft.addToBackStack(null);
         ft.commit();
     }
-
-//    @OnClick(R.id.btn_hide_listview)
-//    public void onHideListview(View view){
-//
-////        photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
-//
-////        Log.i(TAG,"HIDE BTN clicked");
-//        if(MadamfiveAPI.isListViewOnPhoneCamera){
-//            photo_container.setVisibility(View.INVISIBLE);
-//            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
-//        }else{
-//            photo_container.setVisibility(View.VISIBLE);
-//            MadamfiveAPI.isListViewOnPhoneCamera = !MadamfiveAPI.isListViewOnPhoneCamera;
-//        }
-////        if(listviewFlag){
-////            photo_container.setVisibility(View.INVISIBLE);
-////            listviewFlag = false;
-////        }else{
-////            photo_container.setVisibility(View.VISIBLE);
-////            listviewFlag = true;
-////        }
-//    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -646,52 +539,6 @@ public class PhoneCameraFragment extends BaseFragment {
         }
         return bitmap;
     }
-
-    private void uploadImage(String filename){
-        Log.w(TAG,"uploadImage => Started");
-
-        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
-
-        byte[] bytes = null;
-        try{
-
-            FileInputStream fis = new FileInputStream(file.getAbsolutePath()+filename);
-            int nCount = fis.available();
-            if(nCount > 0){
-                bytes = new byte[nCount];
-                fis.read(bytes);
-            }
-            if(fis != null){
-                fis.close();
-            }
-        }catch(Exception e){
-            Log.i(TAG,e.toString());
-        }
-        Log.i(TAG,"uploadImage => Read Bitmap");
-
-        MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("AsyncTask", "Uploading");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-            }
-        });
-        Log.i(TAG,"uploadImage => Finished");
-    }
-
-
-
 
 
 }

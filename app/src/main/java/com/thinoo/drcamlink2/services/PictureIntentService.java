@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -22,25 +23,19 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.Constants;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.activities.FileExploreActivity;
-import com.thinoo.drcamlink2.madamfive.BlabAPI;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.models.PhotoModel;
 import com.thinoo.drcamlink2.util.DisplayUtil;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import cz.msebera.android.httpclient.Header;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -95,8 +90,6 @@ public class PictureIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG,"onHandleIntent 호출");
         mAcccessToken = SmartFiPreference.getSfToken(getApplicationContext());
-
-        Log.e(TAG,"현재토큰 = "+mAcccessToken);
         mHospitalId = SmartFiPreference.getHospitalId(getApplicationContext());
 
         mDate = new SimpleDateFormat("yyyyMM").format(new Date());
@@ -110,12 +103,12 @@ public class PictureIntentService extends IntentService {
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
 
-                makeNoti("picture uploading...", 0);
+//                makeNoti("picture uploading...", 0);
 
                 mPatientId = photoModel.getCustNo();
-                Log.w(TAG, "mPatientId = "+mPatientId);
-                uploadThumbnail(photoModel, false);
-
+//                Log.w(TAG, "mPatientId = "+mPatientId);
+//                uploadThumbnail(photoModel, false);
+                uploadPicture(photoModel);
 
             }
 
@@ -128,225 +121,6 @@ public class PictureIntentService extends IntentService {
         super.onDestroy();
         Log.d(TAG, "onDestroy, notiId = "+mNotiId);
 
-    }
-
-    private void regPhototoEMR(final PhotoModel pm){
-        Log.w(TAG,"regPhototoEMR");
-        final String fileName = pm.getFilename();
-        final long fileSize = pm.getFilesize();
-        pm.setChainUploading(1);
-
-        Thread t2 = new Thread(new Runnable() {
-
-            String url = Constants.EMRAPI.BASE_URL + Constants.EMRAPI.REG_PHOTO;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
-
-            @Override
-            public void run() {
-
-                JSONObject jsonObject = new JSONObject();
-                JSONObject data = new JSONObject();
-                JSONArray req_arry = new JSONArray();
-
-                try {
-                    jsonObject.put("userId", SmartFiPreference.getDoctorId(getApplicationContext()));
-                    jsonObject.put("custNo", SmartFiPreference.getSfPatientCustNo(getApplicationContext()));
-                    data.put("phtoFileNm", fileName);
-                    data.put("phtoFilePath", filepath);
-                    data.put("imgSize",fileSize);
-                    req_arry.put(data);
-                    jsonObject.put("photoList", req_arry);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                OkHttpClient client = new OkHttpClient();
-
-
-                RequestBody reqBody = RequestBody.create(
-                        MediaType.parse("application/json; charset=utf-8"),
-                        jsonObject.toString()
-                );
-
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url(url)
-                        .addHeader("Accept","application/json")
-                        .addHeader("X-Auth-Token",mAcccessToken)
-                        .addHeader("Content-Type", "application/json")
-                        .post(reqBody)
-                        .build();
-
-                try {
-                    okhttp3.Response response = client.newCall(request).execute();
-
-
-                    if(!response.isSuccessful()){
-                        Log.w(TAG," regPhototoEMR 싪패 , response code = "+response.code());
-
-                        pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",1);
-
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-                    }else{
-                        Log.w(TAG," regPhototoEMR 성공 ");
-
-
-                        makeNoti("uploading success",0);
-//                        Toast.makeText(mCon, R.string.upload_success, Toast.LENGTH_SHORT).show();
-                        if(Constants.FILE_N_DB_DELETE){
-                            PhotoModelService.deleteFileNPhotoModel(pm);
-                        }else{
-                            pm.setChainUploading(2);
-                        }
-
-                        Log.w(TAG," mMessenger =  "+mMessenger);
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-                    }
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",1);
-
-                    if(mMessenger != null){
-                        Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                        try {
-                            mMessenger.send(msg);
-                        } catch (android.os.RemoteException e1) {
-                            Log.w(getClass().getName(), "Exception sending message", e1);
-                        }
-
-                    }
-                }
-
-            }
-        });
-
-        t2.start();
-    }
-
-    private void uploadChain(final PhotoModel pm) {
-
-        Log.w(TAG,"uploadChain");
-
-        final String fileName = pm.getFilename();
-        pm.setChainUploading(1);
-
-        Thread t2 = new Thread(new Runnable() {
-
-            String urlproof = Constants.Chain.BASE_URL + Constants.Chain.CREATE;
-            String filepath = "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName;
-
-            @Override
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-
-                RequestBody formBody = new FormBody.Builder()
-                        .add("hospital", mHospitalId)
-                        .add("patient", mPatientId)
-                        .add("file", filepath)
-                        .build();
-
-
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url(urlproof)
-                        .addHeader("X-Auth-Token",mAcccessToken)
-                        .addHeader("Content-Type", "application/json")
-                        .post(formBody)
-                        .build();
-
-                try {
-                    okhttp3.Response response = client.newCall(request).execute();
-
-
-                    if(!response.isSuccessful()){
-                        Log.w(TAG," 체인 create 싪패 , response code = "+response.code());
-
-                        pm.setChainUploading(3);//업로드실패
-                        makeNoti("uploading fail",1);
-
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-                    }else{
-                        Log.w(TAG," 체인 create 성공 ");
-
-
-                        makeNoti("uploading success",0);
-                        if(Constants.FILE_N_DB_DELETE){
-                            PhotoModelService.deleteFileNPhotoModel(pm);
-                        }else{
-                            pm.setChainUploading(2);
-                        }
-
-                        Log.w(TAG," mMessenger =  "+mMessenger);
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_SUCCESS;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-                    }
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",1);
-
-                    if(mMessenger != null){
-                        Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                        try {
-                            mMessenger.send(msg);
-                        } catch (android.os.RemoteException e1) {
-                            Log.w(getClass().getName(), "Exception sending message", e1);
-                        }
-
-                    }
-                }
-
-            }
-        });
-
-        t2.start();
     }
 
     private void uploadPicture(final PhotoModel pm) {
@@ -366,237 +140,48 @@ public class PictureIntentService extends IntentService {
 
                 pm.setThumbUploading(1);
 
-                File f  = new File(filePath);
+                File file  = new File(filePath);
                 String content_type  = DisplayUtil.getMimeType(filePath);
-
-                OkHttpClient client = new OkHttpClient();
-                RequestBody file_body = RequestBody.create(MediaType.parse(content_type),f);
-
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName))
-                        .put(file_body)
-                        .addHeader("X-Auth-Token",mAcccessToken)
-                        .build();
-
-
-                try {
-                    okhttp3.Response response = client.newCall(request).execute();
-
-
-                    if(!response.isSuccessful()){
-                        Log.d(TAG," 원본, response code = "+response.code());
-
-                        pm.setUploading(3);//업로드실패
-                        makeNoti("uploading fail",1);
-
-                        Log.w(TAG," mMessenger =  "+mMessenger);
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-
-                    }else{
-                        Log.d(TAG," 원본 업로드 성공 ");
-                        pm.setUploading(2);
-                        //uploadChain(pm);
-                        regPhototoEMR(pm);
-
+//                File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
+                byte[] bytes = null;
+                try{
+                    FileInputStream fis = new FileInputStream(file);
+                    int nCount = fis.available();
+                    if(nCount > 0){
+                        bytes = new byte[nCount];
+                        fis.read(bytes);
                     }
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    pm.setUploading(3); //업로드실패
-                    makeNoti("uploading fail",1);
-
-                    Log.w(TAG," mMessenger =  "+mMessenger);
-                    if(mMessenger != null){
-                        Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                        try {
-                            mMessenger.send(msg);
-                        } catch (android.os.RemoteException e1) {
-                            Log.w(getClass().getName(), "Exception sending message", e1);
-                        }
-
+                    if(fis != null){
+                        fis.close();
                     }
+                }catch(Exception e){
+                    Log.i(TAG,e.toString());
                 }
+                Log.i(TAG,"uploadImage => Read Bitmap");
+
+                MadamfiveAPI.createPost(bytes, "Phone", new JsonHttpResponseHandler() {
+                    @Override
+                    public void onStart() {
+                        Log.i("AsyncTask", "Uploading");
+                    }
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                        Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
+                    }
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                        Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
+                    }
+                });
+                Log.i(TAG,"uploadImage => Finished");
+
             }
         });
 
         t1.start();
     }
 
-    private void uploadThumbnail(final PhotoModel pm, final boolean isRetry) {
-
-
-        final String filePath = pm.getThumbpath();
-
-//        if(pm.getMode() == 0 || pm.getMode() == 1){
-//            mMediaType = "pictures";
-//        }else if(pm.getMode() == 2){
-//            mMediaType = "videos";
-//        }
-
-        final String fileName = pm.getFilename();
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                pm.setThumbUploading(1);
-
-                File f  = new File(filePath);
-                String content_type  = DisplayUtil.getMimeType(filePath);
-
-                OkHttpClient client = new OkHttpClient();
-                RequestBody file_body = RequestBody.create(MediaType.parse(content_type),f);
-
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url( getAbsoluteUrl(mHospitalId+"$"+ mPatientId+
-                                "/thumbnail"+"/"+mHospitalId+"/"+ mPatientId + "/pictures/"+ mDate+"/"+ fileName))
-                        .put(file_body)
-                        .addHeader("X-Auth-Token",mAcccessToken)
-                        .build();
-
-
-                try {
-                    okhttp3.Response response = client.newCall(request).execute();
-
-
-                    if(!response.isSuccessful()){
-
-                        Log.w(TAG, " 썸네일, response = "+response.code());
-                        if(response.code() == 401 && ! isRetry){
-                            Log.w(TAG, " 신규토큰 필요 ");
-
-                            getTokenNupLoad(pm);
-                            return;
-                        }
-
-                        pm.setThumbUploading(3);
-
-                        makeNoti("uploading fail", 1);
-
-                        Log.w(TAG," mMessenger =  "+mMessenger);
-                        if(mMessenger != null){
-                            Message msg = Message.obtain();
-                            msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                            try {
-                                mMessenger.send(msg);
-                            } catch (android.os.RemoteException e1) {
-                                Log.w(getClass().getName(), "Exception sending message", e1);
-                            }
-
-                        }
-
-                    }else{
-
-                        Log.d(TAG, " 썸네일, 업로드 성공 ");
-                        pm.setThumbUploading(2);
-
-                        uploadPicture(pm);
-
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    pm.setThumbUploading(3); //업로드실패
-                    makeNoti("uploading fail. please check network", 1);
-
-                    Log.w(TAG," mMessenger =  "+mMessenger);
-                    if(mMessenger != null){
-                        Message msg = Message.obtain();
-                        msg.obj = Constants.Upload.READ_FILE_UPLOAD_FAIL;
-
-                        try {
-                            mMessenger.send(msg);
-                        } catch (android.os.RemoteException e1) {
-                            Log.w(getClass().getName(), "Exception sending message", e1);
-                        }
-
-                    }
-                }
-            }
-        });
-
-        t.start();
-    }
-
-    private void getTokenNupLoad(final PhotoModel pm) {
-        String id = SmartFiPreference.getDoctorId(mCon);
-        String pw = SmartFiPreference.getSfDoctorPw(mCon);
-
-        Log.w(TAG,"id =  "+id);
-        Log.w(TAG,"pw =  "+pw);
-        BlabAPI.loginSyncEMR(mCon, id,pw, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-
-                try {
-                    String code =  response.get(Constants.EMRAPI.CODE).toString();
-                    if(!code.equals(Constants.EMRAPI.CODE_200)){
-                        Log.w(TAG,"응답실패 ");
-                        //todo 신규로그인이 필요
-                        pm.setThumbUploading(3);
-
-                        makeNoti("로그인이 필요합니다.", 0);
-
-
-                    }else{
-
-                        try {
-
-                            JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
-                            SmartFiPreference.setSfToken(mCon,data.getString("token"));
-
-                            uploadThumbnail(pm, true);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.e(TAG," 응답에러");
-                        }
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-            }
-
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.w(TAG,"실패");
-            }
-        });
-    }
-
-
-    private static String getAbsoluteUrl(String relativeUrl) {
-
-        return Constants.Storage.BASE_URL + "/" + relativeUrl;
-    }
-
-
-    /**
-     *
-     * @param message
-     * @param id 파일업로드실패일때만 fileexplore호출되게
-     */
-
     private void makeNoti(final String message, int id) {
-
 
         NotificationCompat.Builder builder;
 
@@ -633,7 +218,6 @@ public class PictureIntentService extends IntentService {
 
         if(id == 1){
             Intent intent= new Intent(this, FileExploreActivity.class);
-
             PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             // Create the notification
@@ -657,25 +241,7 @@ public class PictureIntentService extends IntentService {
                     .setWhen(System.currentTimeMillis());
         }
 
-//        Intent intent= new Intent(this, FileExploreActivity.class);
-//
-//        PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        // Create the notification
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-//                .setSmallIcon(R.drawable.smartfi_icon)
-//                .setContentTitle(Constants.Notification.NOTIFICATION_TITLE)
-//                .setContentText(message)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setContentIntent(pending)
-//                .setAutoCancel(true)
-//                .setWhen(System.currentTimeMillis());
-
-
-        //Log.d(TAG, "exec  ==> makeNoti => id :  "+mNotiId + "input id = "+id);
-        // Show the notification, if add noti please NOTIFICATION_PICTURE_ID to change pm id
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_PICTURE_ID, builder.build());
-
 
     }
 }

@@ -13,9 +13,15 @@ public class SmartFiPreference {
     public static final String SF_PATIENT_ID = "smartfi.patient.id";
     public static final String SF_PATIENT_CHART = "smartfi.patient.chart";
     public static final String SF_DOCTOR_PW = "smartfi.doctor.password";
-    public static final String INSERT_PATIENT = "smartfi.patient.insert";
+//    public static final String SF_PATIENT_CATEGORYID = "smartfi.patient.categoryid";
+
     public static final String SF_PATIENT_CUST_NO = "smartfi.patient.cust.no";
     public static final String SF_PATIENT_NAME = "smartfi.patient.name";
+
+    public static final String DISPLAY_EXTRA = "smartfi.display.extra";
+    public static final String INSERT_PATIENT = "smartfi.patient.insert";
+    public static final String INSERT_DOCTOR = "smartfi.insert.doctor";
+    public static final String SHOOT_DISPLAY = "smartfi.shoot.display";
 
     public static void defaultPreference(Context context){
 
@@ -71,16 +77,6 @@ public class SmartFiPreference {
         setString(con, SF_DOCTOR_PW, pw);
     }
 
-
-    public static final Boolean getSfInsertPatientOpt(Context con){
-        return getBoolean(con, INSERT_PATIENT, false);
-    }
-
-    public static void setSfInsertPatientOpt(Context con, boolean is){
-        setBoolean(con, INSERT_PATIENT, is);
-    }
-
-
     public static final String getSfPatientCustNo(Context con){
         return getString(con, SF_PATIENT_CUST_NO, "");
     }
@@ -97,6 +93,15 @@ public class SmartFiPreference {
         setString(con, SF_PATIENT_NAME, name);
     }
 
+//    public static final String getSfPatientCategoryid(Context con){
+//        return getString(con, SF_PATIENT_CATEGORYID, "");
+//    }
+//
+//    public static void setSfPatientCategoryid(Context con, String name){
+//        setString(con, SF_PATIENT_CATEGORYID, name);
+//    }
+
+    //
     public static void setInt(Context context, String key, int value){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();
@@ -132,4 +137,39 @@ public class SmartFiPreference {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return sp.getString(key, default_value);
     }
+
+
+    // Save options
+    public static final Boolean getSfInsertPatientOpt(Context con){
+        return getBoolean(con, INSERT_PATIENT, false);
+    }
+
+    public static void setSfInsertPatientOpt(Context con, boolean is){
+        setBoolean(con, INSERT_PATIENT, is);
+    }
+
+    public static final Boolean getSfDisplayExtraOpt(Context con){
+        return getBoolean(con, DISPLAY_EXTRA, false);
+    }
+
+    public static void setSfDisplayExtraOpt(Context con, boolean is){
+        setBoolean(con, DISPLAY_EXTRA, is);
+    }
+
+    public static final Boolean getSfInsertDoctorOpt(Context con){
+        return getBoolean(con, INSERT_DOCTOR, false);
+    }
+
+    public static void setSfInsertDoctorOpt(Context con, boolean is){
+        setBoolean(con, INSERT_DOCTOR, is);
+    }
+
+    public static final Boolean getSfShootDisplayOpt(Context con){
+        return getBoolean(con, SHOOT_DISPLAY, false);
+    }
+
+    public static void setSfShootDisplayOpt(Context con, boolean is){
+        setBoolean(con, SHOOT_DISPLAY, is);
+    }
+
 }

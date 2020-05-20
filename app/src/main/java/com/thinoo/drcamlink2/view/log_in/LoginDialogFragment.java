@@ -72,10 +72,6 @@ public class LoginDialogFragment extends DialogFragment {
 
         final Button loginButton = (Button)view.findViewById(R.id.btn_login);
 
-        /**
-         * 기존 loginbutton의 동작이 한번 누른 후 응답이 와야 활성화 되나 네트워크 접속이 안된경우
-         * 응답을 받지 못함으로 이 경우 버튼을 활성화 시킬 받업이 없음으로 기존동작(loginButton.setEnabled(false);을 수정
-         */
         loginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,15 +94,15 @@ public class LoginDialogFragment extends DialogFragment {
                             SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
                             SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
 //                            Log.i(TAG,"responseString:::"+responseString);
-                            try{
-                                JSONObject obj = new JSONObject(responseString);
-                                SmartFiPreference.setSfToken(getActivity(),obj.getString("accessToken"));
-                                JSONObject obj2 = new JSONArray(obj.getString("boards")).getJSONObject(0);
-                                SmartFiPreference.setHospitalId(getActivity(),obj2.getString("id"));
-//                                Log.i(TAG,"Check:::"+SmartFiPreference.getHospitalId(getActivity()).toString()+SmartFiPreference.getSfToken(getActivity()).toString());
-                            }catch(Exception e){
-                                Log.d(TAG,e.toString());
-                            }
+//                            try{
+//                                JSONObject obj = new JSONObject(responseString);
+//                                SmartFiPreference.setSfToken(getActivity(),obj.getString("accessToken"));
+//                                JSONObject obj2 = new JSONArray(obj.getString("boards")).getJSONObject(0);
+//                                SmartFiPreference.setHospitalId(getActivity(),obj2.getString("id"));
+////                                Log.i(TAG,"Check:::"+SmartFiPreference.getHospitalId(getActivity()).toString()+SmartFiPreference.getSfToken(getActivity()).toString());
+//                            }catch(Exception e){
+//                                Log.d(TAG,e.toString());
+//                            }
                             loginButton.setEnabled(true);
                             startSelectPatient();
                         }

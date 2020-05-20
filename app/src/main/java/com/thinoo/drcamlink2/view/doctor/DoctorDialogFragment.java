@@ -34,8 +34,8 @@ import java.util.HashMap;
 
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
