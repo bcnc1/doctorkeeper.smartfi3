@@ -55,14 +55,9 @@ public class CloudGalleryAdapter extends BaseAdapter {
         mContext=context;
     }
 
-//    public void setItems(List<PhotoModel> items) {
-//        this.items = items;
-//        notifyDataSetChanged();
-//    }
-
     public void setItems(List<HashMap<String,String>> items) {
         this.items = items;
-        Log.w(TAG,"갯수 = "+items);
+//        Log.w(TAG,"갯수 = "+items);
         notifyDataSetChanged();
     }
 
@@ -132,7 +127,6 @@ public class CloudGalleryAdapter extends BaseAdapter {
         }
 
         holder.progressBar.setVisibility(View.INVISIBLE);
-
         accessToken = MadamfiveAPI.getAccessToken();
 
         String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
@@ -146,39 +140,7 @@ public class CloudGalleryAdapter extends BaseAdapter {
         holder.date.setText(createdDate);
         holder.done = false;
 
-        //for kt cloud
-//        String container = SmartFiPreference.getHospitalId(mContext)+"$"+SmartFiPreference.getSfPatientCustNo(mContext);
-//        String imageURL = Constants.Storage.BASE_URL+"/"+container+holder.photo.get("thumurl");
-//
-//        imageLoadingGlide(imageURL, holder);
-
-
         return view;
     }
 
-    private void imageLoadingGlide(String imgUrl, ViewHolder viewHolder) {
-
-        String token = SmartFiPreference.getSfToken(mContext);
-
-
-        Glide.with(mContext)
-                .load(new Headers().getUrlWithHeaders(imgUrl, token))
-                .into(viewHolder.image1);
-
-        String createdDate = viewHolder.photo.get("uploadDate");
-        viewHolder.date.setText(createdDate);
-        viewHolder.done = false;
-    }
-
-
-
-    class Headers {
-
-
-         GlideUrl getUrlWithHeaders(String url , String token){
-            return new GlideUrl(url, new LazyHeaders.Builder()
-                    .addHeader("X-Auth-Token", token)
-                    .build());
-        }
-    }
 }

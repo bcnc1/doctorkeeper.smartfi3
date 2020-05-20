@@ -52,13 +52,13 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     @BindView(R.id.cloud_empty_textview)
     TextView emptyView;
 
-    private int currentObjectHandle;
-    private Bitmap currentBitmap;
+//    private int currentObjectHandle;
+//    private Bitmap currentBitmap;
     private ArrayList<HashMap<String,String>> imageInfoList;
-    String accessToken;
-    private int mPageIdx = 0;
-    private final int mPageSize = 30;
-    private int mTotalSize, mTotalPage, mCurPage, mReqPage, mTotalImages;
+//    String accessToken;
+//    private int mPageIdx = 0;
+//    private final int mPageSize = 30;
+//    private int mTotalSize, mTotalPage, mCurPage, mReqPage, mTotalImages;
 
     private final String TAG = CloudGalleryFragment.class.getSimpleName();
 
@@ -74,7 +74,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         ButterKnife.bind(this, view);
 
         cloudGalleryAdapter = new CloudGalleryAdapter(getActivity());
-        Log.i(TAG, "CloudGalleryFragment STARTED");
+//        Log.i(TAG, "CloudGalleryFragment STARTED");
         getImagesList();
        // accessToken = MadamfiveAPI.getAccessToken();
         enableUi(true);
@@ -153,7 +153,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     }
 
     private void getImagesList(){
-        Log.i(TAG, "CloudGalleryFragment getImagesList");
+//        Log.i(TAG, "CloudGalleryFragment getImagesList");
         imageInfoList = new ArrayList<HashMap<String, String>>();
 
         MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
@@ -206,9 +206,6 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 
                 }catch (Exception e){
                 }
-//                photoModel.setUploaded(true);
-//                photoModel.save();
-//                galleryAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -218,55 +215,6 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 //                galleryAdapter.notifyDataSetChanged();
             }
         });
-//
-
-//            BlabAPI.getPatientImagesAll(getActivity(), SmartFiPreference.getSfPatientCustNo(getActivity()), new JsonHttpResponseHandler(){
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                    super.onSuccess(statusCode, headers, response);
-//
-//                    try{
-//                        String code =  response.get(Constants.EMRAPI.CODE).toString();
-//                        if(code.equals(Constants.EMRAPI.CODE_200)){
-//
-//                            JSONArray imgInfolist = response.getJSONArray((Constants.EMRAPI.DATA));
-//
-//                            for(int i=0; i<imgInfolist.length(); i++){
-//                                //JSONObject imgObj = imgInfolist.getJSONObject(i);
-//                                HashMap<String,String> imageInfo = new HashMap<>();
-//                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("updDttm"));
-//                                imageInfo.put("thumurl", imgInfolist.getJSONObject(i).getString("thnlFilePath"));
-//                                imageInfo.put("url", imgInfolist.getJSONObject(i).getString("phtoFilePath"));
-//                                imageInfo.put("uploadDate", imgInfolist.getJSONObject(i).getString("regDttm"));
-//
-//                                String fileName = imgInfolist.getJSONObject(i).getString("phtoFileNm");
-//                                if(fileName.contains("phone") && fileName.contains(".mp4")){
-//                                    imageInfo.put("cameraKind", "Video");
-//                                } else if(fileName.contains("dslr")){
-//                                    imageInfo.put("cameraKind", "DSLR");
-//                                }else{
-//                                    imageInfo.put("cameraKind", "Phone");
-//                                }
-//
-//                                imageInfoList.add(imageInfo);
-//                            }
-//
-//                        }
-//                    }catch (JSONException e){
-//                        e.printStackTrace();
-//                        Log.e(TAG," 응답에러");
-//                    }
-//
-//                    cloudGalleryAdapter.setItems(imageInfoList);
-//                    cloudGalleryAdapter.notifyDataSetChanged();
-//                }
-//
-//                @Override
-//                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                    super.onFailure(statusCode, headers, throwable, errorResponse);
-//                }
-//            });
-//        }
         Log.i("List in CloudFragment",imageInfoList.size()+"");
     }
 

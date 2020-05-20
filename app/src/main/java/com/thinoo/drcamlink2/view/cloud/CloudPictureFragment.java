@@ -56,9 +56,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Expended View 화면 구현...
- */
+
 public class CloudPictureFragment extends BaseFragment {
 
     private final String TAG = CloudPictureFragment.class.getSimpleName();
@@ -67,7 +65,6 @@ public class CloudPictureFragment extends BaseFragment {
         Bundle args = new Bundle();
         args.putInt("handle", objectHandle);
         args.putString("imageUrl", imageUrl);
-        // TODO: 2020-01-30 please delete : imageGuid
         args.putString("imageGuid",imageGuid);
         CloudPictureFragment f = new CloudPictureFragment();
         f.setArguments(args);
@@ -98,21 +95,18 @@ public class CloudPictureFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-//        handler = new Handler();
-//        objectHandle = getArguments().getInt("handle");
         imageUrl = getArguments().getString("imageUrl");
-        // TODO: 2020-01-30 please delete  imageGuid
         imageGuid = getArguments().getString("imageGuid");
 
-        Log.i(TAG, "imageUrl = "+imageUrl);
-        Log.i(TAG, "imageGuid = "+imageGuid);
+//        Log.i(TAG, "imageUrl = "+imageUrl);
+//        Log.i(TAG, "imageGuid = "+imageGuid);
 
         View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
 //        pictureView = (PictureView) view.findViewById(R.id.cloud_image);
-        if(cloud_image_picasso != null){
-            Log.w(TAG,"이미지뷰 초기화");
-            ((BitmapDrawable)cloud_image_picasso.getDrawable()).getBitmap().recycle();
-        }
+//        if(cloud_image_picasso != null){
+////            Log.w(TAG,"이미지뷰 초기화");
+//            ((BitmapDrawable)cloud_image_picasso.getDrawable()).getBitmap().recycle();
+//        }
 
         cloud_image_picasso = (ImageView) view.findViewById(R.id.cloud_image_picasso);
         progressBar = (ProgressBar) view.findViewById(R.id.cloud_progress);
@@ -125,89 +119,22 @@ public class CloudPictureFragment extends BaseFragment {
             }
         });
 
+        accessToken = MadamfiveAPI.getAccessToken();
+        imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageUrl+
+                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
 
-        String box = SmartFiPreference.getHospitalId(getActivity())+"$"+SmartFiPreference.getSfPatientCustNo(getActivity());
-        imageURL = Constants.Storage.BASE_URL+"/"+box+imageUrl;
-
-
-        Log.e(TAG,"imageURL = " +imageURL);
-
-        imageLoadingGlide(imageURL);
-
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(new Interceptor() {
-//                    @Override
-//                    public Response intercept(Interceptor.Chain chain) throws IOException {
-//                        Request newRequest = chain.request().newBuilder()
-//                                .addHeader("X-Auth-Token", SmartFiPreference.getSfToken(getActivity()))
-//                                .build();
-//                        return chain.proceed(newRequest);
-//                    }
-//                })
-//                .build();
-//
-//        final Picasso picasso = new Picasso.Builder(getActivity())
-//        .downloader(new OkHttp3Downloader(client))
-//        .listener(new Picasso.Listener() {
-//            @Override
-//            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-//                exception.printStackTrace();
-//            }
-//        })
-//        .build();
-
-        // TODO: 2020-01-17 이미지회전이 필요할 경우
-//        if(imageURL.contains("phone")){    //화먄이 90도 회전되어 있어서..
-//            picasso.load(imageURL).rotate(90).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-//                @Override
-//                public void onSuccess() {
-//                    //do smth when picture is loaded successfully
-//                    Log.w(TAG,"로딩 성공");
-//                    progressBar.setVisibility(View.GONE);
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//                    Log.w(TAG,"로딩 실");
-//                }
-//            });
-//        }else{
-//            picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-//                @Override
-//                public void onSuccess() {
-//                    //do smth when picture is loaded successfully
-//                    Log.w(TAG,"로딩 성공");
-//                    progressBar.setVisibility(View.GONE);
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//                    Log.w(TAG,"로딩 실");
-//                }
-//            });
-//        }
-
-
-
-//        picasso.load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-//            @Override
-//            public void onSuccess() {
-//                //do smth when picture is loaded successfully
-//                Log.w(TAG,"로딩 성공");
-//                progressBar.setVisibility(View.GONE);
-//
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                Log.w(TAG,"로딩 실패");
-//                Toast.makeText(getActivity(),"이미지를 가져오는데 실패했습니다. 다시 시도해주세요",Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
+        Picasso.get().load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                //do smth when picture is loaded successfully
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onError(Exception e) {
+            }
+        });
 
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
-
         view.setOnTouchListener(new View.OnTouchListener() {
 
             Float y1 = 0f, y2 = 0f;
@@ -243,37 +170,30 @@ public class CloudPictureFragment extends BaseFragment {
         return view;
     }
 
-    private void imageLoadingGlide(String imgUrl) {
-        String token = SmartFiPreference.getSfToken(getActivity());
-
-        Glide.with(getActivity())
-                .load(new Headers().getUrlWithHeaders(imgUrl, token))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        progressBar.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(cloud_image_picasso);
-
-
-    }
-
-    class Headers {
-
-
-        GlideUrl getUrlWithHeaders(String url , String token){
-            return new GlideUrl(url, new LazyHeaders.Builder()
-                    .addHeader("X-Auth-Token", token)
-                    .build());
-        }
-    }
+//    private void imageLoadingGlide(String imgUrl) {
+//        String token = SmartFiPreference.getSfToken(getActivity());
+//        Glide.with(getActivity())
+//                .load(new Headers().getUrlWithHeaders(imgUrl, token))
+//                .listener(new RequestListener<Drawable>() {
+//                    @Override
+//                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                        return false;
+//                    }
+//                    @Override
+//                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                        progressBar.setVisibility(View.GONE);
+//                        return false;
+//                    }
+//                })
+//                .into(cloud_image_picasso);
+//    }
+//    class Headers {
+//        GlideUrl getUrlWithHeaders(String url , String token){
+//            return new GlideUrl(url, new LazyHeaders.Builder()
+//                    .addHeader("X-Auth-Token", token)
+//                    .build());
+//        }
+//    }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -287,12 +207,11 @@ public class CloudPictureFragment extends BaseFragment {
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        cloud_image_picasso.setImageDrawable(null);
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        cloud_image_picasso.setImageDrawable(null);
+//    }
 
 
 }
