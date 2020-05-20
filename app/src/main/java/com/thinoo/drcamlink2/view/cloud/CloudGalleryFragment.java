@@ -111,8 +111,6 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
             Toast.makeText(getActivity(), "비디오파일은 미리보기가 제공되지 않습니다!", Toast.LENGTH_SHORT).show();
         } else{
             String imageUrl = pictureMap.get("url");
-
-            // TODO: 2020-01-30 삭제예정
             String imageGuid = pictureMap.get("guid");
 
             FragmentTransaction ft = getFragmentManager().beginTransaction();

@@ -79,14 +79,12 @@ public class LaunchVrecordActivity extends Activity {
         mFileNameThumb = DEVICE + "_" + timeStamp + ".jpg";
 
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-
         contentUri = FileProvider.getUriForFile(mCon, BuildConfig.APPLICATION_ID , mFile);
-
-        Log.d(TAG,"contentUri = "+ contentUri);
+//        Log.d(TAG,"contentUri = "+ contentUri);
 
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, contentUri );
-        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1); //high quality
+        intent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0);
         intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*MaxMin);
         grantUriPermission(getPackageName(), contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -99,30 +97,20 @@ public class LaunchVrecordActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         //Toast.makeText(mCon, "비디오에서 돌아옴", Toast.LENGTH_SHORT).show();
-
         if(requestCode == VREC_REQUEST && resultCode == Activity.RESULT_OK){
-
-//            if(contentUri != null){
-//
-//            }
-
-
 
             String path = DisplayUtil.storeThumbVideoImage(mFile.toString(),
                     mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileNameThumb);
-
-            if(path != null){
+//            if(path != null){
                 PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, mFile.toString(),path, mFileName, 2);
-
                 Long id = photoModel.getId();
                 VideoIntentService.startUploadVideo(mCon, id);
 
-            }else{
-                Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
-
-            }
+//            }else{
+//                Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+//
+//            }
 
 
         }else{

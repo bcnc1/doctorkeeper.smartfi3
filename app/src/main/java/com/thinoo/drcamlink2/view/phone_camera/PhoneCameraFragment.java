@@ -356,17 +356,6 @@ public class PhoneCameraFragment extends BaseFragment {
         }else{
             Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
-//        try {
-//            cameraView.stop();
-//        }catch(Exception e){
-//            Log.e(TAG,"ERROR~~~"+e);
-//        }
-//
-//        FragmentTransaction ft = getFragmentManager().beginTransaction();
-//        ft.replace(R.id.fragment_container, CloudFragment.newInstance(), null);
-//        ft.addToBackStack(null);
-//        ft.commit();
-
     }
 
     @OnClick(R.id.btn_launch_cameraApp)

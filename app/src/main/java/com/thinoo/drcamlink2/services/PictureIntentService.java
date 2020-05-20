@@ -36,6 +36,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.deleteImage;
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.getActivity;
+
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -132,7 +135,7 @@ public class PictureIntentService extends IntentService {
             mMediaType = "videos";
         }
 
-        final String fileName = pm.getFilename();
+//        final String fileName = pm.getFilename();
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -141,7 +144,7 @@ public class PictureIntentService extends IntentService {
                 pm.setThumbUploading(1);
 
                 File file  = new File(filePath);
-                String content_type  = DisplayUtil.getMimeType(filePath);
+//                String content_type  = DisplayUtil.getMimeType(filePath);
 //                File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
                 byte[] bytes = null;
                 try{
@@ -167,10 +170,14 @@ public class PictureIntentService extends IntentService {
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                         Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
+                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        deleteImage();
                     }
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
+                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        deleteImage();
                     }
                 });
                 Log.i(TAG,"uploadImage => Finished");

@@ -231,7 +231,11 @@ public class MadamfiveAPI {
 
         try {
             attachmentJson.put("guid", fileName);
-            attachmentJson.put("fileType", "image/jpeg");
+            if(cameraKind.equals("Video")){
+                attachmentJson.put("fileType", "video/mp4");
+            }else{
+                attachmentJson.put("fileType", "image/jpeg");
+            }
             attachmentJson.put("fileName", fileName);
             attachmentJson.put("type", "none.ko");
             params.put("attachments[]", URLEncoder.encode(attachmentJson.toString()));
@@ -295,7 +299,10 @@ public class MadamfiveAPI {
                 // for now just get bitmap data from ImageView
 //                Log.i(TAG, "imageBytes.length : " + imageBytes.length);
 //                Log.i(TAG, "fileName : " + fileName);
-                ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));
+                if(cameraKind.equals("Video")){
+                    ImageParams.put("files[]", new DataPart(fileName, imageBytes, "video/mp4"));
+                }else{
+                    ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));                }
 
                 return ImageParams;
             }
@@ -303,16 +310,9 @@ public class MadamfiveAPI {
 
 //        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000, 1, 1.0f));
         request.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
         VolleySingleton.getInstance(mContext).addToRequestQueue(request);
 
-        getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(getActivity(),name+"님 이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        deleteImage();
+//        deleteImage();
 
         countDownTimer.cancel();
         countDownTimer.start();
@@ -549,7 +549,7 @@ public class MadamfiveAPI {
 
     public static void deleteImage() {
 
-        Log.d(TAG,"deleteImage");
+//        Log.d(TAG,"deleteImage");
         File myDir = getActivity().getExternalFilesDir(Environment.getExternalStorageState());
         if(myDir.exists()&&myDir.isDirectory()){
             File[] files = myDir.listFiles();
