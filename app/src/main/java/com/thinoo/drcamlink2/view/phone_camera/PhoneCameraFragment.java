@@ -373,7 +373,6 @@ public class PhoneCameraFragment extends BaseFragment {
             Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
 
-
     }
 
     @OnClick(R.id.btn_launch_videoApp)
@@ -392,7 +391,6 @@ public class PhoneCameraFragment extends BaseFragment {
         }else{
             Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
-
 
     }
 
@@ -477,7 +475,6 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private byte[] rotateImage(byte[] bytes,int orientationValue)
     {
-
         try
         {
 

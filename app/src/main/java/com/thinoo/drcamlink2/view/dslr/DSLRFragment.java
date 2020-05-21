@@ -288,7 +288,7 @@ public class DSLRFragment extends SessionFragment implements
 
     @Override
     public void capturedPictureReceived(int objectHandle, String filename, Bitmap thumbnail, Bitmap bitmap) {
-        Log.i(TAG, "BITMAP:capturedPictureReceived:" + bitmap.getWidth() + "x" + bitmap.getHeight());
+//        Log.i(TAG, "BITMAP:capturedPictureReceived:" + bitmap.getWidth() + "x" + bitmap.getHeight());
     }
 
     @Override
@@ -297,7 +297,7 @@ public class DSLRFragment extends SessionFragment implements
 
         if (camera() != null) {
             if (format == PtpConstants.ObjectFormat.EXIF_JPEG) {
-                Log.i(TAG, "OBJECT:retrieveImage:");
+//                Log.i(TAG, "OBJECT:retrieveImage:");
                 camera().retrieveImage(this, handle);
             }
         }
@@ -324,10 +324,7 @@ public class DSLRFragment extends SessionFragment implements
                 }
 
                 if (currentObjectHandle == objectHandle) {
-
                     //Log.i(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
-
-
                     camera_ready_Notice.setVisibility(View.GONE);
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     if(displayPictureFragment!=null){
@@ -344,10 +341,8 @@ public class DSLRFragment extends SessionFragment implements
                     displayPhoto(objectHandle,currentBitmap);
 
                 }
-
             }
         });
-
     }
 
     private void getImage(int objectHandle){
@@ -401,8 +396,7 @@ public class DSLRFragment extends SessionFragment implements
     }
 
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
-        Log.d(TAG, "sendPhoto");
-
+//        Log.d(TAG, "sendPhoto");
         currentObjectHandle = 0;
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
@@ -413,104 +407,16 @@ public class DSLRFragment extends SessionFragment implements
         String path = DisplayUtil.storeDslrImage(mFile.toString(),
                 getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
-
         if(path != null){
             PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
             Long id = photoModel.getId();
             PictureIntentService.startUploadPicture(getActivity(), id);
-
         }else{
             Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
-
         }
 
     }
 
-    private void uploadImage(String filename){
-        Log.d(TAG,"Started");
-        String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/drcam/" + filename;
-        Log.d(TAG,"imagePath = "+imagePath);
-
-        Log.d(TAG,"외부 11 = "+Environment.getExternalStorageDirectory());
-        Log.d(TAG,"외부 22 = "+Environment.getExternalStorageDirectory().getAbsolutePath());
-
-//        Log.d(TAG,"외부 = "+Environment.getExternalStorageState());
-//
-//        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
-//        //test
-          File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/kimcy/");
-////        Bitmap bitmap = null;
-////        File f = new File(imagePath);
-            byte[] bytes = null;
-            try{
-                Log.d(TAG,"파일패스 = "+ file.getAbsolutePath()+filename);
-                FileInputStream fis = new FileInputStream(file.getAbsolutePath()+filename);
-                int nCount = fis.available();
-                if(nCount > 0){
-                    bytes = new byte[nCount];
-                    fis.read(bytes);
-                }
-                if(fis != null){
-                    fis.close();
-                }
-            }catch(Exception e){
-                Log.i(TAG,e.toString());
-            }
-        Log.i("Upload Image","Read Bitmap");
-
-        MadamfiveAPI.createPost(bytes, "DSLR", new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("AsyncTask", "Uploading");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-//                        photoModel.setUploaded(true);
-//                        photoModel.save();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-            }
-        });
-        Log.i("Upload Image","Finished");
-
-
-    }
-
-
-    private void uploadDslrImage(String filePath, String filename){
-
-        Log.i("Upload Image","Read Bitmap");
-
-        BlabAPI.ktStoreObject(filePath, "DSLR", filename, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("AsyncTask", "Uploading");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("AsyncTask", "이미지 업로드 완료:" + statusCode + responseString);
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(getActivity(),"DSLR 이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-            }
-        });
-        Log.i("Upload Image","Finished");
-    }
     @Override
     public void onWorkerStarted() {
     }
@@ -545,9 +451,7 @@ public class DSLRFragment extends SessionFragment implements
                     int end = handles.length;
                     if(end!=0)  getImage(handles[end - 1]);
                 }
-                Log.i(TAG,"objectHandleNumber:::>>>"+objectHandleNumber);
-
-
+//                Log.i(TAG,"objectHandleNumber:::>>>"+objectHandleNumber);
             }
         });
     }

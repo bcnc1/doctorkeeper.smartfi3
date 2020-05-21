@@ -133,6 +133,7 @@
     <string name="notification_error_during_upload">error during upload</string>
 
     <string name="make_error_thumbnail">썸네일 이미지 생성 실패</string>
+    <string name="error_read_image">이미지 읽기 실패</string>
     <string name="error_upload_image">이미지 업로드 실패</string>
     <string name="check_network">네트워크 상태를 체크해 주세요</string>
     <string name="upload_fail_etc">네트워크등의 문제로 업로드를 실패했습니다.</string>

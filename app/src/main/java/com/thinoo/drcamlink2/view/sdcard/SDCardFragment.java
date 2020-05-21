@@ -88,15 +88,15 @@ public class SDCardFragment extends SessionFragment
     @BindView(R.id.read_Image)
     ImageView readImage;
 
-    private int currentScrollState;
-    private int currentObjectHandle;
-    private Bitmap currentBitmap;
+//    private int currentScrollState;
+//    private int currentObjectHandle;
+//    private Bitmap currentBitmap;
 
     private final String TAG = SDCardFragment.class.getSimpleName();
 
     private boolean storageRead = false;
 
-    private Fragment displayPictureFragment;
+//    private Fragment displayPictureFragment;
     private Fragment galleryFragment;
 
 //    private MyAsyncTask myAsyncTask;
@@ -112,15 +112,12 @@ public class SDCardFragment extends SessionFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         formatParser = new SimpleDateFormat("yyyyMMdd'T'HHmmss.S");
-        currentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
+//        currentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 
         View view = inflater.inflate(R.layout.dslr_frag, container, false);
         ButterKnife.bind(this, view);
-
         ((SessionActivity) getActivity()).setSessionView(this);
-
 //        galleryAdapter = new DSLRPhotoAdapter(getActivity());
-
         enableUi(false);
         //enableUi(true);
 
@@ -274,169 +271,6 @@ public class SDCardFragment extends SessionFragment
 
     @Override
     public void objectAdded(int handle, int format) {
-//        Log.i(TAG, "OBJECT:Added:" + handle + ":" + format);
-//
-//        if (camera() != null) {
-//            if (format == PtpConstants.ObjectFormat.EXIF_JPEG) {
-//                Log.i(TAG, "OBJECT:retrieveImage:");
-//                camera().retrieveImage(this, handle);
-//            }
-//        }
-//        if (camera() == null) {
-//            return;
-//        }
-//
-//        if (format == PtpConstants.ObjectFormat.EXIF_JPEG) {
-//            camera().retrieveImageInfo(this, handle);
-//        }
-
     }
-//
-//    @Override
-//    public void onImageInfoRetrieved(final int objectHandle, final ObjectInfo objectInfo, final Bitmap thumbnail) {
-//
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                Camera camera = camera();
-//                if (!inStart || camera == null) {
-//                    return;
-//                }
-//
-//                if (currentObjectHandle == objectHandle) {
-//
-//                    Log.i(TAG, "1:onImageInfoRetrieved ###### [" + objectHandle + "] " + objectInfo.filename + "#####");
-//
-////                    camera_ready_Notice.setVisibility(View.GONE);
-////                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-////                    if(displayPictureFragment!=null){
-////                        ft.remove(displayPictureFragment).commit();
-////                    }
-////                    if(galleryFragment != null){
-////                        ft.remove(galleryFragment).commit();
-////                        storageRead = false;
-////                    }
-////                    if(readImage.isEnabled())  readImage.setVisibility(View.GONE);
-////                    upload_Notice.setVisibility(View.VISIBLE);
-//
-////                    sendPhoto(currentObjectHandle, objectInfo, thumbnail, currentBitmap);
-////                    displayPhoto(objectHandle,currentBitmap);
-//
-//                }
-//
-//            }
-//        });
-//
-//    }
-//
-//    @Override
-//    public void onScrollStateChanged(AbsListView view, int scrollState) {
-//
-//        currentScrollState = scrollState;
-//
-//        switch (scrollState) {
-//            case OnScrollListener.SCROLL_STATE_IDLE: {
-//                Camera camera = camera();
-//                if (!inStart || camera == null) {
-//                    break;
-//                }
-//                break;
-//            }
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//    }
-//
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//    }
-//
-//    /**
-//     * Camera.RetrieveImageListener
-//     *
-//     * @param objectHandle
-//     * @param image
-//     */
-//    @Override
-//    public void onImageRetrieved(int objectHandle, Bitmap image) {
-//
-//        Camera camera = camera();
-//        if (camera == null) {
-//            return;
-//        }
-//
-//        currentObjectHandle = objectHandle;
-//        currentBitmap = image;
-//
-//        camera.retrieveImageInfo(this, objectHandle);
-//
-//    }
-//
-//    @Override
-//    public void onWorkerStarted() {
-//    }
-//
-//    @Override
-//    public void onWorkerEnded() {
-//    }
-//
-//    ////////////////////////////////////////////////////////////////////
-//    // Camera.StorageInfoListener Override Methods
-//    ///////////////////////////////////////////////////////////////////
-//
-//    @Override
-//    public void onImageHandlesRetrieved(final int[] handles) {
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (!inStart) {
-//                    return;
-//                }
-//                if (handles.length == 0) {
-//                    emptyView.setText(getString(R.string.gallery_empty));
-//                }
-//                Log.i(TAG, "onImageHandlesRetrieved:" + handles.length);
-//                galleryAdapter.setHandles(handles);
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void onAllStoragesFound() {
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (!inStart || camera() == null) {
-//                    return;
-//                }
-//                if (storageAdapter.getCount() == 0) {
-//                    emptyView.setText(getString(R.string.gallery_empty));
-//                    return;
-//                } else if (storageAdapter.getCount() == 1) {
-//                    storageSpinner.setEnabled(false);
-//                }
-//                storageSpinner.setSelection(0);
-//                camera().retrieveImageHandles(SDCardFragment.this, storageAdapter.getItemHandle(0),
-//                        PtpConstants.ObjectFormat.EXIF_JPEG);
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void onStorageFound(final int handle, final String label) {
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-////                if (!inStart) {
-////                    return;
-////                }
-//                storageAdapter.add(handle, label);
-//            }
-//        });
-//    }
-//
 
 }
