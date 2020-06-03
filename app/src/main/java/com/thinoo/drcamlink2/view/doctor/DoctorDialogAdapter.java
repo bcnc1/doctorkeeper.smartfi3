@@ -12,7 +12,7 @@ import com.thinoo.drcamlink2.R;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
 
 
 public class DoctorDialogAdapter extends BaseAdapter {

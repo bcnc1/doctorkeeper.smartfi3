@@ -99,6 +99,7 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private Boolean doctorSelectExtraOption;
     private Boolean shootingImageDisplayExtraOption;
+    private Boolean fixedPortraitExtraOption;
 
     public interface VrecordInterface{
         public void startRecord();
@@ -187,6 +188,8 @@ public class PhoneCameraFragment extends BaseFragment {
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(MadamfiveAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
 
+        fixedPortraitExtraOption = SmartFiPreference.getSfShootPortraitOpt(MadamfiveAPI.getActivity());
+
         cameraView = (CameraView) view.findViewById(R.id.camera);
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
@@ -209,7 +212,13 @@ public class PhoneCameraFragment extends BaseFragment {
                 Bitmap picture = cameraKitImage.getBitmap();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
                 mFileName = DEVICE + "_" + timeStamp+".jpg";
-                savePhotoNUpload(picture, "phone",mFileName);
+                if(fixedPortraitExtraOption){
+                    int orientationValue = orientationListener.rotation;
+                    Bitmap picture2 = rotateImage(picture,orientationValue);
+                    savePhotoNUpload(picture2, "phone", mFileName);
+                }else {
+                    savePhotoNUpload(picture, "phone", mFileName);
+                }
             }
             @Override
             public void onVideo(CameraKitVideo cameraKitVideo) {
@@ -509,58 +518,60 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     }
 
-//    private byte[] rotateImage(byte[] bytes,int orientationValue)
-//    {
-//        try
-//        {
-//
+    private Bitmap rotateImage(Bitmap image,int orientationValue){
+//        try{
 //            Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);;
-//
 //            Log.i("Orientation Listener","value : "+orientationValue+"==============================");
-//
-//            if(orientationValue==6){
-//                image = rotate(image, 90);
-//            }else if(orientationValue==8){
-//                image = rotate(image, 180);
-//            }
-//
+            if(fixedPortraitExtraOption) {
+                if (orientationValue == 2) {
+                    image = rotate(image, 90);
+                } else if (orientationValue == 3) {
+                    image = rotate(image, 180);
+                } else if (orientationValue == 4) {
+                    image = rotate(image, 270);
+                }
+            }else{
+                if (orientationValue == 6) {
+                    image = rotate(image, 90);
+                } else if (orientationValue == 8) {
+                    image = rotate(image, 180);
+                }
+            }
+
 //            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 //            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 //            bytes = stream.toByteArray();
-//
-//        }
-//        catch(Exception e)
-//        {
+//            return image;
+//        }catch(Exception e){
 //            Log.e(TAG,e+"");
 //        }
-//
+        return image;
 //        return bytes;
-//    }
+    }
 
-//    public Bitmap rotate(Bitmap bitmap, int degrees)
-//    {
-//        if(degrees != 0 && bitmap != null)
-//        {
-//            Matrix m = new Matrix();
-//            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
-//                    (float) bitmap.getHeight() / 2);
-//
-//            try
-//            {
-//                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
-//                if(bitmap != converted)
-//                {
-//                    bitmap.recycle();
-//                    bitmap = converted;
-//                }
-//            }
-//            catch(OutOfMemoryError ex)
-//            {
-//                // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
-//            }
-//        }
-//        return bitmap;
-//    }
+    public Bitmap rotate(Bitmap bitmap, int degrees) {
+        if(degrees != 0 && bitmap != null)
+        {
+            Matrix m = new Matrix();
+            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
+                    (float) bitmap.getHeight() / 2);
+
+            try
+            {
+                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+                if(bitmap != converted)
+                {
+                    bitmap.recycle();
+                    bitmap = converted;
+                }
+            }
+            catch(OutOfMemoryError ex)
+            {
+                // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
+            }
+        }
+        return bitmap;
+    }
 
 
 }

@@ -7,10 +7,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
+
 import java.util.HashMap;
 import java.util.List;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
+//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
 
 
 public class PatientDialogAdapter extends BaseAdapter {
@@ -19,6 +22,7 @@ public class PatientDialogAdapter extends BaseAdapter {
     private List<HashMap<String,String>> items;
     private TextView patient_name;
     private TextView patient_chartNumber;
+    private Boolean patientSearchDisplayExtraOption;
 
     public PatientDialogAdapter(Context context) {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,6 +59,7 @@ public class PatientDialogAdapter extends BaseAdapter {
         patient_name = (TextView) view.findViewById(R.id.patient_name);
         patient_chartNumber = (TextView) view.findViewById(R.id.patient_chartNumber);
 
+        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(MadamfiveAPI.getActivity());
         if(patientSearchDisplayExtraOption){
             HashMap<String, String> patientInfo = getItem(i);
             patient_name.setText(patientInfo.get("name"));

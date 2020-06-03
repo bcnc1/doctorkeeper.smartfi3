@@ -24,6 +24,8 @@ public class SmartFiPreference {
     public static final String INSERT_PATIENT = "smartfi.patient.insert";
     public static final String INSERT_DOCTOR = "smartfi.insert.doctor";
     public static final String SHOOT_DISPLAY = "smartfi.shoot.display";
+    public static final String SHOOT_PORTRAIT = "smartfi.shoot.portrait";
+    public static final String DISPLAY_LANDSCAPE = "smartfi.display.landscape";
 
     public static void defaultPreference(Context context){
 
@@ -189,5 +191,20 @@ public class SmartFiPreference {
         setBoolean(con, SHOOT_DISPLAY, is);
     }
 
+    public static final Boolean getSfShootPortraitOpt(Context con){
+        return getBoolean(con, SHOOT_PORTRAIT, false);
+    }
+
+    public static void setSfShootPortraitOpt(Context con, boolean is){
+        setBoolean(con, SHOOT_PORTRAIT, is);
+    }
+
+    public static final Boolean getSfDisplayLandscapeOpt(Context con){
+        return getBoolean(con, DISPLAY_LANDSCAPE, false);
+    }
+
+    public static void setSfDispalyLandscapeOpt(Context con, boolean is){
+        setBoolean(con, DISPLAY_LANDSCAPE, is);
+    }
 
 }

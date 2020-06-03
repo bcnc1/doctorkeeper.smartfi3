@@ -72,14 +72,12 @@ public class MadamfiveAPI {
     private static String boardId = null;
     private static String mAcccessToken = null;
 
-    public static Boolean patientSearchDisplayExtraOption = false;
-    public static Boolean patientInsertExtraOption = false;
-//    public static Boolean doctorSelectExtraOption = false;
-//    public static Boolean shootingImageDisplayExtraOption = false;
+//    public static Boolean patientSearchDisplayExtraOption = false;
+//    public static Boolean patientInsertExtraOption = false;
 
     public static boolean isCameraOn = false;
 
-    public static boolean isListViewOnPhoneCamera = true;
+//    public static boolean isListViewOnPhoneCamera = true;
 
     public static String getAccessToken() {
         mAcccessToken = SmartFiPreference.getSfToken(getActivity());
@@ -516,18 +514,6 @@ public class MadamfiveAPI {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(mContext).addToRequestQueue(request);
 
-    }
-
-    public static void write_patientInfo(){
-
-        if(selectedPatientInfo!=null) {
-            try {
-                ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("patient.txt", Context.MODE_PRIVATE));
-                outputStream.writeObject(selectedPatientInfo);
-                outputStream.close();
-            } catch (Exception e) {
-            }
-        }
     }
 
     public static void deleteImage() {

@@ -45,11 +45,16 @@ public class OptionsDialogFragment extends DialogFragment {
     private Switch switch_options_patient_insert_activate;
     private Switch switch_options_doctor_insert_activate;
     private Switch switch_options_shooting_image_display;
+    private Switch switch_options_fixed_portrait;
+    private Switch switch_options_fixed_landscape;
 
     private Boolean doctorSelectExtraOption;
     private Boolean patientInsertExtraOption;
     private Boolean patientSearchDisplayExtraOption;
     private Boolean shootingImageDisplayExtraOption;
+    private Boolean fixedPortraitExtraOption;
+    private Boolean fixedLandscapeExtraOption;
+
 
     public static OptionsDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -116,7 +121,7 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
-        /// Option 3
+        /// Option 3 : Doctor Info
         switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
         switch_options_doctor_insert_activate.setChecked(false);
 
@@ -139,7 +144,7 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
-        /// optins4
+        /// optins4 : Display Images over PhoneCamera Fragment (Init screen)
         switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
         switch_options_shooting_image_display.setChecked(false);
 
@@ -162,6 +167,55 @@ public class OptionsDialogFragment extends DialogFragment {
                 SmartFiPreference.setSfShootDisplayOpt(MadamfiveAPI.getActivity(),shootingImageDisplayExtraOption);
             }
         });
+
+        /// Option 5 : Shoot only Portrait Mode in PhoneCamera Fragment
+        switch_options_fixed_portrait = (Switch) view.findViewById(R.id.switch_options_fixed_portrait);
+        switch_options_fixed_portrait.setChecked(false);
+
+        fixedPortraitExtraOption = SmartFiPreference.getSfShootPortraitOpt(MadamfiveAPI.getActivity());
+        if(fixedPortraitExtraOption){
+            switch_options_fixed_portrait.setChecked(true);
+        }
+
+        switch_options_fixed_portrait.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(fixedPortraitExtraOption){
+                    fixedPortraitExtraOption = false;
+                    switch_options_fixed_portrait.setChecked(false);
+                }else {
+                    fixedPortraitExtraOption = true;
+                    switch_options_fixed_portrait.setChecked(true);
+                }
+                SmartFiPreference.setSfShootPortraitOpt(MadamfiveAPI.getActivity(),fixedPortraitExtraOption);
+            }
+        });
+
+        /// Option 6
+        switch_options_fixed_landscape = (Switch) view.findViewById(R.id.switch_options_fixed_landscape);
+        switch_options_fixed_landscape.setChecked(false);
+
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        if(fixedLandscapeExtraOption){
+            switch_options_fixed_landscape.setChecked(true);
+        }
+
+        switch_options_fixed_landscape.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(fixedLandscapeExtraOption){
+                    fixedLandscapeExtraOption = false;
+                    switch_options_fixed_landscape.setChecked(false);
+                }else {
+                    fixedLandscapeExtraOption = true;
+                    switch_options_fixed_landscape.setChecked(true);
+                }
+                SmartFiPreference.setSfDispalyLandscapeOpt(MadamfiveAPI.getActivity(),fixedLandscapeExtraOption);
+            }
+        });
+
 
         return view;
     }
