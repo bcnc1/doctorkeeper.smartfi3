@@ -127,8 +127,7 @@
             android:layout_marginRight="30dp"
             android:layout_marginBottom="120dp"
             android:background="@null"
-            android:src="@drawable/btn_doctor"
-            android:visibility="gone"/>
+            android:src="@drawable/btn_doctor" />
 
         <TextView
             android:id="@+id/patient_name"

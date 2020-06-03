@@ -429,8 +429,7 @@ public class MadamfiveAPI {
         mAcccessToken = getAccessToken();
         boardId = getBoardId();
 
-        String relativeURL = "https://dashboard.doctorkeeper.com/v1/boards/SVCBoard_371113691246594/my/posts?limit=200&accessToken="+URLEncoder.encode(mAcccessToken);
-//        Log.i("URL=====", relativeURL.toString());
+        String relativeURL = "https://dashboard.doctorkeeper.com/v1/boards/"+boardId+"/posts?limit=10&accessToken="+URLEncoder.encode(mAcccessToken);
 
         SSLConnect ssl = new SSLConnect();
         ssl.postHttps(relativeURL,1000,1000);
@@ -442,12 +441,9 @@ public class MadamfiveAPI {
                         try {
                             responseHandler.onSuccess(200, null, response.toString());
                             Log.i(TAG, "Response:%n %s" + response.toString());
-
                         } catch (Exception e) {
                             Log.i(TAG,"Errr:::"+e.toString());
                         }
-
-//                        callBack.onSuccess(imageInfoList);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -462,7 +458,6 @@ public class MadamfiveAPI {
                 params.put("X-Madamfive-APIKey", mAPIKey);
                 return params;
             }
-
         };
 
         request.setRetryPolicy(new DefaultRetryPolicy(10000,
@@ -529,18 +524,6 @@ public class MadamfiveAPI {
             try {
                 ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("patient.txt", Context.MODE_PRIVATE));
                 outputStream.writeObject(selectedPatientInfo);
-                outputStream.close();
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    public static void write_doctorInfo(){
-
-        if(selectedDoctor!=null) {
-            try {
-                ObjectOutputStream outputStream = new ObjectOutputStream(getActivity().openFileOutput("doctor.txt", Context.MODE_PRIVATE));
-                outputStream.writeObject(selectedDoctor);
                 outputStream.close();
             } catch (Exception e) {
             }

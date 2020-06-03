@@ -577,7 +577,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             Log.w(TAG,"Timer Completed");
 //            Log.i(TAG,"selectedPatientInfo:"+selectedPatientInfo.toString());
             MadamfiveAPI.write_patientInfo();
-            MadamfiveAPI.write_doctorInfo();
+//            MadamfiveAPI.write_doctorInfo();
             MadamfiveAPI.deleteImage();
 
             finish();

@@ -17,6 +17,8 @@ public class SmartFiPreference {
 
     public static final String SF_PATIENT_CUST_NO = "smartfi.patient.cust.no";
     public static final String SF_PATIENT_NAME = "smartfi.patient.name";
+    public static final String SF_DOCTOR_NAME = "smartfi.doctor.name";
+    public static final String SF_DOCTOR_NUMBER = "smartfi.doctor.number";
 
     public static final String DISPLAY_EXTRA = "smartfi.display.extra";
     public static final String INSERT_PATIENT = "smartfi.patient.insert";
@@ -93,6 +95,22 @@ public class SmartFiPreference {
         setString(con, SF_PATIENT_NAME, name);
     }
 
+    public static final String getSfDoctorName(Context con){
+        return getString(con, SF_DOCTOR_NAME, "");
+    }
+
+    public static void setSfDoctorName(Context con, String name){
+        setString(con, SF_DOCTOR_NAME, name);
+    }
+
+    public static final String getSfDoctorNumber(Context con){
+        return getString(con, SF_DOCTOR_NUMBER, "");
+    }
+
+    public static void setSfDoctorNumber(Context con, String name){
+        setString(con, SF_DOCTOR_NUMBER, name);
+    }
+
 //    public static final String getSfPatientCategoryid(Context con){
 //        return getString(con, SF_PATIENT_CATEGORYID, "");
 //    }
@@ -138,7 +156,6 @@ public class SmartFiPreference {
         return sp.getString(key, default_value);
     }
 
-
     // Save options
     public static final Boolean getSfInsertPatientOpt(Context con){
         return getBoolean(con, INSERT_PATIENT, false);
@@ -171,5 +188,6 @@ public class SmartFiPreference {
     public static void setSfShootDisplayOpt(Context con, boolean is){
         setBoolean(con, SHOOT_DISPLAY, is);
     }
+
 
 }

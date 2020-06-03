@@ -67,6 +67,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
+
 
 public class PhoneCameraFragment extends BaseFragment {
 
@@ -84,6 +86,7 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private boolean cameraIsReady;
     private TextView patient_name;
+    private TextView doctor_name;
 
     private VrecordInterface mVrecInterface;
 
@@ -91,6 +94,7 @@ public class PhoneCameraFragment extends BaseFragment {
     private String mFileName;
 
     private MediaActionSound mSound;
+    private Boolean doctorSelectExtraOption;
 
     public interface VrecordInterface{
         public void startRecord();
@@ -114,8 +118,8 @@ public class PhoneCameraFragment extends BaseFragment {
     Button btnLaunchCameraApp;
 
     //kimcy: add video
-    @BindView(R.id.btn_launch_videoApp)
-    Button btnLaunchVideoApp;
+//    @BindView(R.id.btn_launch_videoApp)
+//    Button btnLaunchVideoApp;
 
     @BindView(R.id.button_capture)
     ImageButton btnCamera;
@@ -176,7 +180,7 @@ public class PhoneCameraFragment extends BaseFragment {
             btnSDCard.setVisibility(View.VISIBLE);
         }
 
-        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(MadamfiveAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
 
         cameraView = (CameraView) view.findViewById(R.id.camera);
@@ -231,13 +235,31 @@ public class PhoneCameraFragment extends BaseFragment {
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);
 
-        Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(getActivity()));
-        patient_name.setText(SmartFiPreference.getSfPatientName(getActivity()));
+        Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()));
+        patient_name.setText(SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()));
 
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
         MadamfiveAPI.getContext().registerReceiver(usbOnReciever,on);
         MadamfiveAPI.getContext().registerReceiver(usbOffReciever,off);
+
+        // Display Doctor info : OPTION
+        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(MadamfiveAPI.getActivity());
+        doctor_name = (TextView)view.findViewById(R.id.doctor_name);
+        if(!doctorSelectExtraOption){
+            btnDoctor.setVisibility(View.INVISIBLE);
+            doctor_name.setVisibility(View.INVISIBLE);
+        }else{
+            HashMap<String,String> doctor = new HashMap<>();
+            String name = SmartFiPreference.getSfDoctorName(MadamfiveAPI.getActivity());
+            String number =SmartFiPreference.getSfDoctorNumber(MadamfiveAPI.getActivity());
+            doctor.put("name", name);
+            doctor.put("doctorNumber", number);
+            selectedDoctor = doctor;
+            if(selectedDoctor!=null){
+                doctor_name.setText(selectedDoctor.get("name"));
+            }
+        }
 
         return view;
     }
@@ -279,19 +301,19 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private void savePhotoNUpload(Bitmap picture, String phone, String mFileName) {
         Log.w(TAG,"savePhotoNUpload");
-        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+        File file = new File(MadamfiveAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
         String srcPath = file.toString();
         String path = DisplayUtil.storePtictureNThumbImage(srcPath,
-                getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, picture);
+                MadamfiveAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, picture);
 
         if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), srcPath,path, mFileName, 0);
+            PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
             Long id = photoModel.getId();
-            PictureIntentService.startUploadPicture(getActivity(), id);
+            PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), id);
 
         }else{
-            Toast.makeText(getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
+            Toast.makeText(MadamfiveAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
     }
 
@@ -306,7 +328,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 cameraView.captureImage();
             }else{
 
-                Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+                Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
             }
 //            mSound = new MediaActionSound();
 //            mSound.play(MediaActionSound.SHUTTER_CLICK);
@@ -318,7 +340,7 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private boolean isInsertPatient() {
-        if(SmartFiPreference.getSfPatientName(getActivity()).equals("")){
+        if(SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()).equals("")){
             return false;
         }else{
             return true;
@@ -354,7 +376,7 @@ public class PhoneCameraFragment extends BaseFragment {
             ft.addToBackStack(null);
             ft.commit();
         }else{
-            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+            Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -367,32 +389,32 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.e(TAG,"ERROR~~~"+e);
             }
 
-            Intent intent = new Intent(getActivity(), LaunchCameraActivity.class);
+            Intent intent = new Intent(MadamfiveAPI.getActivity(), LaunchCameraActivity.class);
             startActivity(intent);
         }else{
-            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+            Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    @OnClick(R.id.btn_launch_videoApp)
-    public void launchVideoApp(View view) {
-        if(isInsertPatient()){
-            try {
-                cameraView.stop();
-            }catch(Exception e){
-                Log.e(TAG,"ERROR~~~"+e);
-            }
-
-            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
-            startActivity(intent);
-
-            mVrecInterface.startRecord();
-        }else{
-            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
-        }
-
-    }
+//    @OnClick(R.id.btn_launch_videoApp)
+//    public void launchVideoApp(View view) {
+//        if(isInsertPatient()){
+//            try {
+//                cameraView.stop();
+//            }catch(Exception e){
+//                Log.e(TAG,"ERROR~~~"+e);
+//            }
+//
+//            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
+//            startActivity(intent);
+//
+//            mVrecInterface.startRecord();
+//        }else{
+//            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+//        }
+//
+//    }
 
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){
@@ -429,8 +451,8 @@ public class PhoneCameraFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(getActivity() !=null && getActivity() instanceof VrecordInterface){
-            mVrecInterface = (VrecordInterface)getActivity();
+        if(MadamfiveAPI.getActivity() !=null && MadamfiveAPI.getActivity() instanceof VrecordInterface){
+            mVrecInterface = (VrecordInterface)MadamfiveAPI.getActivity();
         }
     }
 
@@ -473,33 +495,33 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     }
 
-    private byte[] rotateImage(byte[] bytes,int orientationValue)
-    {
-        try
-        {
-
-            Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);;
-
-            Log.i("Orientation Listener","value : "+orientationValue+"==============================");
-
-            if(orientationValue==6){
-                image = rotate(image, 90);
-            }else if(orientationValue==8){
-                image = rotate(image, 180);
-            }
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            bytes = stream.toByteArray();
-
-        }
-        catch(Exception e)
-        {
-            Log.e(TAG,e+"");
-        }
-
-        return bytes;
-    }
+//    private byte[] rotateImage(byte[] bytes,int orientationValue)
+//    {
+//        try
+//        {
+//
+//            Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);;
+//
+//            Log.i("Orientation Listener","value : "+orientationValue+"==============================");
+//
+//            if(orientationValue==6){
+//                image = rotate(image, 90);
+//            }else if(orientationValue==8){
+//                image = rotate(image, 180);
+//            }
+//
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//            bytes = stream.toByteArray();
+//
+//        }
+//        catch(Exception e)
+//        {
+//            Log.e(TAG,e+"");
+//        }
+//
+//        return bytes;
+//    }
 
     public Bitmap rotate(Bitmap bitmap, int degrees)
     {

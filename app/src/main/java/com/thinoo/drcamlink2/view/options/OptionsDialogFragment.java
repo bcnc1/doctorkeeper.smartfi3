@@ -119,11 +119,10 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
-        /// Option 3 삭제
+        /// Option 3
         switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
         switch_options_doctor_insert_activate.setChecked(false);
 
-//        read_doctorSelectExtraOption();
         doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(getActivity());
         if(doctorSelectExtraOption){
             switch_options_doctor_insert_activate.setChecked(true);
@@ -141,15 +140,13 @@ public class OptionsDialogFragment extends DialogFragment {
                     switch_options_doctor_insert_activate.setChecked(true);
                 }
                 SmartFiPreference.setSfInsertDoctorOpt(getActivity(),doctorSelectExtraOption);
-//                write_doctorSelectExtraOption();
             }
         });
 
-        /// optins4 삭제
+        /// optins4
         switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
         switch_options_shooting_image_display.setChecked(false);
 
-//        read_ShootingImageDisplayExtraOption();
         shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(getActivity());
         if(shootingImageDisplayExtraOption){
             switch_options_shooting_image_display.setChecked(true);
@@ -166,8 +163,7 @@ public class OptionsDialogFragment extends DialogFragment {
                     shootingImageDisplayExtraOption = true;
                     switch_options_shooting_image_display.setChecked(true);
                 }
-                SmartFiPreference.setSfDisplayExtraOpt(getActivity(),shootingImageDisplayExtraOption);
-//                write_ShootingImageDisplayExtraOption();
+                SmartFiPreference.setSfShootDisplayOpt(getActivity(),shootingImageDisplayExtraOption);
             }
         });
 

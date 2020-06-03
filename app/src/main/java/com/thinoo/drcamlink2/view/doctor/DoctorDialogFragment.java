@@ -22,8 +22,8 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink2.R;
 import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink2.util.SmartFiPreference;
 import com.thinoo.drcamlink2.view.log_in.LoginDialogFragment;
-import com.thinoo.drcamlink2.view.patient.PatientDialogAdapter;
 import com.thinoo.drcamlink2.view.phone_camera.PhoneCameraFragment;
 
 import org.json.JSONArray;
@@ -32,22 +32,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientInsertExtraOption;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.patientSearchDisplayExtraOption;
-//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientInsertExtraOption;
-//import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.read_patientSearchDisplayExtraOption;
 import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedDoctor;
-import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.selectedPatientInfo;
 
 public class DoctorDialogFragment extends DialogFragment {
 
     private final String TAG = DoctorDialogFragment.class.getSimpleName();
-//    private ArrayList<HashMap<String, String>> patientInfoList;
     private DoctorDialogAdapter adapter;
     private ListView doctorListView;
 
     private ProgressBar doctor_list_progressBar;
-
 
     public static DoctorDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -67,8 +60,6 @@ public class DoctorDialogFragment extends DialogFragment {
         if (MadamfiveAPI.getBoardId() == null) {
             showLoginDialog();
         }
-
-//        Log.i("+++++",MadamfiveAPI.getAccessToken()+":::"+MadamfiveAPI.getBoardId());
 
         getDialog().setTitle("의사 검색");
         final View view = inflater.inflate(R.layout.activity_search_doctor, container, false);
@@ -143,13 +134,10 @@ public class DoctorDialogFragment extends DialogFragment {
                                     }else if (chartNumber != null && chartNumber.length() != 0) {
                                         if(doctorInfo.get("doctorNumber").contains(chartNumber)){
                                             doctorInfoList.add(doctorInfo);
-//                                            Log.i(TAG, "Inside HashMap : " + doctorInfo.toString());
                                         }
                                     }else {
                                         doctorInfoList.add(doctorInfo);
                                     }
-//                                    Log.i(TAG, "Selected Doctorlist === length:" + doctorInfoList.size());
-
                                 }
                                 adapter.setItems(doctorInfoList);
                                 adapter.notifyDataSetChanged();
@@ -186,8 +174,10 @@ public class DoctorDialogFragment extends DialogFragment {
 
                 String name = selectedDoctor.get("name");
                 Toast.makeText(getActivity(), "진료 의사 : "+name , Toast.LENGTH_LONG).show();
+                String doctorNumber = selectedDoctor.get("doctorNumber");
 
-                MadamfiveAPI.write_doctorInfo();
+                SmartFiPreference.setSfDoctorName(getActivity(),name);
+                SmartFiPreference.setSfDoctorNumber(getActivity(),doctorNumber);
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
