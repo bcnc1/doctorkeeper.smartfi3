@@ -28,6 +28,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.thinoo.drcamlink2.R;
+import com.thinoo.drcamlink2.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink2.util.SmartFiPreference;
 
 //import static com.thinoo.drcamlink2.madamfive.MadamfiveAPI.doctorSelectExtraOption;
@@ -70,8 +71,7 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_patient_info = (Switch) view.findViewById(R.id.switch_options_patient_info);
         switch_options_patient_info.setChecked(false);
 
-//        read_patientSearchDisplayExtraOption();
-        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(getActivity());
+        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(MadamfiveAPI.getActivity());
         if(patientSearchDisplayExtraOption){
             switch_options_patient_info.setChecked(true);
         }
@@ -79,7 +79,6 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_patient_info.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
                 if(patientSearchDisplayExtraOption){
                     patientSearchDisplayExtraOption = false;
                     switch_options_patient_info.setChecked(false);
@@ -87,8 +86,7 @@ public class OptionsDialogFragment extends DialogFragment {
                     patientSearchDisplayExtraOption = true;
                     switch_options_patient_info.setChecked(true);
                 }
-//                write_patientSearchDisplayExtraOption();
-                SmartFiPreference.setSfDisplayExtraOpt(getActivity(),patientSearchDisplayExtraOption);
+                SmartFiPreference.setSfDisplayExtraOpt(MadamfiveAPI.getActivity(),patientSearchDisplayExtraOption);
             }
         });
 
@@ -96,7 +94,7 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
         switch_options_patient_insert_activate.setChecked(false);
 
-        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(getActivity());
+        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(MadamfiveAPI.getActivity());
 
         Log.w(TAG,"patientInsertExtraOption = "+patientInsertExtraOption);
         if(patientInsertExtraOption){
@@ -106,15 +104,14 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_patient_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
                 if(patientInsertExtraOption){
                     patientInsertExtraOption = false;
                     switch_options_patient_insert_activate.setChecked(false);
-                    SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
+                    SmartFiPreference.setSfInsertPatientOpt(MadamfiveAPI.getActivity(),patientInsertExtraOption);
                 }else {
                     patientInsertExtraOption = true;
                     switch_options_patient_insert_activate.setChecked(true);
-                    SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
+                    SmartFiPreference.setSfInsertPatientOpt(MadamfiveAPI.getActivity(),patientInsertExtraOption);
                 }
             }
         });
@@ -123,7 +120,7 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);
         switch_options_doctor_insert_activate.setChecked(false);
 
-        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(getActivity());
+        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(MadamfiveAPI.getActivity());
         if(doctorSelectExtraOption){
             switch_options_doctor_insert_activate.setChecked(true);
         }
@@ -131,7 +128,6 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_doctor_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
                 if(doctorSelectExtraOption){
                     doctorSelectExtraOption = false;
                     switch_options_doctor_insert_activate.setChecked(false);
@@ -139,7 +135,7 @@ public class OptionsDialogFragment extends DialogFragment {
                     doctorSelectExtraOption = true;
                     switch_options_doctor_insert_activate.setChecked(true);
                 }
-                SmartFiPreference.setSfInsertDoctorOpt(getActivity(),doctorSelectExtraOption);
+                SmartFiPreference.setSfInsertDoctorOpt(MadamfiveAPI.getActivity(),doctorSelectExtraOption);
             }
         });
 
@@ -147,7 +143,7 @@ public class OptionsDialogFragment extends DialogFragment {
         switch_options_shooting_image_display = (Switch) view.findViewById(R.id.switch_options_shooting_image_display);
         switch_options_shooting_image_display.setChecked(false);
 
-        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(getActivity());
+        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(MadamfiveAPI.getActivity());
         if(shootingImageDisplayExtraOption){
             switch_options_shooting_image_display.setChecked(true);
         }
@@ -163,7 +159,7 @@ public class OptionsDialogFragment extends DialogFragment {
                     shootingImageDisplayExtraOption = true;
                     switch_options_shooting_image_display.setChecked(true);
                 }
-                SmartFiPreference.setSfShootDisplayOpt(getActivity(),shootingImageDisplayExtraOption);
+                SmartFiPreference.setSfShootDisplayOpt(MadamfiveAPI.getActivity(),shootingImageDisplayExtraOption);
             }
         });
 

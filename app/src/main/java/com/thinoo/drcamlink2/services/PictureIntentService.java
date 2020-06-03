@@ -170,13 +170,13 @@ public class PictureIntentService extends IntentService {
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                         Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
                         deleteImage();
                     }
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
                         deleteImage();
                     }
                 });

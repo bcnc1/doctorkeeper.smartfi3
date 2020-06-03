@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.usb.UsbManager;
 import android.media.MediaActionSound;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -94,7 +95,10 @@ public class PhoneCameraFragment extends BaseFragment {
     private String mFileName;
 
     private MediaActionSound mSound;
+    private int android_ver = android.os.Build.VERSION.SDK_INT;
+
     private Boolean doctorSelectExtraOption;
+    private Boolean shootingImageDisplayExtraOption;
 
     public interface VrecordInterface{
         public void startRecord();
@@ -261,6 +265,12 @@ public class PhoneCameraFragment extends BaseFragment {
             }
         }
 
+        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(MadamfiveAPI.getActivity());
+        if(shootingImageDisplayExtraOption){
+            photo_container.setVisibility(View.VISIBLE);
+        }
+
+
         return view;
     }
 
@@ -311,7 +321,8 @@ public class PhoneCameraFragment extends BaseFragment {
             PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
             Long id = photoModel.getId();
             PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), id);
-
+            photoList.add(0, photoModel);
+            phoneCameraPhotoAdapter.notifyDataSetChanged();
         }else{
             Toast.makeText(MadamfiveAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
@@ -323,9 +334,12 @@ public class PhoneCameraFragment extends BaseFragment {
             Log.w(TAG,"카메라촬영, 셔터음");
 
             if(isInsertPatient()){
-                mSound = new MediaActionSound();
-                mSound.play(MediaActionSound.SHUTTER_CLICK);
                 cameraView.captureImage();
+                mSound = new MediaActionSound();
+                if (android_ver < 28) {
+                    mSound.play(MediaActionSound.SHUTTER_CLICK);
+                }else {
+                }
             }else{
 
                 Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
@@ -523,30 +537,30 @@ public class PhoneCameraFragment extends BaseFragment {
 //        return bytes;
 //    }
 
-    public Bitmap rotate(Bitmap bitmap, int degrees)
-    {
-        if(degrees != 0 && bitmap != null)
-        {
-            Matrix m = new Matrix();
-            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
-                    (float) bitmap.getHeight() / 2);
-
-            try
-            {
-                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
-                if(bitmap != converted)
-                {
-                    bitmap.recycle();
-                    bitmap = converted;
-                }
-            }
-            catch(OutOfMemoryError ex)
-            {
-                // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
-            }
-        }
-        return bitmap;
-    }
+//    public Bitmap rotate(Bitmap bitmap, int degrees)
+//    {
+//        if(degrees != 0 && bitmap != null)
+//        {
+//            Matrix m = new Matrix();
+//            m.setRotate(degrees, (float) bitmap.getWidth() / 2,
+//                    (float) bitmap.getHeight() / 2);
+//
+//            try
+//            {
+//                Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+//                if(bitmap != converted)
+//                {
+//                    bitmap.recycle();
+//                    bitmap = converted;
+//                }
+//            }
+//            catch(OutOfMemoryError ex)
+//            {
+//                // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
+//            }
+//        }
+//        return bitmap;
+//    }
 
 
 }
