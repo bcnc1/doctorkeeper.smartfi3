@@ -18,7 +18,7 @@
   android:layout_width="fill_parent"
   android:layout_height="wrap_content">
 
-  <com.thinoo.drcamlink2.view.AspectRatioImageView
+  <com.thinoo.drcamlink.view.AspectRatioImageView
     android:id="@+id/image1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"

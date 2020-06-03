@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.thinoo.drcamlink2.PictureView
+    <com.thinoo.drcamlink.PictureView
         android:id="@+id/phone_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center">
-    </com.thinoo.drcamlink2.PictureView>
+    </com.thinoo.drcamlink.PictureView>
 
     <ProgressBar
         android:id="@+id/phone_progress"

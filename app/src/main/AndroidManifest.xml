@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.thinoo.drcamlink2"
+    package="com.thinoo.drcamlink"
     android:versionCode="1"
     android:versionName="0.1.0">
 
@@ -93,11 +93,11 @@
             android:value="true" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.thinoo.drcamlink2" />
+            android:value="com.thinoo.drcamlink" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.thinoo.drcamlink2"
+            android:authorities="com.thinoo.drcamlink"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
