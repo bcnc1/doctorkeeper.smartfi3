@@ -66,17 +66,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@+id/photo_container"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
             android:background="@android:color/transparent"
             android:text="CAMERA"
             android:textAlignment="textEnd"
             android:textColor="@android:color/background_light"
-            android:textSize="12sp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"/>
+            android:textSize="12sp" />
 
-
-        <!-- video 기능을 구현하기 위해 버튼 추가 -->
         <Button
             android:id="@+id/btn_launch_videoApp"
             android:layout_width="wrap_content"

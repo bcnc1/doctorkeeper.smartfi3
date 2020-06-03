@@ -52,6 +52,7 @@ public class PatientDialogFragment extends DialogFragment {
     private String chartNumber;
     private TextView nameTextView;
     private TextView chartNumberTextView;
+    private Boolean fixedLandscapeExtraOption;
 
     public static PatientDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -309,6 +310,14 @@ public class PatientDialogFragment extends DialogFragment {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = (int) (metrics.widthPixels * .85);
         int height = (int) (metrics.heightPixels * .60);
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        if(fixedLandscapeExtraOption){
+            height = (int) (metrics.heightPixels * .90);
+            width= (int) (metrics.widthPixels * .60);
+        }else {
+            height = (int) (metrics.heightPixels * .60);
+            width= (int) (metrics.widthPixels * .85);
+        }
         window.setLayout(width, height);
         window.setGravity(Gravity.CENTER);
     }

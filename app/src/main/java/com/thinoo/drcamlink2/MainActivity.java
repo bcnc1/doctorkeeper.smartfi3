@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -91,6 +92,8 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
     public static MyCountDownTimer countDownTimer;
     private boolean isVrecording;
     private Context mCon;
+
+    private Boolean fixedLandscapeExtraOption;
 
     @Override
     public Camera getCamera() {        return camera;    }
@@ -168,6 +171,12 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();
+
+//        MadamfiveAPI.read_FixedLandscapeExtraOption();
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        if(fixedLandscapeExtraOption){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        }
     }
 
     private void autoGetToken() {

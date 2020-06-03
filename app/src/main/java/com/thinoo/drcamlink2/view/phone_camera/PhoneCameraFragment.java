@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -100,6 +101,7 @@ public class PhoneCameraFragment extends BaseFragment {
     private Boolean doctorSelectExtraOption;
     private Boolean shootingImageDisplayExtraOption;
     private Boolean fixedPortraitExtraOption;
+    private Boolean fixedLandscapeExtraOption;
 
     public interface VrecordInterface{
         public void startRecord();
@@ -238,14 +240,17 @@ public class PhoneCameraFragment extends BaseFragment {
         phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
         listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
 
-        rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
-        rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
-        rotate3Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_3);
-        rotate4Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_4);
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        if(!fixedLandscapeExtraOption){
+            rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
+            rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
+            rotate3Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_3);
+            rotate4Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_4);
 
-        orientationListener = new OrientationListener(MadamfiveAPI.getContext());
-        orientationListener.enable();
-
+            orientationListener = new OrientationListener(MadamfiveAPI.getContext());
+            orientationListener.enable();
+        }
+        
         patient_name = (TextView)view.findViewById(R.id.patient_name);
 
         Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()));
@@ -519,9 +524,6 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private Bitmap rotateImage(Bitmap image,int orientationValue){
-//        try{
-//            Bitmap image = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);;
-//            Log.i("Orientation Listener","value : "+orientationValue+"==============================");
             if(fixedPortraitExtraOption) {
                 if (orientationValue == 2) {
                     image = rotate(image, 90);
@@ -538,15 +540,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 }
             }
 
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//            bytes = stream.toByteArray();
-//            return image;
-//        }catch(Exception e){
-//            Log.e(TAG,e+"");
-//        }
         return image;
-//        return bytes;
     }
 
     public Bitmap rotate(Bitmap bitmap, int degrees) {
@@ -556,17 +550,14 @@ public class PhoneCameraFragment extends BaseFragment {
             m.setRotate(degrees, (float) bitmap.getWidth() / 2,
                     (float) bitmap.getHeight() / 2);
 
-            try
-            {
+            try{
                 Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                 if(bitmap != converted)
                 {
                     bitmap.recycle();
                     bitmap = converted;
                 }
-            }
-            catch(OutOfMemoryError ex)
-            {
+            } catch(OutOfMemoryError ex) {
                 // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
             }
         }
