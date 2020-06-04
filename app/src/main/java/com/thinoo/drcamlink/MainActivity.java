@@ -39,9 +39,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink.activities.AppSettingsActivity;
-import com.thinoo.drcamlink.madamfive.BlabAPI;
 import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.ptp.Camera;
 import com.thinoo.drcamlink.ptp.Camera.CameraListener;
@@ -55,12 +53,7 @@ import com.thinoo.drcamlink.view.WebViewDialogFragment;
 import com.thinoo.drcamlink.view.log_in.LoginDialogFragment;
 import com.thinoo.drcamlink.view.phone_camera.PhoneCameraFragment;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-
-import cz.msebera.android.httpclient.Header;
 
 import static com.thinoo.drcamlink.Constants.Invoke.VIDEO_RECORD;
 
@@ -136,8 +129,6 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         setContentView(R.layout.main);
 
         MadamfiveAPI.setContext(this, getApplicationContext());
-        //kimcy todo 일단 추가, 추후 삭제 예정
-//        BlabAPI.setContext(this, getApplicationContext());
 
         settings = new AppSettings(this);
 
@@ -165,57 +156,15 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             showLoginDialog();
         }else {
             Log.w(TAG,"자동로그인");
-            //자동 로그인
-//            autoGetToken();
         }
 
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();
 
-//        MadamfiveAPI.read_FixedLandscapeExtraOption();
         fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
         if(fixedLandscapeExtraOption){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         }
-    }
-
-    private void autoGetToken() {
-        Log.w(TAG,"autoGetToken");
-        String id = SmartFiPreference.getDoctorId(mCon);
-        String pw = SmartFiPreference.getSfDoctorPw(mCon);
-        BlabAPI.loginEMR(mCon, id,pw, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-
-                try {
-                    String code =  response.get(Constants.EMRAPI.CODE).toString();
-                    if(!code.equals(Constants.EMRAPI.CODE_200)){
-                        Log.w(TAG,"응답 => OK");
-                    }else{
-
-                        try {
-
-                            JSONObject data = (JSONObject) response.get(Constants.EMRAPI.DATA);
-                            SmartFiPreference.setSfToken(mCon,data.getString("token"));
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.e(TAG," 응답에러");
-                        }
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-            }
-
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.w(TAG,"실패");
-            }
-        });
     }
 
     public void showLoginDialog() {

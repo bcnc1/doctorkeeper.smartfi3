@@ -20,19 +20,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.thinoo.drcamlink.BuildConfig;
 import com.thinoo.drcamlink.MainActivity;
 import com.thinoo.drcamlink.R;
-import com.thinoo.drcamlink.madamfive.BlabAPI;
 import com.thinoo.drcamlink.models.PhotoModel;
 import com.thinoo.drcamlink.services.PhotoModelService;
 import com.thinoo.drcamlink.services.PictureIntentService;
-import com.thinoo.drcamlink.util.DisplayUtil;
-
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -165,43 +157,6 @@ public class LaunchCameraActivity extends Activity {
         startActivity(intent);
     }
 
-
-    private void savePhoto(byte[] bytes, String cameraKind, String filePath) {
-
-        Log.i(TAG,"savePhoto => filepath = "+filePath);
-        // 화일 저장
-        int filePathLength = filePath.length();
-        String filename = filePath.substring(0,filePathLength-2);
-        filename = filename + ".JPG";
-        final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, filename, 0);
-
-        Log.d(TAG, "카메라업로드시작:" );
-        BlabAPI.ktStoreObject(photoModel.getFullpath(), "Phone", filename, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("AsyncTask", "Uploading");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("AsyncTask", "이미지 업로드 완료:" + statusCode + responseString);
-                LaunchCameraActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-            }
-        });
-
-        Log.i(TAG,"Finished");
-    }
-
     private class OrientationListener extends OrientationEventListener {
 
         final int ROTATION_O = 1;
@@ -229,8 +184,7 @@ public class LaunchCameraActivity extends Activity {
         }
     }
 
-    private Bitmap rotateImage(Bitmap image,int orientationValue)
-    {
+    private Bitmap rotateImage(Bitmap image,int orientationValue) {
         try
         {
             Log.i(TAG,"Orientation value : "+orientationValue);
@@ -250,27 +204,20 @@ public class LaunchCameraActivity extends Activity {
         return image;
     }
 
-    private Bitmap rotate(Bitmap bitmap, int degrees)
-    {
+    private Bitmap rotate(Bitmap bitmap, int degrees){
         if(degrees != 0 && bitmap != null)
         {
             Matrix m = new Matrix();
             m.setRotate(degrees, (float) bitmap.getWidth() / 2,
                     (float) bitmap.getHeight() / 2);
-
-            try
-            {
+            try {
                 Bitmap converted = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                 if(bitmap != converted)
                 {
                     bitmap.recycle();
                     bitmap = converted;
                 }
-            }
-            catch(OutOfMemoryError ex)
-            {
-
-                // 메모리가 부족하여 회전을 시키지 못할 경우 그냥 원본을 반환합니다.
+            }catch(OutOfMemoryError ex) {
             }
         }
         return bitmap;
