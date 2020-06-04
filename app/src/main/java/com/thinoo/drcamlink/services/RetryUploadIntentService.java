@@ -32,7 +32,7 @@ import okhttp3.RequestBody;
 public class RetryUploadIntentService extends IntentService {
 
     private static final String TAG = "RetryUpload";
-    private static final String EXTRA_RETRY_UPLOAD_ID = "com.thinoo.drcamlink2.services.extra.retry.upload.id";
+    private static final String EXTRA_RETRY_UPLOAD_ID = "com.thinoo.drcamlink.services.extra.retry.upload.id";
 
     private static String mAcccessToken = null;
     private static String mPatientId = null;

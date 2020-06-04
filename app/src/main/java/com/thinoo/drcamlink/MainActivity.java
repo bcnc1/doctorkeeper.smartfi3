@@ -243,8 +243,12 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         }
         this.setIntent(intent);
 
-        if (isInStart) {
-            ptp.initialize(this, intent);
+        try {
+            if (isInStart) {
+                ptp.initialize(this, intent);
+            }
+        }catch(Exception e){
+            Log.i(TAG,"ptp error"+e);
         }
         isVrecording = intent.getBooleanExtra(VIDEO_RECORD, false);
         Log.i(TAG,"isVrecording = "+isVrecording);

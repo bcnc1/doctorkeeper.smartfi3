@@ -3,7 +3,7 @@ android {
     compileSdkVersion 26
 
     defaultConfig {
-        applicationId "com.thinoo.drcamlink2"
+        applicationId "com.thinoo.drcamlink"
         minSdkVersion 19
         targetSdkVersion 26
     }

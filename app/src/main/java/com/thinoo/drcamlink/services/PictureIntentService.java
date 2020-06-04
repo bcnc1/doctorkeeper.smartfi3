@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.thinoo.drcamlink.madamfive.MadamfiveAPI.deleteImage;
+import static com.thinoo.drcamlink.madamfive.MadamfiveAPI.getActivity;
 
 
 /**
@@ -42,7 +43,7 @@ import static com.thinoo.drcamlink.madamfive.MadamfiveAPI.deleteImage;
 public class PictureIntentService extends IntentService {
 
     private static final String TAG = "PictureIntentService";
-    private static final String EXTRA_PICTURE_ID = "com.thinoo.drcamlink2.services.extra.picture.id";
+    private static final String EXTRA_PICTURE_ID = "com.thinoo.drcamlink.services.extra.picture.id";
 
     private static String mAcccessToken = null;
     private static String mPatientId = null;
@@ -165,13 +166,13 @@ public class PictureIntentService extends IntentService {
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                         Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
-//                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
                         deleteImage();
                     }
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-//                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
                         deleteImage();
                     }
                 });

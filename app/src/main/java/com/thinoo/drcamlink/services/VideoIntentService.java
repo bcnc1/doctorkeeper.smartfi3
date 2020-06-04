@@ -33,7 +33,7 @@ import java.util.Date;
 public class VideoIntentService extends IntentService {
 
     private static final String TAG = "VideoIntentService";
-    private static final String EXTRA_VIDEO_ID = "com.thinoo.drcamlink2.services.extra.video.id";
+    private static final String EXTRA_VIDEO_ID = "com.thinoo.drcamlink.services.extra.video.id";
     private static String mAcccessToken = null;
     private static String mPatientId = null;
     private static String mHospitalId = null;

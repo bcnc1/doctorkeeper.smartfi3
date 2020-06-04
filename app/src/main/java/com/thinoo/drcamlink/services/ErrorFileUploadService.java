@@ -15,15 +15,15 @@ public class ErrorFileUploadService extends IntentService {
 
     private static final String TAG = "ErrorFileUploadService";
 
-    private static final String EXTRA_FILE_UPLOAD_ID = "com.thinoo.drcamlink2.services.extra.picture.id";
+    private static final String EXTRA_FILE_UPLOAD_ID = "com.thinoo.drcamlink.services.extra.picture.id";
 
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.thinoo.drcamlink2.services.action.FOO";
-    private static final String ACTION_BAZ = "com.thinoo.drcamlink2.services.action.BAZ";
+    private static final String ACTION_FOO = "com.thinoo.drcamlink.services.action.FOO";
+    private static final String ACTION_BAZ = "com.thinoo.drcamlink.services.action.BAZ";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.thinoo.drcamlink2.services.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.thinoo.drcamlink2.services.extra.PARAM2";
+    private static final String EXTRA_PARAM1 = "com.thinoo.drcamlink.services.extra.PARAM1";
+    private static final String EXTRA_PARAM2 = "com.thinoo.drcamlink.services.extra.PARAM2";
 
     public ErrorFileUploadService() {
         super("ErrorFileUploadService");

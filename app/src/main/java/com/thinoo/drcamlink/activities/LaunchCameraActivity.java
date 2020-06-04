@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,7 +32,10 @@ import com.thinoo.drcamlink.util.DisplayUtil;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -42,7 +46,7 @@ public class LaunchCameraActivity extends Activity {
 
     private final String TAG = LaunchCameraActivity.class.getSimpleName();
 
-    private static final int CAMERA_REQUEST = 1888;
+    private static final int CAMERA_REQUEST = 1;
     private ImageView imageView;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
@@ -54,33 +58,64 @@ public class LaunchCameraActivity extends Activity {
     private final String  DEVICE = "phone";
     private Context mCon;
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    private String currentPhotoPath;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.launch_camera_activity_main);
-
         mCon = this;
 
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
-
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         mFileName = DEVICE + "_" + timeStamp+".jpg";
-
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+//        imageToUploadUri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID, mFile);
+//        Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
 
+//        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//        cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageToUploadUri );
+//        startActivityForResult(cameraIntent, CAMERA_REQUEST);
 
-        imageToUploadUri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID, mFile);
-        Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
 
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageToUploadUri );
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-
-
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.thinoo.drcamlink",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
         orientationListener = new OrientationListener(getContext());
         orientationListener.enable();
+    }
+
+    private File createImageFile() throws IOException {
+        File storageDir = mCon.getExternalFilesDir(Environment.getExternalStorageState());
+        String name = mFileName.substring(0,26);
+        File image = File.createTempFile(
+                name,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -99,33 +134,31 @@ public class LaunchCameraActivity extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            Bitmap srcBmp = BitmapFactory.decodeFile(currentPhotoPath);
+            int orientationValue = orientationListener.rotation;
+            srcBmp = rotateImage(srcBmp, orientationValue);
+
+            FileOutputStream out = new FileOutputStream(currentPhotoPath);
+            srcBmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+        }catch(Exception e){
+            Log.i(TAG,"rotation E"+e.toString());
+        }
 
         Log.i(TAG,"onActivityResult 카매라에서돌아옴");
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-
             try {
-
-                if(imageToUploadUri != null) {
-
-                    //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
-                    String path = DisplayUtil.storeThumbPtictureImage(mFile.toString(),
-                                    mCon.getExternalFilesDir(Environment.getExternalStorageState()),mFileName);
-
-                    if(path != null){
-                        PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, mFile.toString(),path, mFileName, 0);
-                        Long id = photoModel.getId();
-                        PictureIntentService.startUploadPicture(mCon, id);
-
-                    }else{
-                        Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
-
-                    }
-
+                if(currentPhotoPath != null){
+                    PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, currentPhotoPath, currentPhotoPath, mFileName, 0);
+                    Long id = photoModel.getId();
+                    PictureIntentService.startUploadPicture(mCon, id);
+                }else{
+                    Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
                 }
             }catch (Exception e){
                 Log.e("INSIDE___",e.toString());
             }
-
         }
 
         Intent intent = new Intent(getApplication(), MainActivity.class);
@@ -169,28 +202,6 @@ public class LaunchCameraActivity extends Activity {
         Log.i(TAG,"Finished");
     }
 
-    private void deleteGalleryFile(){
-
-        File galleryDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        Log.i(TAG,"path:"+galleryDirectory);
-
-        String[] projection = new String[]{MediaStore.Images.ImageColumns._ID,MediaStore.Images.ImageColumns.DATA,MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,MediaStore.Images.ImageColumns.DATE_TAKEN,MediaStore.Images.ImageColumns.MIME_TYPE};
-        final Cursor cursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,projection, null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
-        if(cursor != null){
-            cursor.moveToFirst();
-            //you can access last taken pics here.
-            for(int i=0;i<cursor.getColumnCount();i++){
-                Log.i(TAG,"cursorColumn:"+cursor.getColumnName(i));
-                Log.i(TAG,"cursorColumn:"+cursor.getString(i));
-            }
-
-        }
-
-//        if (galleryDirectory.exists()) {
-//            galleryDirectory.delete();
-//        }
-    }
-
     private class OrientationListener extends OrientationEventListener {
 
         final int ROTATION_O = 1;
@@ -222,7 +233,7 @@ public class LaunchCameraActivity extends Activity {
     {
         try
         {
-            Log.i("Orientation Listener","value : "+orientationValue+"==============================");
+            Log.i(TAG,"Orientation value : "+orientationValue);
 
             if(orientationValue==1){
                 image = rotate(image, 90);

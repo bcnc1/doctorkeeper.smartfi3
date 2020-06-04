@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.thinoo.drcamlink.R;
 import com.thinoo.drcamlink.activities.LaunchCameraActivity;
+import com.thinoo.drcamlink.activities.LaunchVrecordActivity;
 import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.models.PhotoModel;
 import com.thinoo.drcamlink.services.PhotoModelService;
@@ -339,7 +340,7 @@ public class PhoneCameraFragment extends BaseFragment {
             if(isInsertPatient()){
                 cameraView.captureImage();
                 mSound = new MediaActionSound();
-                if (android_ver < 28) {
+                if (android_ver <= 28) {
                     mSound.play(MediaActionSound.SHUTTER_CLICK);
                 }else {
                 }
@@ -414,24 +415,24 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
-//    @OnClick(R.id.btn_launch_videoApp)
-//    public void launchVideoApp(View view) {
-//        if(isInsertPatient()){
-//            try {
-//                cameraView.stop();
-//            }catch(Exception e){
-//                Log.e(TAG,"ERROR~~~"+e);
-//            }
-//
-//            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
-//            startActivity(intent);
-//
-//            mVrecInterface.startRecord();
-//        }else{
-//            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
+    @OnClick(R.id.btn_launch_videoApp)
+    public void launchVideoApp(View view) {
+        if(isInsertPatient()){
+            try {
+                cameraView.stop();
+            }catch(Exception e){
+                Log.e(TAG,"ERROR~~~"+e);
+            }
+
+            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
+            startActivity(intent);
+
+            mVrecInterface.startRecord();
+        }else{
+            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){

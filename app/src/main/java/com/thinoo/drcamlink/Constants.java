@@ -66,7 +66,7 @@ public class Constants {
 
     public static final long DELAY_TIME_MILLIS = 3000;
     public static final boolean FILE_N_DB_DELETE = true;  //디버그, 파일 및 db 안지우기..
-    public static final String MESSENGER = "com.thinoo.drcamlink2.services.extra.picture.messenger";
-    public static final String MESSENGER_RETRY = "com.thinoo.drcamlink2.services.extra.picture.messenger.retry";
+    public static final String MESSENGER = "com.thinoo.drcamlink.services.extra.picture.messenger";
+    public static final String MESSENGER_RETRY = "com.thinoo.drcamlink.services.extra.picture.messenger.retry";
     public static boolean PATIENT_HAS_MANY_IMAGES = false;
 }
