@@ -51,25 +51,18 @@ public class LaunchVrecordActivity extends Activity {
     };
 
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.launch_vrecord_activity_main);
-
         mCon = this;
 
         if(!hasPermissions(mCon, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else{
-
             gotoVideoRecord();
-
         }
-
-
-
     }
 
     private void gotoVideoRecord() {
@@ -91,7 +84,6 @@ public class LaunchVrecordActivity extends Activity {
 
         //intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1048576);  //size제한, 1MB
         startActivityForResult(intent, VREC_REQUEST);
-
     }
 
     @Override

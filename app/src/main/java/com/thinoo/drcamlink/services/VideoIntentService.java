@@ -86,7 +86,6 @@ public class VideoIntentService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         Log.e(TAG, "비디오 인텐트서비스 종료");
     }
 
@@ -128,21 +127,19 @@ public class VideoIntentService extends IntentService {
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
-//                        makeNoti("uploading success",0);
+                        makeNoti("비디오 업로드 성공",0);
                         PhotoModelService.deleteFileNPhotoModel(pm);
                     }
                 });
 //                Log.i(TAG,"uploadImage => Finished");
             }
         });
-
         t1.start();
     }
 
     private void makeNoti(final String message, int id) {
 
         NotificationCompat.Builder builder;
-
         String CHANNEL_ID = "video_upload_channel";
 
         // Create the NotificationChannel, but only on API 26+ because
@@ -155,11 +152,9 @@ public class VideoIntentService extends IntentService {
             NotificationChannel channel =
                     new NotificationChannel(CHANNEL_ID, name, importance);
             //channel.setDescription(description);
-
             // Add the channel
             NotificationManager notificationManager =
                     (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
@@ -171,12 +166,10 @@ public class VideoIntentService extends IntentService {
                     Toast.makeText(mCon, message, Toast.LENGTH_SHORT).show();
                 }
             });
-
         }
 
         if(id == 1){
             Intent intent= new Intent(this, FileExploreActivity.class);
-
             PendingIntent pending= PendingIntent.getActivity(mCon, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             // Create the notification
@@ -189,7 +182,6 @@ public class VideoIntentService extends IntentService {
                     .setAutoCancel(true)
                     .setWhen(System.currentTimeMillis());
         } else{
-
             // Create the notification
             builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                     .setSmallIcon(R.drawable.smartfi_icon)
@@ -199,11 +191,9 @@ public class VideoIntentService extends IntentService {
                     .setAutoCancel(true)
                     .setWhen(System.currentTimeMillis());
         }
-
-
         // Show the notification
         NotificationManagerCompat.from(getApplicationContext()).notify(Constants.Notification.NOTIFICATION_VIDEO_ID, builder.build());
-
-
     }
+
+
 }
