@@ -86,7 +86,7 @@ public class VideoIntentService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "비디오 인텐트서비스 종료");
+        Log.i(TAG, "비디오 인텐트서비스 종료");
     }
 
     private void uploadVideo(final PhotoModel pm) {
@@ -111,7 +111,7 @@ public class VideoIntentService extends IntentService {
                 }catch(Exception e){
                     Log.i(TAG,e.toString());
                 }
-                Log.i(TAG,"uploadImage => Read Bitmap");
+                Log.i(TAG,"upload Video => Read MP4");
 
                 MadamfiveAPI.createPost(bytes, "Video", new JsonHttpResponseHandler() {
                     @Override

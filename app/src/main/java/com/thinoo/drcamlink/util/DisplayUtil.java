@@ -191,31 +191,30 @@ public class DisplayUtil {
 
         String path = null;
 
-        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(sourcePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
-        Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
-
         File file = new File(storePath, "/thumbnail/");
-
+        path = file.getAbsolutePath()+ File.separator +fileName;
         if (!file.isDirectory()) {
             file.mkdir();
         }
 
-        try {
-            Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
-            FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-            outStream.close();
-
-            path = file.getAbsolutePath()+ File.separator +fileName;
-            return path;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return path;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return path;
-        }
+//        try {
+//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(sourcePath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+//            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 255, 170);
+//
+//            Log.i(TAG, "파일패스 = "+file.getAbsolutePath());
+//            FileOutputStream outStream = new FileOutputStream(file.getAbsolutePath()+ File.separator +fileName); //파일저장
+//            thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+//            outStream.close();
+//
+//            return path;
+//        } catch (FileNotFoundException e) {
+//            Log.d(TAG, e.toString());
+//            return path;
+//        } catch (IOException e) {
+//            Log.d(TAG, e.toString());
+//            return path;
+//        }
+        return path;
     }
 
     private static Bitmap rotate(Bitmap bitmap, int degrees)

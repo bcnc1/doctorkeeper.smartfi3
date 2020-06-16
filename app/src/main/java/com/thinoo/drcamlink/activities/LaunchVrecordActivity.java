@@ -36,7 +36,7 @@ public class LaunchVrecordActivity extends Activity {
 
     private static final int VREC_REQUEST = 2100;
     private Context mCon;
-    private final int MaxMin = 3;
+    private final int MaxMin = 10;
     private File mFile;
     private String mFileName;
     private String mFileNameThumb;

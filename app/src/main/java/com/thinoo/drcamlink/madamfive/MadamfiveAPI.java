@@ -247,8 +247,8 @@ public class MadamfiveAPI {
         } catch (JSONException e) {
             Log.i("m5API",e.toString());
         }
-
-        VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, getAbsoluteUrl("/boards/" + boardId+"/posts"),
+        Log.i(TAG,"Start Upload ====>>> "+getAbsoluteUrl("boards/" + boardId+"/posts"));
+        VolleyMultipartRequest request = new VolleyMultipartRequest(Request.Method.POST, getAbsoluteUrl("boards/" + boardId+"/posts"),
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
@@ -262,7 +262,6 @@ public class MadamfiveAPI {
                             Log.i(TAG,e.toString());
                             responseHandler.onSuccess(501, null, resultJson);
                         }
-
                     }
                 }, new Response.ErrorListener() {
             @Override
