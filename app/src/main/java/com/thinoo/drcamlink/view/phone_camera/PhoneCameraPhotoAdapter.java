@@ -41,18 +41,18 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
             progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
             dslr = (TextView) view.findViewById(R.id.textview_dslr);
 
-            view.setOnLongClickListener(new View.OnLongClickListener(){
-                @Override
-                public boolean onLongClick(View view) {
-                    int position = getAdapterPosition();
-                    final PhotoModel photo = photoModelList.get(position);
-                    String fileName = photo.getFilename();
-                    Long photoId = photo.getId();
-                    //Toast.makeText(view.getContext(),"name"+photo.getFilname()+"/id:"+photo.getId(),Toast.LENGTH_SHORT).show();
-                    deleteImage(fileName,photoId);
-                    return false;
-                }
-            });
+//            view.setOnLongClickListener(new View.OnLongClickListener(){
+//                @Override
+//                public boolean onLongClick(View view) {
+//                    int position = getAdapterPosition();
+//                    final PhotoModel photo = photoModelList.get(position);
+//                    String fileName = photo.getFilename();
+//                    Long photoId = photo.getId();
+//                    //Toast.makeText(view.getContext(),"name"+photo.getFilname()+"/id:"+photo.getId(),Toast.LENGTH_SHORT).show();
+//                    deleteImage(fileName,photoId);
+//                    return false;
+//                }
+//            });
 
             view.setOnClickListener(new View.OnClickListener(){
                 @Override

@@ -46,14 +46,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     @BindView(R.id.cloud_empty_textview)
     TextView emptyView;
 
-//    private int currentObjectHandle;
-//    private Bitmap currentBitmap;
     private ArrayList<HashMap<String,String>> imageInfoList;
-//    String accessToken;
-//    private int mPageIdx = 0;
-//    private final int mPageSize = 30;
-//    private int mTotalSize, mTotalPage, mCurPage, mReqPage, mTotalImages;
-
     private final String TAG = CloudGalleryFragment.class.getSimpleName();
 
     public static CloudGalleryFragment newInstance() {
@@ -63,16 +56,12 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.cloud_gallery_frag, container, false);
         ButterKnife.bind(this, view);
 
         cloudGalleryAdapter = new CloudGalleryAdapter(getActivity());
-//        Log.i(TAG, "CloudGalleryFragment STARTED");
         getImagesList();
-       // accessToken = MadamfiveAPI.getAccessToken();
         enableUi(true);
-
         return view;
     }
 
@@ -122,7 +111,6 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
         switch (scrollState) {
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE: {
                 for (int i = 0; i < galleryView.getChildCount(); ++i) {
-
                     View child = view.getChildAt(i);
                     if (child == null) {
                         continue;
@@ -133,11 +121,9 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 //                        camera.retrieveImageInfo(this, holder.objectHandle);
                     }
                 }
-
                 break;
             }
         }
-
     }
 
     @Override
@@ -145,11 +131,10 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
     }
 
     private void getImagesList(){
-//        Log.i(TAG, "CloudGalleryFragment getImagesList");
+
         imageInfoList = new ArrayList<HashMap<String, String>>();
 
         MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
-
             @Override
             public void onStart() {
                 Log.i("CLoud Approach", "onStart2:");
@@ -159,9 +144,7 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
 
                 Log.d(TAG, "HTTP21:" + statusCode + responseString);
-
                 try {
-
                     JSONObject response = new JSONObject(responseString);
                     JSONArray imagesArray = response.getJSONArray("posts");
 
@@ -169,17 +152,14 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
                         JSONObject imagesObject = imagesArray.getJSONObject(i);
 //                        Log.i(TAG,"Inside JSON Array");
                         Log.i(TAG,"Inside value : "+ imagesObject.get("id").toString());
-
                         HashMap<String,String> imageInfo = new HashMap<>();
                         imageInfo.put("url",imagesObject.getString("id"));
                         imageInfo.put("uploadDate",imagesObject.getString("created"));
-
                         try{
                             imageInfo.put("cameraKind",imagesObject.getString("title"));
                         }catch(Exception e){
                             imageInfo.put("cameraKind","DSLR");
                         }
-
                         try {
                             JSONArray attachmentArray = imagesArray.getJSONObject(i).getJSONArray("attachments");
                             JSONObject attach = attachmentArray.getJSONObject(0);
@@ -187,15 +167,12 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
                         }catch (Exception e){
                             imageInfo.put("guid", "none");
                         }
-
-                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
+//                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
                         imageInfoList.add(imageInfo);
                     }
-
                     cloudGalleryAdapter.setItems(imageInfoList);
                     cloudGalleryAdapter.notifyDataSetChanged();
                     Log.i("CloudFragment","list received! === length:"+imageInfoList.size());
-
                 }catch (Exception e){
                 }
             }

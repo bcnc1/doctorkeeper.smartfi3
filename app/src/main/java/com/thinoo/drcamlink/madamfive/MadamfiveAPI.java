@@ -57,7 +57,8 @@ public class MadamfiveAPI {
     // Set up the network to use HttpURLConnection as the HTTP client.
     private static Network mNetwork;
 
-    public static HashMap<String,String> selectedPatientInfo;
+//    public static HashMap<String,String> selectedPatientInfo;
+
     public static HashMap<String,String> selectedDoctor;
 
     private static final String BASE_URL = "http://api.doctorkeeper.com:7818/v1";
@@ -293,7 +294,8 @@ public class MadamfiveAPI {
                 if(cameraKind.equals("Video")){
                     ImageParams.put("files[]", new DataPart(fileName, imageBytes, "video/mp4"));
                 }else{
-                    ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));                }
+                    ImageParams.put("files[]", new DataPart(fileName, imageBytes, "image/jpeg"));
+                }
 
                 return ImageParams;
             }

@@ -10,6 +10,10 @@ public class Constants {
         public static final String UPLOAD_MESSAGE_CALLBACK = "upload.message.callback";
     }
 
+    public static final class m5{
+        public static final String BASE_URL = "http://api.doctorkeeper.com:7818";
+    }
+
     public static final class Upload{
         public static final String FILE_UPLOAD_SUCCESS = "file.upload.success";
         public static final String FILE_UPLOAD_FAIL = "file.upload.fail";

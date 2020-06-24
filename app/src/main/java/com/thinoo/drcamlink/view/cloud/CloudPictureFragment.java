@@ -17,7 +17,10 @@ package com.thinoo.drcamlink.view.cloud;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -27,7 +30,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Picasso;
+import com.thinoo.drcamlink.Constants;
 import com.thinoo.drcamlink.R;
 import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.view.BaseFragment;
@@ -49,11 +58,6 @@ public class CloudPictureFragment extends BaseFragment {
         return f;
     }
 
-//    private Handler handler;
-//    private PictureView pictureView;
-//    private int objectHandle;
-//    private Bitmap picture;
-//    private GestureDetector gestureDetector;
     private ProgressBar progressBar;
     private Button cloudBtnBack;
 
@@ -69,15 +73,11 @@ public class CloudPictureFragment extends BaseFragment {
 
     private float xCoOrdinate, yCoOrdinate;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         imageUrl = getArguments().getString("imageUrl");
         imageGuid = getArguments().getString("imageGuid");
-
-//        Log.i(TAG, "imageUrl = "+imageUrl);
-//        Log.i(TAG, "imageGuid = "+imageGuid);
 
         View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
 //        pictureView = (PictureView) view.findViewById(R.id.cloud_image);
@@ -98,19 +98,21 @@ public class CloudPictureFragment extends BaseFragment {
         });
 
         accessToken = MadamfiveAPI.getAccessToken();
-        imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+imageUrl+
+        imageURL = Constants.m5.BASE_URL+"/v1/posts/"+imageUrl+
                 "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
 
-        Picasso.get().load(imageURL).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                //do smth when picture is loaded successfully
-                progressBar.setVisibility(View.GONE);
-            }
-            @Override
-            public void onError(Exception e) {
-            }
-        });
+        Glide.with(MadamfiveAPI.getActivity()).load(imageURL)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+        }).into(cloud_image_picasso);
 
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
         view.setOnTouchListener(new View.OnTouchListener() {
@@ -148,31 +150,6 @@ public class CloudPictureFragment extends BaseFragment {
         return view;
     }
 
-//    private void imageLoadingGlide(String imgUrl) {
-//        String token = SmartFiPreference.getSfToken(getActivity());
-//        Glide.with(getActivity())
-//                .load(new Headers().getUrlWithHeaders(imgUrl, token))
-//                .listener(new RequestListener<Drawable>() {
-//                    @Override
-//                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-//                        return false;
-//                    }
-//                    @Override
-//                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-//                        progressBar.setVisibility(View.GONE);
-//                        return false;
-//                    }
-//                })
-//                .into(cloud_image_picasso);
-//    }
-//    class Headers {
-//        GlideUrl getUrlWithHeaders(String url , String token){
-//            return new GlideUrl(url, new LazyHeaders.Builder()
-//                    .addHeader("X-Auth-Token", token)
-//                    .build());
-//        }
-//    }
-
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector scaleGestureDetector){
@@ -184,12 +161,5 @@ public class CloudPictureFragment extends BaseFragment {
             return true;
         }
     }
-
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        cloud_image_picasso.setImageDrawable(null);
-//    }
-
 
 }

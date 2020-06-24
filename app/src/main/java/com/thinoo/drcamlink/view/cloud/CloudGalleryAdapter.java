@@ -1,6 +1,7 @@
 package com.thinoo.drcamlink.view.cloud;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,15 +10,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.thinoo.drcamlink.Constants;
 import com.thinoo.drcamlink.R;
 import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink.util.SmartFiPreference;
 import com.thinoo.drcamlink.view.AspectRatioImageView;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+
+import com.bumptech.glide.Glide;
+
 
 public class CloudGalleryAdapter extends BaseAdapter {
 
@@ -123,10 +128,11 @@ public class CloudGalleryAdapter extends BaseAdapter {
         holder.progressBar.setVisibility(View.INVISIBLE);
         accessToken = MadamfiveAPI.getAccessToken();
 
-        String imageURL = "http://api.doctorkeeper.com:7818/v1/posts/"+holder.photo.get("url")+
+        String imageURL = Constants.m5.BASE_URL+"/v1/posts/"+holder.photo.get("url")+
                 "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
-//        Log.w(TAG,"imageURL = "+imageURL);
-        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
+//        Log.i(TAG,"imageURL in Cloud"+imageURL);
+//        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
+        Glide.with(mContext).load(imageURL).centerCrop().into(holder.image1);
         holder.image1.setExpectedDimensions(120, 120);
 
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
