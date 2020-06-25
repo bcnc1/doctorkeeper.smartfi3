@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.thinoo.drcamlink.Constants;
 import com.thinoo.drcamlink.util.SSLConnect;
 import com.thinoo.drcamlink.util.SmartFiPreference;
 
@@ -47,32 +48,21 @@ public class MadamfiveAPI {
     private static final String TAG = MadamfiveAPI.class.getSimpleName();
     private static AsyncHttpClient client = new AsyncHttpClient();
 
-    // Instantiate the cache
     private static Cache mCache;
 
-    // Instantiate the cache
     private static Activity mActivity;
     private static Context mContext;
 
-    // Set up the network to use HttpURLConnection as the HTTP client.
-    private static Network mNetwork;
-
-//    public static HashMap<String,String> selectedPatientInfo;
-
+//    private static Network mNetwork;
     public static HashMap<String,String> selectedDoctor;
 
-    private static final String BASE_URL = "http://api.doctorkeeper.com:7818/v1";
+//    private static final String BASE_URL = "http://api.doctorkeeper.com:7818/v1";
     private static final String mAPIKey = "NTlFUG5qdkNBV1VJWDRjL0tBMU5TMlZOY1UvaTBVQVVVU3h2eW5aRlkwND0K.gXttoBDWfyPc3z92HxRurTXo56s4NBT2khGTsBskfYM=";
 
     private static String boardId = null;
     private static String mAcccessToken = null;
 
-//    public static Boolean patientSearchDisplayExtraOption = false;
-//    public static Boolean patientInsertExtraOption = false;
-
     public static boolean isCameraOn = false;
-
-//    public static boolean isListViewOnPhoneCamera = true;
 
     public static String getAccessToken() {
         mAcccessToken = SmartFiPreference.getSfToken(getActivity());
@@ -85,7 +75,7 @@ public class MadamfiveAPI {
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
-        return BASE_URL + "/" + relativeUrl;
+        return Constants.m5.BASE_URL + "/v1/" + relativeUrl;
     }
 
     public static Activity getActivity() {
@@ -287,10 +277,6 @@ public class MadamfiveAPI {
             protected Map<String, DataPart> getByteData() {
 
                 Map<String, DataPart> ImageParams = new HashMap<String, DataPart>();
-                // file name could found file base or direct access from real path
-                // for now just get bitmap data from ImageView
-//                Log.i(TAG, "imageBytes.length : " + imageBytes.length);
-//                Log.i(TAG, "fileName : " + fileName);
                 if(cameraKind.equals("Video")){
                     ImageParams.put("files[]", new DataPart(fileName, imageBytes, "video/mp4"));
                 }else{
@@ -304,8 +290,6 @@ public class MadamfiveAPI {
 //        request.setRetryPolicy(new DefaultRetryPolicy(10 * 1000, 1, 1.0f));
         request.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(mContext).addToRequestQueue(request);
-
-//        deleteImage();
 
         countDownTimer.cancel();
         countDownTimer.start();
@@ -513,7 +497,6 @@ public class MadamfiveAPI {
 
     public static void deleteImage() {
 
-//        Log.d(TAG,"deleteImage");
         File myDir = getActivity().getExternalFilesDir(Environment.getExternalStorageState());
         if(myDir.exists()&&myDir.isDirectory()){
             File[] files = myDir.listFiles();
@@ -537,6 +520,5 @@ public class MadamfiveAPI {
             }
         }
     }
-
 
 }

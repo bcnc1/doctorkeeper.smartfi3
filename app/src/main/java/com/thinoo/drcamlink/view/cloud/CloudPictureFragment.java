@@ -80,11 +80,6 @@ public class CloudPictureFragment extends BaseFragment {
         imageGuid = getArguments().getString("imageGuid");
 
         View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
-//        pictureView = (PictureView) view.findViewById(R.id.cloud_image);
-//        if(cloud_image_picasso != null){
-////            Log.w(TAG,"이미지뷰 초기화");
-//            ((BitmapDrawable)cloud_image_picasso.getDrawable()).getBitmap().recycle();
-//        }
 
         cloud_image_picasso = (ImageView) view.findViewById(R.id.cloud_image_picasso);
         progressBar = (ProgressBar) view.findViewById(R.id.cloud_progress);

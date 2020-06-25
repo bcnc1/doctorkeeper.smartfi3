@@ -13,8 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 import com.thinoo.drcamlink.R;
+import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.models.PhotoModel;
 import com.thinoo.drcamlink.services.PhotoModelService;
 
@@ -29,6 +31,7 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
     private List<PhotoModel> photoModelList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+
         public ImageView imageView;
         public ImageView thumbView;
         public ProgressBar progressBar;
@@ -62,7 +65,7 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
                     String fullPath = photo.getFullpath();
 
                     FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
-                    ft.replace(R.id.phone_picture_container, PhonePictureFragment.newInstance(position, fullPath), null);
+                    ft.replace(R.id.phone_picture_container, PhonePictureFragment.newInstance(position, fullPath, photo), null);
                     ft.addToBackStack(null);
                     ft.commit();
 
@@ -87,15 +90,10 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final PhotoModel photo = photoModelList.get(position);
-
         Log.i("XXX", "position:"+photo.getFilename()+","+position);
 
         File f = new File(photo.getFullpath());
-
-        Picasso.get().load(f).resize(120,120).centerCrop().into(holder.imageView);
-
-//        Bitmap ThumbImage = BitmapFactory.decodeFile(photo.getFullpath()+"_thumb");
-//        holder.imageView.setImageBitmap(ThumbImage);
+        Glide.with(MadamfiveAPI.getActivity()).load(f).centerCrop().into(holder.imageView);
 
         if (photo.getMode()==1) {
             holder.dslr.setVisibility(View.VISIBLE);
