@@ -108,6 +108,7 @@ public class PhotoModelService {
         }
 
     }
+
 //    public static PhotoModel saveThumb(Bitmap bitmap, String filename, final int mode) {
 //        File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
 //
@@ -159,7 +160,8 @@ public class PhotoModelService {
         photoModel.setMode(mode);
         photoModel.setCreated(new Date());
         photoModel.setFileSize(filesize);
-        photoModel.setCustNo(SmartFiPreference.getSfPatientCustNo(con));
+        photoModel.setCustNo(SmartFiPreference.getPatientChart(con));
+        photoModel.setCustName(SmartFiPreference.getSfPatientName(con));
         photoModel.save();
 
         return photoModel;
@@ -257,7 +259,6 @@ public class PhotoModelService {
 
         return photoModel;
     }
-
 
 //    public static PhotoModel saveVideo(byte[] bytes, String filename, final int mode) {
 //        return photoModel;
