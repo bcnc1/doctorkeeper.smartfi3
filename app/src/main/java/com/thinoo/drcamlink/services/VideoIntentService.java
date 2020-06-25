@@ -92,7 +92,7 @@ public class VideoIntentService extends IntentService {
     private void uploadVideo(final PhotoModel pm) {
         final String filePath = pm.getFullpath();
         final Long photoModelId = pm.getId();
-
+        Log.i(TAG, "filePath>>>"+filePath);
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -123,13 +123,13 @@ public class VideoIntentService extends IntentService {
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                         Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
                         makeNoti("비디오 업로드 성공",0);
-                        PhotoModelService.deleteFileNPhotoModel(pm);
+//                        PhotoModelService.deleteFileNPhotoModel(pm);
                     }
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
                         makeNoti("비디오 업로드 성공",0);
-                        PhotoModelService.deleteFileNPhotoModel(pm);
+//                        PhotoModelService.deleteFileNPhotoModel(pm);
                     }
                 });
 //                Log.i(TAG,"uploadImage => Finished");

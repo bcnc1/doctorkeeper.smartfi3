@@ -232,13 +232,13 @@ public class PhoneCameraFragment extends BaseFragment {
 
         fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
         if(!fixedLandscapeExtraOption){
-            rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
-            rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
-            rotate3Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_3);
-            rotate4Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_4);
-
-            orientationListener = new OrientationListener(MadamfiveAPI.getContext());
-            orientationListener.enable();
+//            rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
+//            rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
+//            rotate3Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_3);
+//            rotate4Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_4);
+//
+//            orientationListener = new OrientationListener(MadamfiveAPI.getContext());
+//            orientationListener.enable();
         }
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);

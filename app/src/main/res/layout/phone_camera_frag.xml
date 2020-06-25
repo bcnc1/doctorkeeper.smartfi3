@@ -67,7 +67,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/photo_container"
             android:background="@android:color/transparent"
             android:text="CAMERA"
             android:textAlignment="textEnd"
@@ -86,7 +87,7 @@
             android:textColor="@android:color/background_light"
             android:textSize="12sp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="20dp"/>
 
         <ImageButton
             android:id="@+id/button_sdcard"
