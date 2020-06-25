@@ -101,12 +101,7 @@ public class PictureIntentService extends IntentService {
                 mMessenger = (Messenger) extras.get(Constants.MESSENGER);
                 Log.d(TAG,"id = "+id);
                 PhotoModel photoModel = PhotoModelService.getPhotoModel(id);
-
-//                makeNoti("picture uploading...", 0);
-
                 mPatientId = photoModel.getCustNo();
-//                Log.w(TAG, "mPatientId = "+mPatientId);
-//                uploadThumbnail(photoModel, false);
                 uploadPicture(photoModel);
 
             }
@@ -124,14 +119,13 @@ public class PictureIntentService extends IntentService {
 
     private void uploadPicture(final PhotoModel pm) {
         final String filePath = pm.getFullpath();
+        final Long photoModelId = pm.getId();
 
         if(pm.getMode() == 0 || pm.getMode() == 1){
             mMediaType = "pictures";
         }else if(pm.getMode() == 2){
             mMediaType = "videos";
         }
-
-//        final String fileName = pm.getFilename();
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -140,8 +134,6 @@ public class PictureIntentService extends IntentService {
                 pm.setThumbUploading(1);
 
                 File file  = new File(filePath);
-//                String content_type  = DisplayUtil.getMimeType(filePath);
-//                File file = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()), "/drcam/");
                 byte[] bytes = null;
                 try{
                     FileInputStream fis = new FileInputStream(file);
@@ -165,7 +157,7 @@ public class PictureIntentService extends IntentService {
                     cameraKind = "DSLR";
                 }
 
-                MadamfiveAPI.createPost(bytes, cameraKind, new JsonHttpResponseHandler() {
+                MadamfiveAPI.createPost(bytes, cameraKind, photoModelId, new JsonHttpResponseHandler() {
                     @Override
                     public void onStart() {
                         Log.i("AsyncTask", "Uploading");

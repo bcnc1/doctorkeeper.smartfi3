@@ -19,6 +19,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink.Constants;
+import com.thinoo.drcamlink.models.PhotoModel;
+import com.thinoo.drcamlink.services.PhotoModelService;
 import com.thinoo.drcamlink.util.SSLConnect;
 import com.thinoo.drcamlink.util.SmartFiPreference;
 
@@ -184,22 +186,32 @@ public class MadamfiveAPI {
 
     public static void createPost(ByteArrayOutputStream baos, String cameraKind, JsonHttpResponseHandler responseHandler) {
         final byte[] imageBytes = baos.toByteArray();
-        createPost(imageBytes, cameraKind, responseHandler);
+        Long photoModelId = 0L;
+        createPost(imageBytes, cameraKind, photoModelId, responseHandler);
     }
 
-    public static void createPost(final byte[] imageBytes, final String cameraKind, final JsonHttpResponseHandler responseHandler) {
+    public static void createPost(final byte[] imageBytes, final String cameraKind, final Long photoModelId, final JsonHttpResponseHandler responseHandler) {
 
         mAcccessToken = getAccessToken();
         boardId = getBoardId();
 
         final Map<String, String> params = new HashMap<String, String>();
 
-        String chartNumber = SmartFiPreference.getPatientChart(getActivity());
-        chartNumber = chartNumber.replace("++++++",""); //환자 차트 번호
-        chartNumber.trim();
+        final String name;
+        String categoryId, chartNumber;
 
-        final String name = SmartFiPreference.getSfPatientName(getActivity());
-        String categoryId = SmartFiPreference.getPatientId(getActivity());
+        if(photoModelId == 0L){
+            name = SmartFiPreference.getSfPatientName(getActivity());
+            categoryId = SmartFiPreference.getPatientId(getActivity());
+            chartNumber = SmartFiPreference.getPatientChart(getActivity());
+            chartNumber = chartNumber.replace("++++++",""); //환자 차트 번호
+            chartNumber.trim();
+        }else{
+            PhotoModel pm = PhotoModelService.getPhotoModel(photoModelId);
+            name = pm.getCustName();
+            categoryId = pm.getCategoryId();
+            chartNumber = pm.getCustNo();
+        }
 
         params.put("title", cameraKind);
         params.put("type", "smartfi");

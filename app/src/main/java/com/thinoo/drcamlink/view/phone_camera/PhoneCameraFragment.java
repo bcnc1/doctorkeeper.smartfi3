@@ -323,7 +323,7 @@ public class PhoneCameraFragment extends BaseFragment {
         if(path != null){
             PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
             Long id = photoModel.getId();
-            Log.i("phone",id.toString());
+//            Log.i("phone",id.toString());
             PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), id);
             photoList.add(0, photoModel);
             phoneCameraPhotoAdapter.notifyDataSetChanged();

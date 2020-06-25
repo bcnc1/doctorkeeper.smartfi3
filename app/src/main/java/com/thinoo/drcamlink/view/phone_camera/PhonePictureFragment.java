@@ -16,184 +16,128 @@
 package com.thinoo.drcamlink.view.phone_camera;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.thinoo.drcamlink.R;
+import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
+import com.thinoo.drcamlink.models.PhotoModel;
+import com.thinoo.drcamlink.services.PictureIntentService;
+import com.thinoo.drcamlink.services.VideoIntentService;
 import com.thinoo.drcamlink.view.BaseFragment;
 
 import java.io.File;
 
 public class PhonePictureFragment extends BaseFragment
-//        implements GestureHandler
 {
 
     private final String TAG = PhonePictureFragment.class.getSimpleName();
 
-    public static PhonePictureFragment newInstance(int objectHandle, String fullPath) {
+    public static PhonePictureFragment newInstance(int objectHandle, String fullPath, PhotoModel model) {
         Bundle args = new Bundle();
         args.putInt("handle", objectHandle);
         args.putString("fullPath", fullPath);
+
+        Log.i("phonePicturFragment","CustNo:"+model.getCustNo());
+        Log.i("phonePicturFragment","CustName:"+model.getCustName());
+        Log.i("phonePicturFragment","Id:"+model.getId().toString());
+
+        args.putString("custNo", model.getCustNo());
+        args.putString("custName", model.getCustName());
+        args.putString("photoModelId", model.getId().toString());
         PhonePictureFragment f = new PhonePictureFragment();
         f.setArguments(args);
         return f;
     }
 
-//    private Handler handler;
-//    private PictureView pictureView;
-//    private int objectHandle;
-//    private Bitmap picture;
-//    private GestureDetector gestureDetector;
     private ProgressBar progressBar;
-    private Button cloudBtnBack;
+    private Button phoneViewPictureBtnBack;
+    private Button phoneViewPictureBtnUpload;
+    private TextView phoneViewPictureType;
 
     private String fullPath;
-    private Bitmap bitmap;
+    private String custNo;
+    private String custName;
+    private String photoModelId;
 
-    private ImageView cloud_image_picasso;
-    private ScaleGestureDetector mScaleGestureDetector;
-    private float mScaleFactor = 1.0f;
-
-    private float xCoOrdinate, yCoOrdinate;
+    private ImageView phone_view_picture_image;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-//        handler = new Handler();
-//        objectHandle = getArguments().getInt("handle");
         fullPath = getArguments().getString("fullPath");
+        custNo = getArguments().getString("custNo");
+        custName = getArguments().getString("custName");
+        photoModelId = getArguments().getString("photoModelId");
 
-//        Log.i("WWWWWW===","fullPath ::: "+fullPath);
+        View view = inflater.inflate(R.layout.phone_picture_frag, container, false);
 
-        View view = inflater.inflate(R.layout.cloud_picture_frag, container, false);
-//        pictureView = (PictureView) view.findViewById(R.id.cloud_image);
-        cloud_image_picasso = (ImageView) view.findViewById(R.id.cloud_image_picasso);
-        progressBar = (ProgressBar) view.findViewById(R.id.cloud_progress);
+        phone_view_picture_image = (ImageView) view.findViewById(R.id.phone_view_picture_image);
+//        phone_view_picture_image.setVisibility(View.VISIBLE);
+        phoneViewPictureType = (TextView) view.findViewById(R.id.phone_view_picture_type);
+        progressBar = (ProgressBar) view.findViewById(R.id.phone_view_picture_progress);
 
-        cloudBtnBack = (Button) view.findViewById(R.id.cloud_btn_back);
-        cloudBtnBack.setOnClickListener(new View.OnClickListener(){
+        phoneViewPictureBtnBack = (Button) view.findViewById(R.id.phone_view_picture_btn_back);
+        phoneViewPictureBtnBack.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 getActivity().getFragmentManager().popBackStack();
             }
         });
 
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inSampleSize = 2;
-//        bitmap = BitmapFactory.decodeFile(fullPath,options);
-        File f = new File(fullPath);
-        Picasso.get().load(f).into(cloud_image_picasso,new com.squareup.picasso.Callback() {
+        phoneViewPictureBtnUpload = (Button) view.findViewById(R.id.phone_view_picture_btn_upload);
+        phoneViewPictureBtnUpload.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onSuccess() {
-                //do smth when picture is loaded successfully
-                progressBar.setVisibility(View.GONE);
-            }
-            @Override
-            public void onError(Exception e) {
-            }
-        });
-
-//        pictureView.setPicture(bitmap);
-
-//        gestureDetector = new GestureDetector(getActivity(), this);
-//        pictureView.setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                gestureDetector.onTouch(event);
-//                return true;
-//            }
-//        });
-        mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new PhonePictureFragment.ScaleListener());
-
-        view.setOnTouchListener(new View.OnTouchListener() {
-            Float y1 = 0f, y2 = 0f;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScaleGestureDetector.onTouchEvent(event);
-
-                Point size = new Point();
-                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        xCoOrdinate = cloud_image_picasso.getX() - event.getRawX();
-                        yCoOrdinate = cloud_image_picasso.getY() - event.getRawY();
-                        Float puffer = 0f;
-                        y1 = event.getRawY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        cloud_image_picasso.animate().y(event.getRawY() + yCoOrdinate).setDuration(0).start();
-                        cloud_image_picasso.animate().x(event.getRawX() + xCoOrdinate).y(event.getRawY() + yCoOrdinate).setDuration(0).start();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        break;
+            public void onClick(View view) {
+                if(fullPath.contains("jpg")){
+                    PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), Long.parseLong(photoModelId));
+                }else{
+                    VideoIntentService.startUploadVideo(MadamfiveAPI.getActivity(),Long.parseLong(photoModelId));
                 }
-                return true;
+                getActivity().getFragmentManager().popBackStack();
             }
         });
 
-//        progressBar.setVisibility(View.GONE);
-//        enableUi(true);
+
+        if(fullPath.contains("mp4")){
+            phoneViewPictureType.setText("VIDEO");
+        }else{
+            phoneViewPictureType.setText("IMAGE");
+        }
+
+        File f = new File(fullPath);
+
+        Glide.with(MadamfiveAPI.getActivity()).load(f)
+            .listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    return false;
+                }
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    progressBar.setVisibility(View.GONE);
+                    return false;
+                }
+            }).centerCrop().into(phone_view_picture_image);
 
         return view;
     }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector){
-            mScaleFactor *= scaleGestureDetector.getScaleFactor();
-            mScaleFactor = Math.max(1f,
-                    Math.min(mScaleFactor, 10.0f));
-            cloud_image_picasso.setScaleX(mScaleFactor);
-            cloud_image_picasso.setScaleY(mScaleFactor);
-            return true;
-        }
-    }
-
-//    public void enableUi(boolean enabled) {
-//
-//        cloudBtnBack.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                getActivity().getFragmentManager().popBackStack();
-//            }
-//        });
-//
-//    }
-
-//    @Override
-//    public void onLongTouch(float posx, float posy) {
-//
-//    }
-//
-//    @Override
-//    public void onPinchZoom(float pX, float pY, float distInPixel) {
-//        pictureView.zoomAt(pX, pY, distInPixel);
-//    }
-//
-//    @Override
-//    public void onTouchMove(float dx, float dy) {
-//        pictureView.pan(dx, dy);
-//    }
-//
-//    @Override
-//    public void onFling(float velx, float vely) {
-//        pictureView.fling(velx, vely);
-//    }
-//
-//    @Override
-//    public void onStopFling() {
-//        pictureView.stopFling();
-//    }
 
 }

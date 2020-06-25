@@ -38,6 +38,7 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
     private Long filesize;
     private String custNo; //업로드 중에 환자가 바뀔 수 있음으로 db에 저장
     private String custName;
+    private String categoryId;
 
     public PhotoModel() {
 
@@ -130,6 +131,14 @@ public class PhotoModel extends SugarRecord<PhotoModel> {
 
     public void setCustName(String custName) {
         this.custName = custName;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Boolean getUploaded() {

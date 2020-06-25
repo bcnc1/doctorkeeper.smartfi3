@@ -319,7 +319,7 @@ public class SDcardPictureFragment extends SessionFragment
 
         final PhotoModel photoModel = PhotoModelService.savePhoto(bytes, filename, 1);
 
-        MadamfiveAPI.createPost(bytes, "DSLR", new JsonHttpResponseHandler() {
+        MadamfiveAPI.createPost(bytes, "DSLR", 0L, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 Log.i("CAMERA", "onStart2:");

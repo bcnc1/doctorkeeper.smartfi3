@@ -91,6 +91,7 @@ public class VideoIntentService extends IntentService {
 
     private void uploadVideo(final PhotoModel pm) {
         final String filePath = pm.getFullpath();
+        final Long photoModelId = pm.getId();
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -113,7 +114,7 @@ public class VideoIntentService extends IntentService {
                 }
                 Log.i(TAG,"upload Video => Read MP4");
 
-                MadamfiveAPI.createPost(bytes, "Video", new JsonHttpResponseHandler() {
+                MadamfiveAPI.createPost(bytes, "Video", photoModelId, new JsonHttpResponseHandler() {
                     @Override
                     public void onStart() {
                         Log.i("AsyncTask", "Uploading");
