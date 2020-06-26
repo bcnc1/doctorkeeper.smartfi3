@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.thinoo.drcamlink.Constants;
 import com.thinoo.drcamlink.R;
+import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.util.SmartFiPreference;
 import com.thinoo.drcamlink.view.BaseFragment;
 import com.thinoo.drcamlink.view.log_in.LoginDialogFragment;
@@ -117,6 +118,9 @@ public class CloudFragment extends BaseFragment{
 
     @OnClick(R.id.btn_options)
     public void optionsBtnClicked(){
+
+//        MadamfiveAPI.deletePhotoModelList();
+
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
         changelogTx.add(opt, "Options");

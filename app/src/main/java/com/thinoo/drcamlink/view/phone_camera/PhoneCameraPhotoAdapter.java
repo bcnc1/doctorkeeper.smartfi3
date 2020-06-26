@@ -52,7 +52,6 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
 //                    String fileName = photo.getFilename();
 //                    Long photoId = photo.getId();
 //                    //Toast.makeText(view.getContext(),"name"+photo.getFilname()+"/id:"+photo.getId(),Toast.LENGTH_SHORT).show();
-//                    deleteImage(fileName,photoId);
 //                    return false;
 //                }
 //            });
@@ -116,23 +115,6 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
-    }
-
-    private void deleteImage(String fileName,Long photoId){
-
-        File myDir = new File(Environment.getExternalStorageDirectory() + "/drcam");
-        new File(myDir,fileName).delete();
-
-        PhotoModel pm = PhotoModel.findById(PhotoModel.class,photoId);
-        pm.delete();
-
-        Toast t = Toast.makeText(getActivity(),"이미지가 삭제되었습니다",Toast.LENGTH_SHORT);
-        t.setGravity(Gravity.TOP,0,200);
-        t.show();
-
-        photoModelList = PhotoModelService.findAll();
-        this.notifyDataSetChanged();
-
     }
 
 

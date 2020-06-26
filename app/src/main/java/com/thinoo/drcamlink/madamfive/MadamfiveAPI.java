@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -255,7 +256,7 @@ public class MadamfiveAPI {
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-                        Log.e(TAG, "Response:%n %s" + new String(response.data));
+                        Log.i(TAG, "Response:%n %s" + new String(response.data));
                         String resultResponse = new String(response.data);
                         JSONObject resultJson = null;
                         try {
@@ -527,10 +528,37 @@ public class MadamfiveAPI {
             });
             for(int i=20;i<numberOfFiles;i++){
                 if(files[i].isFile()==true){
+                    Log.i(TAG,"Delete File:"+files[i]);
                     files[i].delete();
                 }
             }
         }
+    }
+
+    public static void deletePhotoModelList(){
+
+        ArrayList<PhotoModel> list = PhotoModelService.findImageListOld();
+        Log.i(TAG,"List Length"+list.size());
+//        for (int i = 0; i < list.size(); i++) {
+//            PhotoModel ph = list.get(i);
+//            Long id = ph.getId();
+//            Log.i(TAG, "photoModel id:" + id.toString());
+//        }
+
+        int listSize = list.size();
+        if(list.size() > 20){
+            for(int i=0;i<list.size();i++){
+                PhotoModel ph = list.get(i);
+                Long id = ph.getId();
+                PhotoModelService.deletePhotoModel(id);
+                listSize = listSize - 1;
+                Log.i(TAG,"Delete photoModel id:"+id.toString());
+//                Log.i(TAG,"Delete photoModel i:"+i);
+//                Log.i(TAG,"List Length"+list.size());
+                if(listSize == 20) break;
+            }
+        }
+
     }
 
 }

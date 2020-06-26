@@ -425,7 +425,6 @@ public class BlabAPI {
 
 
                       //추후구현
-//                    deleteImage();
 //
                     countDownTimer.cancel();
                     countDownTimer.start();

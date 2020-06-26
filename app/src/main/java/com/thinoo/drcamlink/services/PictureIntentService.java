@@ -32,10 +32,6 @@ import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.thinoo.drcamlink.madamfive.MadamfiveAPI.deleteImage;
-import static com.thinoo.drcamlink.madamfive.MadamfiveAPI.getActivity;
-
-
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -166,13 +162,11 @@ public class PictureIntentService extends IntentService {
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                         Log.d("AsyncTask", "HTTP21:" + statusCode + responseString);
 //                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                        deleteImage();
                     }
                     @Override
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         Log.d("AsyncTask", "HTTP22:" + statusCode + response.toString());
 //                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                        deleteImage();
                     }
                 });
                 Log.i(TAG,"uploadImage => Finished");

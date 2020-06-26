@@ -535,12 +535,10 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
 
         @Override
         public void onFinish() {
-            //DO WHATEVER YOU WANT HERE
             Log.w(TAG,"Timer Completed");
-//            Log.i(TAG,"selectedPatientInfo:"+selectedPatientInfo.toString());
-//            MadamfiveAPI.write_patientInfo();
-//            MadamfiveAPI.write_doctorInfo();
+
             MadamfiveAPI.deleteImage();
+            MadamfiveAPI.deletePhotoModelList();
 
             finish();
             System.exit(0);
