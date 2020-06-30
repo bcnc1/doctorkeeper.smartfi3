@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.thinoo.drcamlink.Constants;
 import com.thinoo.drcamlink.R;
-import com.thinoo.drcamlink.madamfive.BlabAPI;
 import com.thinoo.drcamlink.madamfive.MadamfiveAPI;
 import com.thinoo.drcamlink.util.SmartFiPreference;
 import com.thinoo.drcamlink.view.log_in.LoginDialogFragment;
@@ -88,7 +87,7 @@ public class PatientDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
 
-                if(BlabAPI.getNetworkStatus(getActivity())){
+                if(MadamfiveAPI.getNetworkStatus(getActivity())){
                     patient_list_progressBar.setVisibility(View.VISIBLE);
 
                     String keyword = "";

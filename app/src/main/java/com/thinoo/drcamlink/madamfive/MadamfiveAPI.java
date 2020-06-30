@@ -3,6 +3,8 @@ package com.thinoo.drcamlink.madamfive;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.thinoo.drcamlink.MainActivity.countDownTimer;
 
 
@@ -560,5 +563,20 @@ public class MadamfiveAPI {
         }
 
     }
+
+    public static boolean getNetworkStatus(Context con){
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if(mobile.isConnected() || wifi.isConnected()){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
 
 }

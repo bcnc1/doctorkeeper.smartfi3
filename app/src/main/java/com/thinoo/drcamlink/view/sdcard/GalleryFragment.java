@@ -15,8 +15,10 @@
  */
 package com.thinoo.drcamlink.view.sdcard;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -518,44 +520,69 @@ public class GalleryFragment extends SessionFragment
             selectedImageNumber++;
         }
 
-        LayoutInflater inflater =  (LayoutInflater) MadamfiveAPI.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.toast_multiple_selection_sdcard,  (ViewGroup) view.findViewById(R.id.toast_container));
+//        LayoutInflater inflater =  (LayoutInflater) MadamfiveAPI.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View layout = inflater.inflate(R.layout.toast_multiple_selection_sdcard,  (ViewGroup) view.findViewById(R.id.toast_container));
+//
+//        TextView text = (TextView) layout.findViewById(R.id.sdcard_toast_textview);
+//        Button sdcard_toast_select = (Button) layout.findViewById(R.id.sdcard_toast_select);
+//        Button sdcard_toast_upload = (Button) layout.findViewById(R.id.sdcard_toast_upload);
+//
+//        final Toast toast = new Toast(MadamfiveAPI.getContext());
+//        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 500);
+//        toast.setDuration(Toast.LENGTH_LONG);
+//        text.setText(selectedImageNumber+"개 이미지 선택");
+//        toast.setView(layout);
+//        toast.show();
 
-        TextView text = (TextView) layout.findViewById(R.id.sdcard_toast_textview);
-        Button sdcard_toast_select = (Button) layout.findViewById(R.id.sdcard_toast_select);
-        Button sdcard_toast_upload = (Button) layout.findViewById(R.id.sdcard_toast_upload);
-
-        final Toast toast = new Toast(MadamfiveAPI.getContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 500);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        text.setText(selectedImageNumber+"개 이미지 선택");
-        toast.setView(layout);
-        toast.show();
-
-        sdcard_toast_select.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Log.w(TAG,"계속선택 클릭");
-                toast.cancel();
-            }
-        });
-
-        sdcard_toast_upload.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-//                Log.w(TAG,"업로드 클릭");
-                toast.cancel();
-
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(selectedImageNumber+"개 이미지 선택");
+        builder.setPositiveButton(R.string.sdcard_toast_select_upload, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                Log.w(TAG,"업로드 클릭");
                 multi_image_uploading_progressbar.setVisibility(View.VISIBLE);
                 multi_image_uploading_message.setVisibility(View.VISIBLE);
-                int[] tempHandles =new int[0];
+                int[] tempHandles = new int[0];
                 galleryAdapter.setHandles(tempHandles);
 
                 multi_image_uploading_progressbar.setMax(selectedImageNumber);
                 uploadSelectedHandles();
             }
         });
+        builder.setNegativeButton(R.string.sdcard_toast_select_continue, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                Log.w(TAG,"계속선택 클릭");
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+
+//        sdcard_toast_select.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                Log.w(TAG,"계속선택 클릭");
+//                toast.cancel();
+//            }
+//        });
+//
+//        sdcard_toast_upload.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                Log.w(TAG,"업로드 클릭");
+//                toast.cancel();
+//
+//                multi_image_uploading_progressbar.setVisibility(View.VISIBLE);
+//                multi_image_uploading_message.setVisibility(View.VISIBLE);
+//                int[] tempHandles = new int[0];
+//                galleryAdapter.setHandles(tempHandles);
+//
+//                multi_image_uploading_progressbar.setMax(selectedImageNumber);
+//                uploadSelectedHandles();
+//            }
+//        });
 
     }
 

@@ -184,7 +184,10 @@ public class PhotoModelService {
         photoModel.setMode(mode);
         photoModel.setCreated(new Date());
         photoModel.setFileSize(filesize);
-        photoModel.setCustNo(SmartFiPreference.getSfPatientCustNo(con));
+//        photoModel.setCustNo(SmartFiPreference.getSfPatientCustNo(con));
+        photoModel.setCustNo(SmartFiPreference.getPatientChart(con));
+        photoModel.setCustName(SmartFiPreference.getSfPatientName(con));
+        photoModel.setCategoryId(SmartFiPreference.getPatientId(con));
         photoModel.save();
 
         return photoModel;
