@@ -567,10 +567,16 @@ public class MadamfiveAPI {
     public static boolean getNetworkStatus(Context con){
 
         ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        try{
+            NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if(mobile.isConnected()){
+                return true;
+            }
+        }catch(Exception e){
+            Log.i(TAG,"mobile info :"+e.toString());
+        }
         NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        if(mobile.isConnected() || wifi.isConnected()){
+        if(wifi.isConnected()){
             return true;
         }else{
             return false;

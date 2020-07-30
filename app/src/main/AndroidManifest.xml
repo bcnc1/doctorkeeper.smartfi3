@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.thinoo.drcamlink"
     android:versionCode="57"
-    android:versionName="2.2.6">
+    android:versionName="2.2.7">
 
     <uses-feature android:name="android.hardware.usb.host" />
 
