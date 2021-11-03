@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.thinoo.drcamlink"
-    android:versionCode="57"
-    android:versionName="2.2.7">
-
+    package="com.doctorkeeper.photokeeper"
+    android:versionCode="1"
+    android:versionName="0.0.1">
     <uses-feature android:name="android.hardware.usb.host" />
-
     <supports-screens
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="false"
         android:xlargeScreens="true" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -35,16 +32,13 @@
         <service
             android:name=".services.ErrorFileUploadService"
             android:exported="false" />
-
         <activity android:name=".activities.FileExploreActivity" />
-
         <service
             android:name=".services.PictureIntentService"
             android:exported="false" />
         <service
             android:name=".services.VideoIntentService"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -53,14 +47,12 @@
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
-
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -74,14 +66,6 @@
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".activities.LaunchCameraActivity" />
         <activity android:name=".activities.LaunchVrecordActivity" /> <!-- <activity -->
-        <!-- android:name="org.acra.CrashReportDialog" -->
-        <!-- android:excludeFromRecents="true" -->
-        <!-- android:finishOnTaskLaunch="true" -->
-        <!-- android:launchMode="singleInstance" -->
-        <!-- android:theme="@android:style/Theme.Dialog" /> -->
-        <!-- <meta-data android:name="AA_DB_NAME" android:value="drcamlink" /> -->
-        <!-- <meta-data android:name="AA_DB_VERSION" android:value="5" /> -->
-        <!-- <meta-data android:name="AA_MODELS" android:value="com.thinoo.drcamlink.models.PhotoModel" /> -->
         <meta-data
             android:name="DATABASE"
             android:value="smartfi.db" />
@@ -93,11 +77,10 @@
             android:value="true" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.thinoo.drcamlink" />
-
+            android:value="com.doctorkeeper.photokeeper" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.thinoo.drcamlink"
+            android:authorities="com.doctorkeeper.photokeeper"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -105,5 +88,4 @@
                 android:resource="@xml/filepaths" />
         </provider>
     </application>
-
 </manifest>

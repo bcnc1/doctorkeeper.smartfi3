@@ -6,7 +6,6 @@ buildscript {
     def dbflow_version = "4.0.3"
     repositories {
         jcenter()
-
         google()
     }
     dependencies {

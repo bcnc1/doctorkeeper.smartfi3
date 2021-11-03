@@ -3,7 +3,7 @@ android {
     compileSdkVersion 26
 
     defaultConfig {
-        applicationId "com.thinoo.drcamlink"
+        applicationId "com.doctorkeeper.photokeeper"
         minSdkVersion 19
         targetSdkVersion 26
     }

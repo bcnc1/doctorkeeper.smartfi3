@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <com.thinoo.drcamlink.PictureView
+  <com.doctorkeeper.photokeeper.PictureView
     android:id="@+id/image1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center">
-  </com.thinoo.drcamlink.PictureView>
+  </com.doctorkeeper.photokeeper.PictureView>
 
   <ProgressBar
     android:id="@+id/progress"

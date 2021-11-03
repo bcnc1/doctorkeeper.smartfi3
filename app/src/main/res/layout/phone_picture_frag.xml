@@ -6,12 +6,12 @@
     android:layout_height="200dp"
     android:background="@color/aliceblue">
 
-    <!--    <com.thinoo.drcamlink.PictureView-->
+    <!--    <com.doctorkeeper.drcamlink.PictureView-->
     <!--        android:id="@+id/phone_view_picture_image"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"-->
     <!--        android:layout_gravity="center">-->
-    <!--    </com.thinoo.drcamlink.PictureView>-->
+    <!--    </com.doctorkeeper.drcamlink.PictureView>-->
 
     <ProgressBar
         android:id="@+id/phone_view_picture_progress"
