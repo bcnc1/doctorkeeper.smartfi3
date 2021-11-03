@@ -1,8 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-
 buildscript {
-
     def dbflow_version = "4.0.3"
     repositories {
         jcenter()
@@ -22,8 +20,6 @@ allprojects {
         google()
     }
     dependencies {
-
-
     }
 }
 

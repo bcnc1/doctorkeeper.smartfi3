@@ -20,7 +20,7 @@
 
     <application
         android:name="com.orm.SugarApp"
-        android:icon="@drawable/smartfi_icon"
+        android:icon="@drawable/photokeeper_icon"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/Theme.RYC"
@@ -79,7 +79,7 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.doctorkeeper.photokeeper" />
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.doctorkeeper.photokeeper"
             android:exported="false"
             android:grantUriPermissions="true">
