@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.doctorkeeper.photokeeper"
+    package="com.doctorkeeper.smartfi"
     android:versionCode="1"
     android:versionName="0.0.1">
     <uses-feature android:name="android.hardware.usb.host" />
@@ -20,27 +20,27 @@
 
     <application
         android:name="com.orm.SugarApp"
-        android:icon="@drawable/photokeeper_icon"
+        android:icon="@drawable/smartfi_icon_2022"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/Theme.RYC"
         android:usesCleartextTraffic="true"
         tools:replace="android:icon">
         <service
-            android:name=".services.RetryUploadIntentService"
+            android:name="com.doctorkeeper.smartfi.services.RetryUploadIntentService"
             android:exported="false"></service>
         <service
-            android:name=".services.ErrorFileUploadService"
+            android:name="com.doctorkeeper.smartfi.services.ErrorFileUploadService"
             android:exported="false" />
-        <activity android:name=".activities.FileExploreActivity" />
+        <activity android:name="com.doctorkeeper.smartfi.activities.FileExploreActivity" />
         <service
-            android:name=".services.PictureIntentService"
+            android:name="com.doctorkeeper.smartfi.services.PictureIntentService"
             android:exported="false" />
         <service
-            android:name=".services.VideoIntentService"
+            android:name="com.doctorkeeper.smartfi.services.VideoIntentService"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.doctorkeeper.smartfi.MainActivity"
             android:configChanges="orientation"
             android:label="@string/launcher_label"
             android:launchMode="singleTask"
@@ -61,11 +61,11 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name=".activities.AppSettingsActivity"
+            android:name="com.doctorkeeper.smartfi.activities.AppSettingsActivity"
             android:label="@string/activity_app_settings_title"
             android:screenOrientation="sensorLandscape" />
-        <activity android:name=".activities.LaunchCameraActivity" />
-        <activity android:name=".activities.LaunchVrecordActivity" /> <!-- <activity -->
+        <activity android:name="com.doctorkeeper.smartfi.activities.LaunchCameraActivity" />
+        <activity android:name="com.doctorkeeper.smartfi.activities.LaunchVrecordActivity" /> <!-- <activity -->
         <meta-data
             android:name="DATABASE"
             android:value="smartfi.db" />
@@ -77,10 +77,10 @@
             android:value="true" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.doctorkeeper.photokeeper" />
+            android:value="com.doctorkeeper.smartfi" />
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.doctorkeeper.photokeeper"
+            android:authorities="com.doctorkeeper.smartfi"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
