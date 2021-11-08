@@ -403,9 +403,9 @@ public class DSLRFragment extends SessionFragment implements
                 getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
         if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
-            Long id = photoModel.getId();
-            PictureIntentService.startUploadPicture(getActivity(), id);
+//            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
+//            Long id = photoModel.getId();
+//            PictureIntentService.startUploadPicture(getActivity(), id);
         }else{
             Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
         }

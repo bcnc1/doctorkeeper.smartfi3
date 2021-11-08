@@ -134,56 +134,56 @@ public class CloudGalleryFragment extends BaseFragment implements AdapterView.On
 
         imageInfoList = new ArrayList<HashMap<String, String>>();
 
-        MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("CLoud Approach", "onStart2:");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-
-                Log.d(TAG, "HTTP21:" + statusCode + responseString);
-                try {
-                    JSONObject response = new JSONObject(responseString);
-                    JSONArray imagesArray = response.getJSONArray("posts");
-
-                    for(int i=0;i<imagesArray.length();i++){
-                        JSONObject imagesObject = imagesArray.getJSONObject(i);
-//                        Log.i(TAG,"Inside JSON Array");
-                        Log.i(TAG,"Inside value : "+ imagesObject.get("id").toString());
-                        HashMap<String,String> imageInfo = new HashMap<>();
-                        imageInfo.put("url",imagesObject.getString("id"));
-                        imageInfo.put("uploadDate",imagesObject.getString("created"));
-                        try{
-                            imageInfo.put("cameraKind",imagesObject.getString("title"));
-                        }catch(Exception e){
-                            imageInfo.put("cameraKind","DSLR");
-                        }
-                        try {
-                            JSONArray attachmentArray = imagesArray.getJSONObject(i).getJSONArray("attachments");
-                            JSONObject attach = attachmentArray.getJSONObject(0);
-                            imageInfo.put("guid", attach.getString("guid"));
-                        }catch (Exception e){
-                            imageInfo.put("guid", "none");
-                        }
-//                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
-                        imageInfoList.add(imageInfo);
-                    }
-                    cloudGalleryAdapter.setItems(imageInfoList);
-                    cloudGalleryAdapter.notifyDataSetChanged();
-                    Log.i("CloudFragment","list received! === length:"+imageInfoList.size());
-                }catch (Exception e){
-                }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("CLoud", "HTTP22:" + statusCode + response.toString());
-//                galleryAdapter.notifyDataSetChanged();
-            }
-        });
+//        MadamfiveAPI.getImageURL("0",new JsonHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                Log.i("CLoud Approach", "onStart2:");
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+//
+//                Log.d(TAG, "HTTP21:" + statusCode + responseString);
+//                try {
+//                    JSONObject response = new JSONObject(responseString);
+//                    JSONArray imagesArray = response.getJSONArray("posts");
+//
+//                    for(int i=0;i<imagesArray.length();i++){
+//                        JSONObject imagesObject = imagesArray.getJSONObject(i);
+////                        Log.i(TAG,"Inside JSON Array");
+//                        Log.i(TAG,"Inside value : "+ imagesObject.get("id").toString());
+//                        HashMap<String,String> imageInfo = new HashMap<>();
+//                        imageInfo.put("url",imagesObject.getString("id"));
+//                        imageInfo.put("uploadDate",imagesObject.getString("created"));
+//                        try{
+//                            imageInfo.put("cameraKind",imagesObject.getString("title"));
+//                        }catch(Exception e){
+//                            imageInfo.put("cameraKind","DSLR");
+//                        }
+//                        try {
+//                            JSONArray attachmentArray = imagesArray.getJSONObject(i).getJSONArray("attachments");
+//                            JSONObject attach = attachmentArray.getJSONObject(0);
+//                            imageInfo.put("guid", attach.getString("guid"));
+//                        }catch (Exception e){
+//                            imageInfo.put("guid", "none");
+//                        }
+////                        Log.i(TAG,"Inside HashMap : "+ imageInfo.toString());
+//                        imageInfoList.add(imageInfo);
+//                    }
+//                    cloudGalleryAdapter.setItems(imageInfoList);
+//                    cloudGalleryAdapter.notifyDataSetChanged();
+//                    Log.i("CloudFragment","list received! === length:"+imageInfoList.size());
+//                }catch (Exception e){
+//                }
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+//                // If the response is JSONObject instead of expected JSONArray
+//                Log.d("CLoud", "HTTP22:" + statusCode + response.toString());
+////                galleryAdapter.notifyDataSetChanged();
+//            }
+//        });
         Log.i("List in CloudFragment",imageInfoList.size()+"");
     }
 

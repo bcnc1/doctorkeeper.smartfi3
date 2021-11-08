@@ -1,1 +1,4 @@
-include ':app', ':camerakit-release', ':camerakit-core-rel', ':camerakit-vision-release'
+include ':camerakit-core-rel'
+include ':camerakit-vision-release'
+include ':camerakit-release'
+include ':app'

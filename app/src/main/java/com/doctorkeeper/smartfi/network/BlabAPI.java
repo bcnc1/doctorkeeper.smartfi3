@@ -11,6 +11,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
@@ -42,11 +43,11 @@ import static com.loopj.android.http.AsyncHttpClient.log;
 
 
 public class BlabAPI {
+
     private static final String TAG = BlabAPI.class.getSimpleName();
-
     private static String mAcccessToken = null;
-
     private static AsyncHttpClient client = new AsyncHttpClient();
+//    private static SyncHttpClient client2 = new SyncHttpClient();
 
     // Instantiate the cache
     private static Cache mCache;
@@ -188,33 +189,6 @@ public class BlabAPI {
 
     }
 
-    public static void loginDoctorKeeper(Context con, String id, String pw, JsonHttpResponseHandler responseHandler){
-
-        String url = "http://211.252.85.83:3000/api/v1/user/login";
-        StringEntity jsonEntity = null;
-
-        JSONObject jsonParams = new JSONObject();
-        try {
-            jsonParams.put("id", id);
-            jsonParams.put("pwd", pw);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            log.w(TAG,e+"");
-        }
-
-        try {
-            jsonEntity = new StringEntity(jsonParams.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            log.w(TAG,e+"");
-        }
-
-        client.addHeader("Accept", "application/json");
-        client.addHeader("Content-Type", "application/json");
-        client.post(con, url, jsonEntity, "application/json",responseHandler);
-
-    }
-
     public static void loginSyncEMR(Context con, String id, String pw, ResponseHandlerInterface responseHandler){
 
         SyncHttpClient syncClient = new SyncHttpClient();
@@ -258,9 +232,7 @@ public class BlabAPI {
         }
 
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.SEARCH_PATIENT;
-
         RequestParams requestParams = new RequestParams();
-
         requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
 
         if(!searchByChart.equals("")){
@@ -277,7 +249,6 @@ public class BlabAPI {
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
         client.addHeader("X-Auth-Token", SmartFiPreference.getSfToken(con));
-
         client.get(con, url, requestParams ,responseHandler);
 
     }
@@ -322,9 +293,7 @@ public class BlabAPI {
         }
 
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.FIND_PHOTOS;
-
         RequestParams requestParams = new RequestParams();
-
         requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
         requestParams.put(Constants.EMRAPI.P_IDX, Integer.toString(page));
         requestParams.put(Constants.EMRAPI.P_SIZE, Integer.toString(pageSize));
@@ -345,7 +314,6 @@ public class BlabAPI {
         }
 
         String url = Constants.EMRAPI.BASE_URL +Constants.EMRAPI.FIND_PHOTOS_ALL;
-
         RequestParams requestParams = new RequestParams();
 
         requestParams.put(Constants.EMRAPI.UID, SmartFiPreference.getDoctorId(con));
@@ -449,15 +417,79 @@ public class BlabAPI {
             return false;
         }
 
-//        ConnectivityManager cm = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo ni = cm.getActiveNetworkInfo();
-//
-//        if (ni != null && ( ni.getType() == ConnectivityManager.TYPE_WIFI || ni.getType() == ConnectivityManager.TYPE_MOBILE))
-//        {
-//            return true;
-//        }else{
-//            return false;
-//        }
+    }
+
+    public static void loginDoctorKeeper(Context con, String id, String pw, JsonHttpResponseHandler responseHandler){
+
+        String url = "http://211.252.85.83:3000/api/v1/user/login";
+        StringEntity jsonEntity = null;
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("id", id);
+            jsonParams.put("pwd", pw);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+
+        try {
+            jsonEntity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.post(con, url, jsonEntity, "application/json",responseHandler);
+
+    }
+
+    public static void uploadImage(final String path, byte[] image, JsonHttpResponseHandler handler){
+
+        String url = "http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_8c4583d1-b030-4cc2-8e65-7e747563dbeb/";
+        String doctorId = SmartFiPreference.getDoctorId(getContext());
+        String[] files = path.split("/");
+        String fileName = files[files.length-1];
+        url = url + doctorId + "/" + fileName;
+        String token = SmartFiPreference.getSfToken(getContext());
+        log.i(TAG,"url:::"+url);
+        log.i(TAG,"doctorId:::"+doctorId+"token:::"+token);
+
+        File f  = new File(path);
+        String content_type  = getMimeType(path);
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody file_body = RequestBody.create(MediaType.parse(content_type),f);
+
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(url)
+                .put(file_body)
+                .addHeader("X-Auth-Token",token)
+                .build();
+
+        try {
+            okhttp3.Response response = client.newCall(request).execute();
+            log.w(TAG,response.toString());
+            //response.body()
+
+            if(!response.isSuccessful()){
+                // throw new IOException("Error : "+response);
+                handler.onFailure(response.code(), null, response.toString(), null);
+            }else{
+                handler.onSuccess(response.code(), null, "");
+                //구현완료
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.w(TAG,e.toString());
+        }
 
 
     }

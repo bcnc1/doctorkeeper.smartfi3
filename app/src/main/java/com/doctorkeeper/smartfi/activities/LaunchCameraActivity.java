@@ -140,9 +140,9 @@ public class LaunchCameraActivity extends Activity {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             try {
                 if(currentPhotoPath != null){
-                    PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, currentPhotoPath, currentPhotoPath, mFileName, 0);
-                    Long id = photoModel.getId();
-                    PictureIntentService.startUploadPicture(mCon, id);
+//                    PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, currentPhotoPath, currentPhotoPath, mFileName, 0);
+//                    Long id = photoModel.getId();
+//                    PictureIntentService.startUploadPicture(mCon, id);
                 }else{
                     Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
                 }

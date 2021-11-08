@@ -17,8 +17,6 @@ android {
     }
     lintOptions {
         checkReleaseBuilds false
-        // Or, if you prefer, you can continue to check for errors in release builds,
-        // but continue the build even when errors are found:
         abortOnError false
     }
     compileOptions {
@@ -52,6 +50,7 @@ dependencies {
     implementation project(':camerakit-release')
     implementation project(':camerakit-core-rel')
     implementation project(':camerakit-vision-release')
+
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'org.conscrypt:conscrypt-android:2.2.1'
     implementation ('com.github.bumptech.glide:glide:4.9.0'){

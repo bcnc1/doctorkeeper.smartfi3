@@ -25,18 +25,20 @@ public class DisplayUtil {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, c.getResources().getDisplayMetrics());
     }
 
-    public static boolean saveBitmap(Bitmap bitmap, String destination, boolean recyle){
-        if(bitmap == null || TextUtils.isEmpty(destination)){
+    public static boolean saveImage(byte[] image, String destination){
+        if(image == null || TextUtils.isEmpty(destination)){
             return false;
         }
 
         BufferedOutputStream bos = null;
         try{
             FileOutputStream fos = new FileOutputStream(destination);
-            bos = new BufferedOutputStream(fos);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+//            bos = new BufferedOutputStream(fos);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+            fos.write(image);
+            fos.close();
             return true;
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false ;
         }finally {
@@ -46,9 +48,6 @@ public class DisplayUtil {
                     bos.close();
                 } catch (IOException e) {
                 }
-            }
-            if (recyle) {
-                bitmap.recycle();
             }
         }
     }

@@ -104,7 +104,7 @@ public class PhonePictureFragment extends BaseFragment
             @Override
             public void onClick(View view) {
                 if(fullPath.contains("jpg")){
-                    PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), Long.parseLong(photoModelId));
+//                    PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), Long.parseLong(photoModelId));
                 }else{
                     VideoIntentService.startUploadVideo(MadamfiveAPI.getActivity(),Long.parseLong(photoModelId));
                 }

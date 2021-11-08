@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.doctorkeeper.smartfi.R;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
 import com.doctorkeeper.smartfi.util.SmartFiPreference;
 
@@ -59,7 +60,7 @@ public class PatientDialogAdapter extends BaseAdapter {
         patient_name = (TextView) view.findViewById(R.id.patient_name);
         patient_chartNumber = (TextView) view.findViewById(R.id.patient_chartNumber);
 
-        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(MadamfiveAPI.getActivity());
+        patientSearchDisplayExtraOption = SmartFiPreference.getSfDisplayExtraOpt(BlabAPI.getActivity());
         if(patientSearchDisplayExtraOption){
             HashMap<String, String> patientInfo = getItem(i);
             patient_name.setText(patientInfo.get("name"));

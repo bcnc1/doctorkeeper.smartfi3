@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doctorkeeper.smartfi.activities.AppSettingsActivity;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
 import com.doctorkeeper.smartfi.ptp.Camera;
 import com.doctorkeeper.smartfi.ptp.Camera.CameraListener;
@@ -128,7 +129,8 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         }
         setContentView(R.layout.main);
 
-        MadamfiveAPI.setContext(this, getApplicationContext());
+//        MadamfiveAPI.setContext(this, getApplicationContext());
+        BlabAPI.setContext(this,getApplicationContext());
 
         settings = new AppSettings(this);
 
@@ -161,7 +163,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();
 
-        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
         if(fixedLandscapeExtraOption){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         }

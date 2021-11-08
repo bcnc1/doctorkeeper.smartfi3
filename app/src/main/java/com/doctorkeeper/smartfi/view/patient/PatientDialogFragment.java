@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.doctorkeeper.smartfi.Constants;
 import com.doctorkeeper.smartfi.R;
@@ -124,8 +125,8 @@ public class PatientDialogFragment extends DialogFragment {
                 String name = patientInfo.get("name");
                 Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_LONG).show();
 
-                SmartFiPreference.setPatientId(getActivity(), patientInfo.get("categoryId"));
-                SmartFiPreference.setSfPatientCustNo(getActivity(),patientInfo.get("custNo"));
+//                SmartFiPreference.setPatientId(getActivity(), patientInfo.get("categoryId"));
+//                SmartFiPreference.setSfPatientCustNo(getActivity(),patientInfo.get("custNo"));
                 SmartFiPreference.setSfPatientName(getActivity(), name);
                 SmartFiPreference.setPatientChart(getActivity(),patientInfo.get("chartNumber"));
 
@@ -147,71 +148,86 @@ public class PatientDialogFragment extends DialogFragment {
 
     private void searchPatient(final String searchName, final String searchChart) {
 
-        MadamfiveAPI.searchPatient(searchName, searchChart, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i(TAG, "onStart:");
-            }
+        ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
 
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                patient_list_progressBar.setVisibility(View.INVISIBLE);
+        HashMap<String, String> patientInfo = new HashMap<>();
+        patientInfo.put("name", "kelly");
+        patientInfo.put("chartNumber", "1001");
+        patientInfoList.add(patientInfo);
 
-                try {
-                    JSONObject response = new JSONObject(responseString);
-                    JSONArray patientArray = response.getJSONArray("categories");
+        HashMap<String, String> patientInfo1 = new HashMap<>();
+        patientInfo1.put("name", "lucy");
+        patientInfo1.put("chartNumber", "1002");
+        patientInfoList.add(patientInfo1);
 
-                    if (patientInsertExtraOption == true && patientArray.length() == 0) {
-                        addPatientInfo(searchName, searchChart);
-                    } else {
-                        ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
-                        for (int i = 0; i < patientArray.length(); i++) {
-                            JSONObject patientObject = patientArray.getJSONObject(i);
-                            Log.i(TAG, "Inside patientObject : " + patientObject.toString());
-                            HashMap<String, String> patientInfo = new HashMap<>();
-                            if(patientSearchDisplayExtraOption) {
+        adapter.setItems(patientInfoList);
+        adapter.notifyDataSetChanged();
 
-                                patientInfo.put("name", patientObject.getString("name").trim());
-                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
-                                patientInfo.put("categoryId", patientObject.getString("id"));
-                                patientInfo.put("customerNumber", patientObject.getString("description"));
-                                try {
-                                    JSONObject userData = patientObject.getJSONObject("userData");
-                                    patientInfo.put("birthDate", userData.getString("birthDate"));
-                                }catch(Exception e){
-                                }
-                            }else{
-                                patientInfo.put("name", patientObject.getString("name").trim());
-                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
-                                patientInfo.put("categoryId", patientObject.getString("id"));
-                                patientInfo.put("customerNumber", patientObject.getString("description"));
-                            }
-//                            Log.i(TAG, "Inside HashMap : " + patientInfo.toString());
-                            patientInfoList.add(patientInfo);
-                        }
-//                        Log.i(TAG, "list received! === length:" + patientInfoList.size());
-                        adapter.setItems(patientInfoList);
-                        adapter.notifyDataSetChanged();
-                    }
-
-                } catch (Exception e) {
-                }
-
-                if (statusCode == 400) {
-                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                } else {
-                }
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-            }
-        });
+//        MadamfiveAPI.searchPatient(searchName, searchChart, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                Log.i(TAG, "onStart:");
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+//                patient_list_progressBar.setVisibility(View.INVISIBLE);
+//
+//                try {
+//                    JSONObject response = new JSONObject(responseString);
+//                    JSONArray patientArray = response.getJSONArray("categories");
+//
+//                    if (patientInsertExtraOption == true && patientArray.length() == 0) {
+//                        addPatientInfo(searchName, searchChart);
+//                    } else {
+//                        ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
+//                        for (int i = 0; i < patientArray.length(); i++) {
+//                            JSONObject patientObject = patientArray.getJSONObject(i);
+//                            Log.i(TAG, "Inside patientObject : " + patientObject.toString());
+//                            HashMap<String, String> patientInfo = new HashMap<>();
+//                            if(patientSearchDisplayExtraOption) {
+//
+//                                patientInfo.put("name", patientObject.getString("name").trim());
+//                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
+//                                patientInfo.put("categoryId", patientObject.getString("id"));
+//                                patientInfo.put("customerNumber", patientObject.getString("description"));
+//                                try {
+//                                    JSONObject userData = patientObject.getJSONObject("userData");
+//                                    patientInfo.put("birthDate", userData.getString("birthDate"));
+//                                }catch(Exception e){
+//                                }
+//                            }else{
+//                                patientInfo.put("name", patientObject.getString("name").trim());
+//                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
+//                                patientInfo.put("categoryId", patientObject.getString("id"));
+//                                patientInfo.put("customerNumber", patientObject.getString("description"));
+//                            }
+////                            Log.i(TAG, "Inside HashMap : " + patientInfo.toString());
+//                            patientInfoList.add(patientInfo);
+//                        }
+////                        Log.i(TAG, "list received! === length:" + patientInfoList.size());
+//                        adapter.setItems(patientInfoList);
+//                        adapter.notifyDataSetChanged();
+//                    }
+//
+//                } catch (Exception e) {
+//                }
+//
+//                if (statusCode == 400) {
+//                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+//                    toast.setGravity(Gravity.CENTER, 0, 0);
+//                    toast.show();
+//                } else {
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+//                // If the response is JSONObject instead of expected JSONArray
+//                Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+//            }
+//        });
 
     }
 
@@ -306,7 +322,7 @@ public class PatientDialogFragment extends DialogFragment {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = (int) (metrics.widthPixels * .85);
         int height = (int) (metrics.heightPixels * .60);
-        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
         if(fixedLandscapeExtraOption){
             height = (int) (metrics.heightPixels * .90);
             width= (int) (metrics.widthPixels * .60);

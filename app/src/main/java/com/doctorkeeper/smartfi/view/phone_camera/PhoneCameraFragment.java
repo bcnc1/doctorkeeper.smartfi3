@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.activities.LaunchCameraActivity;
 import com.doctorkeeper.smartfi.activities.LaunchVrecordActivity;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
 import com.doctorkeeper.smartfi.models.PhotoModel;
 import com.doctorkeeper.smartfi.services.PhotoModelService;
@@ -156,6 +157,9 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     };
 
+    private String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+    private String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -176,10 +180,10 @@ public class PhoneCameraFragment extends BaseFragment {
             btnSDCard.setVisibility(View.VISIBLE);
         }
 
-        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(MadamfiveAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(BlabAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
 
-        fixedPortraitExtraOption = SmartFiPreference.getSfShootPortraitOpt(MadamfiveAPI.getActivity());
+        fixedPortraitExtraOption = SmartFiPreference.getSfShootPortraitOpt(BlabAPI.getActivity());
 
         cameraView = (CameraView) view.findViewById(R.id.camera);
         cameraView.addCameraKitListener(new CameraKitEventListener() {
@@ -200,16 +204,10 @@ public class PhoneCameraFragment extends BaseFragment {
             public void onImage(CameraKitImage cameraKitImage) {
                 Log.w(TAG,"onImage");
                 mSound.release();
-                Bitmap picture = cameraKitImage.getBitmap();
+                byte[] picture = cameraKitImage.getJpeg();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-                mFileName = DEVICE + "_" + timeStamp+".jpg";
-                if(fixedPortraitExtraOption){
-                    int orientationValue = orientationListener.rotation;
-                    Bitmap picture2 = rotateImage(picture,orientationValue);
-                    savePhotoNUpload(picture2, "phone", mFileName);
-                }else {
-                    savePhotoNUpload(picture, "phone", mFileName);
-                }
+                mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
+                savePhotoNUpload(picture, "phone", mFileName);
             }
             @Override
             public void onVideo(CameraKitVideo cameraKitVideo) {
@@ -229,7 +227,7 @@ public class PhoneCameraFragment extends BaseFragment {
         phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
         listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
 
-        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(MadamfiveAPI.getActivity());
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
         if(!fixedLandscapeExtraOption){
 //            rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
 //            rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
@@ -242,24 +240,24 @@ public class PhoneCameraFragment extends BaseFragment {
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);
 
-        Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()));
-        patient_name.setText(SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()));
+        Log.w(TAG,"초기이름 = "+SmartFiPreference.getSfPatientName(BlabAPI.getActivity()));
+        patient_name.setText(SmartFiPreference.getSfPatientName(BlabAPI.getActivity()));
 
         IntentFilter on = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         IntentFilter off = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        MadamfiveAPI.getContext().registerReceiver(usbOnReciever,on);
-        MadamfiveAPI.getContext().registerReceiver(usbOffReciever,off);
+        BlabAPI.getContext().registerReceiver(usbOnReciever,on);
+        BlabAPI.getContext().registerReceiver(usbOffReciever,off);
 
         // Display Doctor info : OPTION
-        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(MadamfiveAPI.getActivity());
+        doctorSelectExtraOption = SmartFiPreference.getSfInsertDoctorOpt(BlabAPI.getActivity());
         doctor_name = (TextView)view.findViewById(R.id.doctor_name);
         if(!doctorSelectExtraOption){
             btnDoctor.setVisibility(View.INVISIBLE);
             doctor_name.setVisibility(View.INVISIBLE);
         }else{
             HashMap<String,String> doctor = new HashMap<>();
-            String name = SmartFiPreference.getSfDoctorName(MadamfiveAPI.getActivity());
-            String number =SmartFiPreference.getSfDoctorNumber(MadamfiveAPI.getActivity());
+            String name = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
+            String number =SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
             doctor.put("name", name);
             doctor.put("doctorNumber", number);
             selectedDoctor = doctor;
@@ -268,7 +266,7 @@ public class PhoneCameraFragment extends BaseFragment {
             }
         }
 
-        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(MadamfiveAPI.getActivity());
+        shootingImageDisplayExtraOption = SmartFiPreference.getSfShootDisplayOpt(BlabAPI.getActivity());
         if(shootingImageDisplayExtraOption){
             photo_container.setVisibility(View.VISIBLE);
         }
@@ -311,23 +309,22 @@ public class PhoneCameraFragment extends BaseFragment {
 //        cameraView.stop();
     }
 
-    private void savePhotoNUpload(Bitmap picture, String phone, String mFileName) {
+    private void savePhotoNUpload(byte[] picture, String phone, String mFileName) {
         Log.w(TAG,"savePhotoNUpload");
-        File file = new File(MadamfiveAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+        File file = new File(BlabAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
         String srcPath = file.toString();
-        String path = DisplayUtil.storePtictureNThumbImage(srcPath,
-                MadamfiveAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, picture);
+        boolean result = DisplayUtil.saveImage(picture,srcPath);
 
-        if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
-            Long id = photoModel.getId();
+        if(result==true){
+//            PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
+//            Long id = photoModel.getId();
 //            Log.i("phone",id.toString());
-            PictureIntentService.startUploadPicture(MadamfiveAPI.getActivity(), id);
-            photoList.add(0, photoModel);
-            phoneCameraPhotoAdapter.notifyDataSetChanged();
+            PictureIntentService.startUploadPicture(BlabAPI.getActivity(), srcPath);
+//            photoList.add(0, photoModel);
+//            phoneCameraPhotoAdapter.notifyDataSetChanged();
         }else{
-            Toast.makeText(MadamfiveAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
+//            Toast.makeText(MadamfiveAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
     }
 
@@ -345,7 +342,7 @@ public class PhoneCameraFragment extends BaseFragment {
                 }
             }else{
 
-                Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+                Toast.makeText(BlabAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
             }
 //            mSound = new MediaActionSound();
 //            mSound.play(MediaActionSound.SHUTTER_CLICK);
@@ -357,7 +354,7 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private boolean isInsertPatient() {
-        if(SmartFiPreference.getSfPatientName(MadamfiveAPI.getActivity()).equals("")){
+        if(SmartFiPreference.getSfPatientName(BlabAPI.getActivity()).equals("")){
             return false;
         }else{
             return true;
@@ -393,7 +390,7 @@ public class PhoneCameraFragment extends BaseFragment {
             ft.addToBackStack(null);
             ft.commit();
         }else{
-            Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+            Toast.makeText(BlabAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -406,10 +403,10 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.e(TAG,"ERROR~~~"+e);
             }
 
-            Intent intent = new Intent(MadamfiveAPI.getActivity(), LaunchCameraActivity.class);
+            Intent intent = new Intent(BlabAPI.getActivity(), LaunchCameraActivity.class);
             startActivity(intent);
         }else{
-            Toast.makeText(MadamfiveAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+            Toast.makeText(BlabAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -468,8 +465,8 @@ public class PhoneCameraFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(MadamfiveAPI.getActivity() !=null && MadamfiveAPI.getActivity() instanceof VrecordInterface){
-            mVrecInterface = (VrecordInterface)MadamfiveAPI.getActivity();
+        if(BlabAPI.getActivity() !=null && BlabAPI.getActivity() instanceof VrecordInterface){
+            mVrecInterface = (VrecordInterface)BlabAPI.getActivity();
         }
     }
 
