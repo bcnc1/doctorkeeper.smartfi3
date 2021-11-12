@@ -1,6 +1,7 @@
 package com.doctorkeeper.smartfi.view.cloud;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +10,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.doctorkeeper.smartfi.Constants;
 import com.doctorkeeper.smartfi.R;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
+import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import com.doctorkeeper.smartfi.view.AspectRatioImageView;
 
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.bumptech.glide.Glide;
+
+import static com.doctorkeeper.smartfi.network.BlabAPI.getContext;
 
 
 public class CloudGalleryAdapter extends BaseAdapter {
@@ -42,7 +54,7 @@ public class CloudGalleryAdapter extends BaseAdapter {
 //    private List<PhotoModel> items;
     private List<HashMap<String,String>> items;
     private final LayoutInflater inflater;
-    String accessToken;
+//    String accessToken;
     private Context mContext;
     private boolean reversed;
     private int handles[] = new int[0];
@@ -70,6 +82,9 @@ public class CloudGalleryAdapter extends BaseAdapter {
     public int getCount() {
         if (items==null) {
             return 0;
+        }
+        if(items.size()>20){
+            return 20;
         }
         return items.size();
     }
@@ -108,34 +123,31 @@ public class CloudGalleryAdapter extends BaseAdapter {
             holder.date = (TextView) view.findViewById(R.id.date_field);
             holder.progressBar = (ProgressBar) view.findViewById(R.id.thumb_uploading);
             holder.thumbView = (ImageView) view.findViewById(R.id.thumb_uploaded);
-            holder.dslr = (TextView) view.findViewById(R.id.textview_dslr);
+//            holder.dslr = (TextView) view.findViewById(R.id.textview_dslr);
         }
 
         final ViewHolder holder = (ViewHolder) view.getTag();
         holder.photo = getItem(position);
 
-        if (holder.photo.get("cameraKind").equals("DSLR")) {                // 1 = DSLR
-            holder.dslr.setVisibility(View.VISIBLE);
-        }else if(holder.photo.get("cameraKind").equals("Video")){
-            holder.dslr.setVisibility(View.VISIBLE);
-            holder.dslr.setText("Video");
-        }else {
-            holder.dslr.setVisibility(View.INVISIBLE);
-        }
-
         holder.progressBar.setVisibility(View.INVISIBLE);
-        accessToken = MadamfiveAPI.getAccessToken();
+//        accessToken = SmartFiPreference.getSfToken(getContext());
 
-        String imageURL = Constants.m5.BASE_URL+"/v1/posts/"+holder.photo.get("url")+
-                "/attachments/"+holder.photo.get("guid")+"?size=small&accessToken="+ URLEncoder.encode(accessToken);
-//        Log.i(TAG,"imageURL in Cloud"+imageURL);
-//        Picasso.get().load(imageURL).resize(120,120).centerCrop().into(holder.image1);
-        Glide.with(mContext).load(imageURL).centerCrop().into(holder.image1);
+        String token = SmartFiPreference.getSfToken(getContext());
+        String hostipalId = SmartFiPreference.getHospitalId(getContext());
+        String imageUrl = Constants.Storage.BASE_URL+hostipalId+"/"+holder.photo.get("fileName");
+        GlideUrl glideUrl = new GlideUrl(imageUrl, new LazyHeaders.Builder()
+                .addHeader("X-Auth-Token", token).build());
+        Glide.with(mContext).load(glideUrl).centerCrop().into(holder.image1);
         holder.image1.setExpectedDimensions(120, 120);
 
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        String createdDate = df.format(Long.parseLong(holder.photo.get("uploadDate")));
-        holder.date.setText(createdDate);
+        String d1 = holder.photo.get("fileName");
+        String[] d2 = d1.split("_");
+        String d3 = d2[2];
+        String d4 = d3.substring(5,15);
+        String d5 = d4.replaceAll("-"," ");
+        String d6 = d5.replaceFirst(" ","-");
+        String d7 = d6.substring(0,8)+":"+d6.substring(8,10);
+        holder.date.setText(d7);
         holder.done = false;
 
         return view;

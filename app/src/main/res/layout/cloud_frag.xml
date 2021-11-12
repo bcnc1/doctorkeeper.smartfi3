@@ -94,7 +94,7 @@
                   android:layout_alignRight="@+id/cloud_detail_container"
                   android:layout_gravity="right"
                   android:layout_marginBottom="10dp"
-                  android:text="Back" />
+                  android:text="←초기화면" />
 
           </LinearLayout>
 

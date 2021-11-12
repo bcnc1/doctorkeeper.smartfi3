@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.client.ResponseHandler;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.protocol.HTTP;
 import okhttp3.Cache;
@@ -242,7 +243,6 @@ public class BlabAPI {
         }
 
         if(!searchByName.equals("")){
-            // TODO: 2020-01-16 인코딩 필요??
             Log.w(TAG,"입력된 환자는 = "+searchByName);
             requestParams.put(Constants.EMRAPI.CUST_NM, searchByName);
         }
@@ -395,13 +395,6 @@ public class BlabAPI {
 
     }
 
-    public static void S3UploadIntentService(final String filePath, final String cameraKind, final  String fileName, final JsonHttpResponseHandler responseHandler) {
-        Intent it = new Intent(getActivity(), VideoIntentService.class);
-        //it.putExtra()
-        getActivity().startService(it);
-
-    }
-
     public static boolean getNetworkStatus(Context con){
 
         ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(CONNECTIVITY_SERVICE);
@@ -449,44 +442,61 @@ public class BlabAPI {
         String doctorId = SmartFiPreference.getDoctorId(getContext());
         String[] files = path.split("/");
         String fileName = files[files.length-1];
-        url = url + doctorId + "/" + fileName;
+        final String urlTarget = url + doctorId + "/" + fileName;
         String token = SmartFiPreference.getSfToken(getContext());
         log.i(TAG,"url:::"+url);
         log.i(TAG,"doctorId:::"+doctorId+"token:::"+token);
 
-        File f  = new File(path);
-        String content_type  = getMimeType(path);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File f = new File(path);
+                String content_type = getMimeType(path);
 
-        OkHttpClient client = new OkHttpClient();
-        RequestBody file_body = RequestBody.create(MediaType.parse(content_type),f);
+                OkHttpClient client = new OkHttpClient();
+                RequestBody file_body = RequestBody.create(MediaType.parse(content_type), f);
 
-        okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(url)
-                .put(file_body)
-                .addHeader("X-Auth-Token",token)
-                .build();
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url(urlTarget)
+                        .put(file_body)
+                        .addHeader("X-Auth-Token", token)
+                        .build();
 
-        try {
-            okhttp3.Response response = client.newCall(request).execute();
-            log.w(TAG,response.toString());
-            //response.body()
+                try {
+                    okhttp3.Response response = client.newCall(request).execute();
+                    log.w(TAG, response.toString());
+                    //response.body()
 
-            if(!response.isSuccessful()){
-                // throw new IOException("Error : "+response);
-                handler.onFailure(response.code(), null, response.toString(), null);
-            }else{
-                handler.onSuccess(response.code(), null, "");
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    if (!response.isSuccessful()) {
+                        // throw new IOException("Error : "+response);
+                        handler.onFailure(response.code(), null, response.toString(), null);
+                    } else {
+                        handler.onSuccess(response.code(), null, "");
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getActivity(), "이미지 저장 완료!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    log.w(TAG, e.toString());
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.w(TAG,e.toString());
-        }
+        });
+        t.start();
 
+    }
+
+    public static void getImageLists(Context con, JsonHttpResponseHandler handler) {
+        String url = Constants.Storage.BASE_URL;
+        String hostipalId = SmartFiPreference.getHospitalId(getContext());
+        final String urlTarget = url + hostipalId + "/?limit=1000&format=json";
+        String token = SmartFiPreference.getSfToken(getContext());
+        log.i(TAG, "url:::" + urlTarget);
+
+        client.addHeader("X-Auth-Token", token);
+        client.get(con, urlTarget, handler);
 
     }
 }

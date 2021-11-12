@@ -82,15 +82,15 @@
     </FrameLayout>
 
 
-    <TextView
-        android:id="@+id/textview_dslr"
-        android:padding="2dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="#fff"
-        android:background="#ff0000"
-        android:layout_gravity="right"
-        android:text="DSLR" />
+<!--    <TextView-->
+<!--        android:id="@+id/textview_dslr"-->
+<!--        android:padding="2dp"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="12sp"-->
+<!--        android:textColor="#fff"-->
+<!--        android:background="#ff0000"-->
+<!--        android:layout_gravity="right"-->
+<!--        android:text="DSLR" />-->
 
 </FrameLayout>

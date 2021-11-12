@@ -32,14 +32,20 @@ import android.widget.ProgressBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.doctorkeeper.smartfi.Constants;
 import com.doctorkeeper.smartfi.R;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
+import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import com.doctorkeeper.smartfi.view.BaseFragment;
 
 import java.net.URLEncoder;
+
+import static com.doctorkeeper.smartfi.network.BlabAPI.getContext;
 
 
 public class CloudPictureFragment extends BaseFragment {
@@ -90,22 +96,40 @@ public class CloudPictureFragment extends BaseFragment {
             }
         });
 
-        accessToken = MadamfiveAPI.getAccessToken();
-        imageURL = Constants.m5.BASE_URL+"/v1/posts/"+imageUrl+
-                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
-
-        Glide.with(MadamfiveAPI.getActivity()).load(imageURL)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        progressBar.setVisibility(View.GONE);
-                        return false;
-                    }
+        String token = SmartFiPreference.getSfToken(BlabAPI.getContext());
+        String hostipalId = SmartFiPreference.getHospitalId(BlabAPI.getContext());
+        String imageUrl2 = Constants.Storage.BASE_URL+hostipalId+"/"+imageUrl;
+        GlideUrl glideUrl = new GlideUrl(imageUrl2, new LazyHeaders.Builder()
+                .addHeader("X-Auth-Token", token).build());
+        Glide.with(BlabAPI.getContext()).load(glideUrl).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                progressBar.setVisibility(View.GONE);
+                return false;
+            }
         }).into(cloud_image_picasso);
+//        holder.image1.setExpectedDimensions(120, 120);
+
+//        accessToken = MadamfiveAPI.getAccessToken();
+//        imageURL = Constants.m5.BASE_URL+"/v1/posts/"+imageUrl+
+//                "/attachments/"+imageGuid+"?size=medium&accessToken="+ URLEncoder.encode(accessToken);
+//
+//        Glide.with(MadamfiveAPI.getActivity()).load(imageURL)
+//                .listener(new RequestListener<Drawable>() {
+//                    @Override
+//                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                        return false;
+//                    }
+//                    @Override
+//                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                        progressBar.setVisibility(View.GONE);
+//                        return false;
+//                    }
+//        }).into(cloud_image_picasso);
 
         mScaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
         view.setOnTouchListener(new View.OnTouchListener() {

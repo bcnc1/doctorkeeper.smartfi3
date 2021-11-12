@@ -48,7 +48,6 @@ public class CloudFragment extends BaseFragment{
     @BindView(R.id.btn_logout)
     Button logoutBtn;
 
-   //박이사님 요청으로 기능활성화..
     @BindView(R.id.btn_options)
     Button optionsBtn;
 
