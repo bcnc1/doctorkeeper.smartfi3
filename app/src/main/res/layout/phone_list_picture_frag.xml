@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+  <!--  <com.thinoo.drcamlink2.PictureView
+        android:id="@+id/cloud_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+    </com.thinoo.drcamlink2.PictureView> -->
+
+    <ImageView
+        android:id="@+id/phone_list_image_picasso"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ProgressBar
+        android:id="@+id/phone_list_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <Button
+          android:id="@+id/phone_list_btn_upload"
+          android:layout_width="120dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="left"
+          android:layout_marginLeft="10dp"
+          android:layout_marginTop="10dp"
+          android:background="@android:color/transparent"
+          android:text="업로드"
+          android:textColor="@color/primary_darker"
+          android:textSize="15sp"
+          android:visibility="visible" />
+
+      <Button
+          android:id="@+id/phone_list_btn_back"
+          android:layout_width="120dp"
+          android:layout_height="wrap_content"
+          android:layout_gravity="right"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="10dp"
+          android:background="@android:color/transparent"
+          android:text="←사진리스트로"
+          android:textColor="@color/primary_darker"
+          android:textSize="15sp"
+          android:visibility="visible" />
+
+    </FrameLayout>
+
+
+</RelativeLayout>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.usb.UsbManager;
 import android.media.MediaActionSound;
@@ -19,6 +20,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -40,6 +42,7 @@ import com.doctorkeeper.smartfi.view.cloud.CloudFragment;
 import com.doctorkeeper.smartfi.view.doctor.DoctorDialogFragment;
 import com.doctorkeeper.smartfi.view.dslr.DSLRFragment;
 import com.doctorkeeper.smartfi.view.patient.PatientDialogFragment;
+import com.doctorkeeper.smartfi.view.phonelist.PhoneListFragment;
 import com.doctorkeeper.smartfi.view.sdcard.SDCardFragment;
 import com.wonderkiln.camerakit.CameraKitError;
 import com.wonderkiln.camerakit.CameraKitEvent;
@@ -48,6 +51,7 @@ import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -228,14 +232,14 @@ public class PhoneCameraFragment extends BaseFragment {
 
         fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
         if(!fixedLandscapeExtraOption){
-//            rotate1Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_1);
-//            rotate2Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_2);
-//            rotate3Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_3);
-//            rotate4Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_4);
-//
-//            orientationListener = new OrientationListener(BlabAPI.getContext());
-//            orientationListener.enable();
+            rotate1Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_1);
+            rotate2Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_2);
+            rotate3Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_3);
+            rotate4Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_4);
         }
+
+        orientationListener = new OrientationListener(BlabAPI.getContext());
+        orientationListener.enable();
 
         patient_name = (TextView)view.findViewById(R.id.patient_name);
 
@@ -310,18 +314,16 @@ public class PhoneCameraFragment extends BaseFragment {
 
     private void savePhotoNUpload(byte[] picture, String phone, String mFileName) {
         Log.w(TAG,"savePhotoNUpload"+mFileName);
+        int orientationValue = orientationListener.rotation;
+        byte[] capturedImage2 = rotateImage(picture,orientationValue);
+
         File file = new File(BlabAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
         String srcPath = file.toString();
-        boolean result = DisplayUtil.saveImage(picture,srcPath);
+        boolean result = DisplayUtil.saveImage(capturedImage2,srcPath);
 
         if(result==true){
-//            PhotoModel photoModel = PhotoModelService.addPhotoModel(BlabAPI.getActivity(), srcPath,path, mFileName, 0);
-//            Long id = photoModel.getId();
-//            Log.i("phone",id.toString());
             PictureIntentService.startUploadPicture(BlabAPI.getActivity(), srcPath);
-//            photoList.add(0, photoModel);
-//            phoneCameraPhotoAdapter.notifyDataSetChanged();
         }else{
 //            Toast.makeText(BlabAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
@@ -453,6 +455,21 @@ public class PhoneCameraFragment extends BaseFragment {
         ft.commit();
     }
 
+    @OnClick(R.id.button_phonelist)
+    public void onPhoneList(View veie){
+
+        try {
+            cameraView.stop();
+        }catch(Exception e){
+            Log.i(TAG,"ERROR~~~"+e);
+        }
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, PhoneListFragment.newInstance(), null);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -500,24 +517,35 @@ public class PhoneCameraFragment extends BaseFragment {
         }
     }
 
-    private Bitmap rotateImage(Bitmap image,int orientationValue){
-            if(fixedPortraitExtraOption) {
-                if (orientationValue == 2) {
-                    image = rotate(image, 90);
-                } else if (orientationValue == 3) {
-                    image = rotate(image, 180);
-                } else if (orientationValue == 4) {
-                    image = rotate(image, 270);
-                }
-            }else{
-                if (orientationValue == 6) {
-                    image = rotate(image, 90);
-                } else if (orientationValue == 8) {
-                    image = rotate(image, 180);
-                }
-            }
+    private byte[] rotateImage(byte[] capturedImage, int orientationValue){
 
-        return image;
+        byte[] bytes = capturedImage;
+        Bitmap image = BitmapFactory.decodeByteArray( capturedImage, 0, capturedImage.length );
+
+        if(fixedPortraitExtraOption) {
+            if (orientationValue == 2) {
+                image = rotate(image, 90);
+            } else if (orientationValue == 3) {
+                image = rotate(image, 180);
+            } else if (orientationValue == 4) {
+                image = rotate(image, 270);
+            }
+        }else{
+            if (orientationValue == 6) {
+                image = rotate(image, 90);
+            } else if (orientationValue == 8) {
+                image = rotate(image, 180);
+            }
+        }
+
+        try{
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bytes = stream.toByteArray();
+        }catch(Exception e){
+        }
+
+        return bytes;
     }
 
     public Bitmap rotate(Bitmap bitmap, int degrees) {

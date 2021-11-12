@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Messenger;
 import android.os.Parcelable;
@@ -27,11 +28,13 @@ import com.doctorkeeper.smartfi.network.MadamfiveAPI;
 import com.doctorkeeper.smartfi.models.PhotoModel;
 import com.doctorkeeper.smartfi.util.SmartFiPreference;
 
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
@@ -154,6 +157,7 @@ public class PictureIntentService extends IntentService {
                         super.onSuccess(statusCode, headers, response);
                         Log.d(TAG, "Success:" + statusCode + response);
 //                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        deleteFiles();
                     }
 
                     @Override
@@ -169,6 +173,29 @@ public class PictureIntentService extends IntentService {
         });
 
         t1.start();
+    }
+
+    private void deleteFiles(){
+        Log.i(TAG,"Delete Files Started");
+
+        File directory = new File(MadamfiveAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())+File.separator);
+        File[] files = directory.listFiles();
+        Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+        Log.d(TAG, "Delete Size: "+ files.length);
+        if(files.length > 50){
+            for (int i = 50; i < files.length; i++)
+            {
+                Log.d(TAG, "Delete FileName:" + files[i].getAbsolutePath());
+                File file1 = files[i];
+                if(file1.isFile()){
+                    File thumbnail = new File(files[i].getAbsolutePath().replace("/mounted/","/mounted/thumbnail/"));
+                    file1.delete();
+                    thumbnail.delete();
+                }
+//                file1.delete();
+            }
+        }
+
     }
 
     private void makeNoti(final String message, int id) {

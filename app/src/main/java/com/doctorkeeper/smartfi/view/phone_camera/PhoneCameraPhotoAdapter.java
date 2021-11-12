@@ -58,10 +58,10 @@ public class PhoneCameraPhotoAdapter extends RecyclerView.Adapter<PhoneCameraPho
                     final PhotoModel photo = photoModelList.get(position);
                     String fullPath = photo.getFullpath();
 
-                    FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
-                    ft.replace(R.id.phone_picture_container, PhonePictureFragment.newInstance(position, fullPath, photo), null);
-                    ft.addToBackStack(null);
-                    ft.commit();
+//                    FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
+//                    ft.replace(R.id.phone_picture_container, PhonePictureFragment.newInstance(position, fullPath, photo), null);
+//                    ft.addToBackStack(null);
+//                    ft.commit();
 
                 }
             });

@@ -27,44 +27,14 @@
         android:visibility="visible"
         tools:visibility="visible">
 
-
-<!--        <RelativeLayout-->
-<!--            android:id="@+id/photo_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_alignParentRight="true"-->
-<!--            android:layout_alignParentTop="true"-->
-<!--            android:paddingTop="10dp">-->
-<!--            <androidx.recyclerview.widget.RecyclerView-->
-<!--                android:id="@+id/listview_photo"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="110dp"-->
-<!--                android:layout_alignParentLeft="true"-->
-<!--                android:layout_centerVertical="true"-->
-<!--                android:layout_gravity="bottom|right"-->
-<!--                android:scrollbars="horizontal" />-->
-<!--        </RelativeLayout>-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_hide_listview"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_below="@+id/photo_container"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:text="LIST"-->
-<!--            android:textAlignment="textEnd"-->
-<!--            android:textColor="@android:color/background_light"-->
-<!--            android:textSize="12sp" />-->
-
         <Button
             android:id="@+id/btn_launch_cameraApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:background="@android:color/transparent"
             android:text="CAMERA"
             android:textAlignment="textEnd"
@@ -89,11 +59,11 @@
             android:id="@+id/button_sdcard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/record_panel"
+            android:layout_above="@+id/button_dslr"
             android:layout_alignParentLeft="true"
             android:layout_gravity="bottom"
             android:layout_marginLeft="30dp"
-            android:layout_marginBottom="17dp"
+            android:layout_marginBottom="30dp"
             android:background="@null"
             android:src="@drawable/btn_sdcard"
             android:visibility="invisible" />
@@ -106,7 +76,7 @@
             android:layout_alignParentEnd="true"
             android:layout_gravity="right"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="0dp"
+            android:layout_marginBottom="10dp"
             android:text=""
             android:textColor="@color/white"
             android:textSize="15dp" />
@@ -115,35 +85,39 @@
             android:id="@+id/button_doctor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/record_panel"
+            android:layout_above="@+id/patient_name"
             android:layout_alignParentRight="true"
             android:layout_gravity="bottom|left"
             android:layout_marginRight="30dp"
-            android:layout_marginBottom="120dp"
+            android:layout_marginBottom="20dp"
             android:background="@null"
             android:src="@drawable/btn_doctor" />
 
         <TextView
             android:id="@+id/patient_name"
-            android:layout_width="52dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/button_sdcard"
+            android:layout_above="@+id/button_patient"
             android:layout_alignParentEnd="true"
             android:layout_gravity="right"
             android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:text=""
+            android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="15dp"
-            android:text="" />
+            android:textSize="15dp" />
 
         <ImageButton
             android:id="@+id/button_patient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/record_panel"
+            android:layout_above="@+id/button_list"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="bottom|left"
-            android:layout_marginBottom="17dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginRight="30dp"
+            android:layout_marginBottom="30dp"
             android:background="@null"
             android:src="@drawable/btn_patient" />
 
@@ -160,61 +134,58 @@
             <!--android:textSize="8sp"-->
             <!--android:visibility="visible" />-->
 
-        <RelativeLayout
-            android:id="@+id/record_panel"
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
+
+        <ImageButton
+            android:id="@+id/button_dslr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            android:visibility="visible">
+            android:layout_gravity="bottom|left"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="50dp"
+            android:background="@null"
+            android:src="@drawable/btn_camera"
+            android:visibility="invisible" />
 
-            <ImageButton
-                android:id="@+id/button_dslr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="bottom|left"
-                android:layout_marginLeft="30dp"
-                android:background="@null"
-                android:src="@drawable/btn_camera"
-                android:visibility="invisible" />
+        <ImageButton
+            android:id="@+id/button_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:background="@null"
+            android:src="@drawable/camera_shot_btn"
+            android:visibility="visible" />
 
-            <ImageButton
-                android:id="@+id/button_capture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:background="@null"
-                android:src="@drawable/camera_shot_btn"
-                android:visibility="visible" />
+        <ImageButton
+            android:id="@+id/button_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_phonelist"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@null"
+            android:src="@drawable/btn_grid"
+            android:visibility="visible" />
 
-            <ImageButton
-                android:id="@+id/button_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/button_capture"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom|right"
-                android:layout_marginRight="30dp"
-                android:layout_marginBottom="7dp"
-                android:background="@null"
-                android:src="@drawable/btn_grid"
-                android:visibility="visible" />
-
-
-        </RelativeLayout>
+        <ImageButton
+            android:id="@+id/button_phonelist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="50dp"
+            android:background="@null"
+            android:src="@drawable/btn_phonelist3"
+            android:visibility="visible" />
 
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/phone_picture_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-    </LinearLayout>
 
 </FrameLayout>
