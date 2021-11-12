@@ -22,8 +22,11 @@ import android.widget.Toast;
 import com.doctorkeeper.smartfi.MainActivity;
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.models.PhotoModel;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.services.PhotoModelService;
 import com.doctorkeeper.smartfi.services.PictureIntentService;
+import com.doctorkeeper.smartfi.util.SmartFiPreference;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -61,8 +64,13 @@ public class LaunchCameraActivity extends Activity {
 
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
+        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        mFileName = DEVICE + "_" + timeStamp+".jpg";
+
+        mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
+//        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+//        mFileName = DEVICE + "_" + timeStamp+".jpg";
         mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 //        imageToUploadUri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID, mFile);
 //        Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
@@ -85,19 +93,19 @@ public class LaunchCameraActivity extends Activity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.doctorkeeper.drcamlink",
+                        "com.doctorkeeper.smartfi",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
-        orientationListener = new OrientationListener(getContext());
+        orientationListener = new OrientationListener(BlabAPI.getContext());
         orientationListener.enable();
     }
 
     private File createImageFile() throws IOException {
         File storageDir = mCon.getExternalFilesDir(Environment.getExternalStorageState());
-        String name = mFileName.substring(0,26);
+        String name = mFileName;
         File image = File.createTempFile(
                 name,  /* prefix */
                 ".jpg",         /* suffix */
@@ -142,7 +150,7 @@ public class LaunchCameraActivity extends Activity {
                 if(currentPhotoPath != null){
 //                    PhotoModel photoModel = PhotoModelService.addPhotoModel(mCon, currentPhotoPath, currentPhotoPath, mFileName, 0);
 //                    Long id = photoModel.getId();
-//                    PictureIntentService.startUploadPicture(mCon, id);
+                    PictureIntentService.startUploadPicture(mCon, currentPhotoPath);
                 }else{
                     Toast.makeText(mCon, R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
                 }

@@ -141,13 +141,16 @@ public class CloudGalleryAdapter extends BaseAdapter {
         holder.image1.setExpectedDimensions(120, 120);
 
         String d1 = holder.photo.get("fileName");
-        String[] d2 = d1.split("_");
-        String d3 = d2[2];
-        String d4 = d3.substring(5,15);
-        String d5 = d4.replaceAll("-"," ");
-        String d6 = d5.replaceFirst(" ","-");
-        String d7 = d6.substring(0,8)+":"+d6.substring(8,10);
-        holder.date.setText(d7);
+        holder.date.setText("");
+        try {
+            String[] d2 = d1.split("_");
+            String d3 = d2[2];
+            String d4 = d3.substring(5, 15);
+            String d5 = d4.replaceAll("-", " ");
+            String d6 = d5.replaceFirst(" ", "-");
+            String d7 = d6.substring(0, 8) + ":" + d6.substring(8, 10);
+            holder.date.setText(d7);
+        }catch(Exception e){}
         holder.done = false;
 
         return view;
