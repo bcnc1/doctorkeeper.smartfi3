@@ -28,26 +28,23 @@
         tools:visibility="visible">
 
 
-        <RelativeLayout
-            android:id="@+id/photo_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:paddingTop="10dp">
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listview_photo"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="bottom|right"
-                android:scrollbars="horizontal" />
-
-        </RelativeLayout>
+<!--        <RelativeLayout-->
+<!--            android:id="@+id/photo_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_alignParentRight="true"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:paddingTop="10dp">-->
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/listview_photo"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="110dp"-->
+<!--                android:layout_alignParentLeft="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_gravity="bottom|right"-->
+<!--                android:scrollbars="horizontal" />-->
+<!--        </RelativeLayout>-->
 
 <!--        <Button-->
 <!--            android:id="@+id/btn_hide_listview"-->
@@ -68,26 +65,25 @@
             android:layout_alignParentEnd="true"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="20dp"
-            android:layout_below="@+id/photo_container"
             android:background="@android:color/transparent"
             android:text="CAMERA"
             android:textAlignment="textEnd"
             android:textColor="@android:color/background_light"
             android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/btn_launch_videoApp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/btn_launch_cameraApp"
-            android:background="@android:color/transparent"
-            android:text="VIDEO"
-            android:textAlignment="textEnd"
-            android:textColor="@android:color/background_light"
-            android:textSize="12sp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"/>
+<!--        <Button-->
+<!--            android:id="@+id/btn_launch_videoApp"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_below="@+id/btn_launch_cameraApp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:text="VIDEO"-->
+<!--            android:textAlignment="textEnd"-->
+<!--            android:textColor="@android:color/background_light"-->
+<!--            android:textSize="12sp"-->
+<!--            android:layout_marginLeft="10dp"-->
+<!--            android:layout_marginTop="20dp"/>-->
 
         <ImageButton
             android:id="@+id/button_sdcard"

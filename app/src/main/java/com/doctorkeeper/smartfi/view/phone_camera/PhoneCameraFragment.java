@@ -59,7 +59,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.doctorkeeper.smartfi.network.MadamfiveAPI.selectedDoctor;
+import static com.doctorkeeper.smartfi.network.BlabAPI.selectedDoctor;
 
 
 public class PhoneCameraFragment extends BaseFragment {
@@ -140,7 +140,7 @@ public class PhoneCameraFragment extends BaseFragment {
                         public void run() {
                             btnDslr.setVisibility(View.VISIBLE);
                             btnSDCard.setVisibility(View.VISIBLE);
-                            MadamfiveAPI.isCameraOn = true;
+                            BlabAPI.isCameraOn = true;
                         }
                     },
                     2000);
@@ -153,12 +153,9 @@ public class PhoneCameraFragment extends BaseFragment {
             Log.w(TAG,"usbOffReciever === "+intent);
             btnDslr.setVisibility(View.INVISIBLE);
             btnSDCard.setVisibility(View.INVISIBLE);
-            MadamfiveAPI.isCameraOn = true;
+            BlabAPI.isCameraOn = true;
         }
     };
-
-    private String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
-    private String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -167,21 +164,21 @@ public class PhoneCameraFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         cameraIsReady = true;
-        photoList = new ArrayList<>();
-        listviewPhoto = (RecyclerView)view.findViewById(R.id.listview_photo);
+//        photoList = new ArrayList<>();
+//        listviewPhoto = (RecyclerView)view.findViewById(R.id.listview_photo);
 
-        photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
-        photo_container.setVisibility(View.INVISIBLE);
+//        photo_container = (RelativeLayout) view.findViewById(R.id.photo_container);
+//        photo_container.setVisibility(View.INVISIBLE);
 
         btnDslr.setVisibility(View.INVISIBLE);
         btnSDCard.setVisibility(View.INVISIBLE);
-        if(MadamfiveAPI.isCameraOn == true){
+        if(BlabAPI.isCameraOn == true){
             btnDslr.setVisibility(View.VISIBLE);
             btnSDCard.setVisibility(View.VISIBLE);
         }
 
-        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(BlabAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-        listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
+//        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(BlabAPI.getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+//        listviewPhoto.setLayoutManager(horizontalLayoutManagaer);
 
         fixedPortraitExtraOption = SmartFiPreference.getSfShootPortraitOpt(BlabAPI.getActivity());
 
@@ -192,7 +189,6 @@ public class PhoneCameraFragment extends BaseFragment {
                 switch (cameraKitEvent.getType()) {
                     case CameraKitEvent.TYPE_CAMERA_OPEN:
                         break;
-
                     case CameraKitEvent.TYPE_CAMERA_CLOSE:
                         break;
                 }
@@ -205,7 +201,10 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.w(TAG,"onImage");
                 mSound.release();
                 byte[] picture = cameraKitImage.getJpeg();
+                String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+                String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+
                 mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
                 savePhotoNUpload(picture, "phone", mFileName);
             }
@@ -214,27 +213,27 @@ public class PhoneCameraFragment extends BaseFragment {
             }
         });
 
-        List<PhotoModel> cameraPhotoList = PhotoModelService.findAll();
-        for (PhotoModel photo : cameraPhotoList) {
-            String mode = "DLSR";
-            if (photo.getMode() == 0) {
-                mode = "CAM";
-            }
-            photoList.add(photo);
-            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
-        }
+//        List<PhotoModel> cameraPhotoList = PhotoModelService.findAll();
+//        for (PhotoModel photo : cameraPhotoList) {
+//            String mode = "DLSR";
+//            if (photo.getMode() == 0) {
+//                mode = "CAM";
+//            }
+//            photoList.add(photo);
+//            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
+//        }
 
-        phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
-        listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
+//        phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
+//        listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
 
         fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
         if(!fixedLandscapeExtraOption){
-//            rotate1Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_1);
-//            rotate2Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_2);
-//            rotate3Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_3);
-//            rotate4Animation = AnimationUtils.loadAnimation(MadamfiveAPI.getContext(), R.anim.rotate_4);
+//            rotate1Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_1);
+//            rotate2Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_2);
+//            rotate3Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_3);
+//            rotate4Animation = AnimationUtils.loadAnimation(BlabAPI.getContext(), R.anim.rotate_4);
 //
-//            orientationListener = new OrientationListener(MadamfiveAPI.getContext());
+//            orientationListener = new OrientationListener(BlabAPI.getContext());
 //            orientationListener.enable();
         }
 
@@ -279,21 +278,21 @@ public class PhoneCameraFragment extends BaseFragment {
         super.onResume();
         cameraView.start();
 
-        photoList.clear();
-        List<PhotoModel> cameraPhotoList = PhotoModelService.findAll();
-        for (PhotoModel photo : cameraPhotoList) {
-            String mode = "DLSR";
-            if (photo.getMode() == 0) {
-                mode = "CAM";
-            }
-            photoList.add(photo);
-            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
-        }
-        phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
-        listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
+//        photoList.clear();
+//        List<PhotoModel> cameraPhotoList = PhotoModelService.findAll();
+//        for (PhotoModel photo : cameraPhotoList) {
+//            String mode = "DLSR";
+//            if (photo.getMode() == 0) {
+//                mode = "CAM";
+//            }
+//            photoList.add(photo);
+//            Log.d("#F", photo.getFilename() + "(" + photo.getUploaded() + "/" + mode + ")");
+//        }
+//        phoneCameraPhotoAdapter = new PhoneCameraPhotoAdapter(photoList);
+//        listviewPhoto.setAdapter(phoneCameraPhotoAdapter);
 
         Log.i(TAG, "PhoneCameraFragment onResume >>>>>>>>>>");
-//        Log.i(TAG,"MadamfiveAPI.isCameraOn ::: "+MadamfiveAPI.isCameraOn);
+//        Log.i(TAG,"BlabAPI.isCameraOn ::: "+BlabAPI.isCameraOn);
 
     }
 
@@ -310,21 +309,21 @@ public class PhoneCameraFragment extends BaseFragment {
     }
 
     private void savePhotoNUpload(byte[] picture, String phone, String mFileName) {
-        Log.w(TAG,"savePhotoNUpload");
+        Log.w(TAG,"savePhotoNUpload"+mFileName);
         File file = new File(BlabAPI.getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
         String srcPath = file.toString();
         boolean result = DisplayUtil.saveImage(picture,srcPath);
 
         if(result==true){
-//            PhotoModel photoModel = PhotoModelService.addPhotoModel(MadamfiveAPI.getActivity(), srcPath,path, mFileName, 0);
+//            PhotoModel photoModel = PhotoModelService.addPhotoModel(BlabAPI.getActivity(), srcPath,path, mFileName, 0);
 //            Long id = photoModel.getId();
 //            Log.i("phone",id.toString());
             PictureIntentService.startUploadPicture(BlabAPI.getActivity(), srcPath);
 //            photoList.add(0, photoModel);
 //            phoneCameraPhotoAdapter.notifyDataSetChanged();
         }else{
-//            Toast.makeText(MadamfiveAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
+//            Toast.makeText(BlabAPI.getActivity(), R.string.error_upload_image, Toast.LENGTH_SHORT);
         }
     }
 
@@ -332,7 +331,6 @@ public class PhoneCameraFragment extends BaseFragment {
     public void onTakePhoto(View view) {
         if(cameraIsReady) {
             Log.w(TAG,"카메라촬영, 셔터음");
-
             if(isInsertPatient()){
                 cameraView.captureImage();
                 mSound = new MediaActionSound();
@@ -341,13 +339,11 @@ public class PhoneCameraFragment extends BaseFragment {
                 }else {
                 }
             }else{
-
                 Toast.makeText(BlabAPI.getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
             }
 //            mSound = new MediaActionSound();
 //            mSound.play(MediaActionSound.SHUTTER_CLICK);
 //            cameraView.captureImage();
-
 //            cameraIsReady = false;
 //            btnCamera.setClickable(false);
         }
@@ -363,7 +359,6 @@ public class PhoneCameraFragment extends BaseFragment {
 
     @OnClick(R.id.button_dslr)
     public void onShowDslr(View view) {
-
         try {
             cameraView.stop();
         }catch(Exception e){
@@ -411,28 +406,24 @@ public class PhoneCameraFragment extends BaseFragment {
 
     }
 
-    @OnClick(R.id.btn_launch_videoApp)
-    public void launchVideoApp(View view) {
-        if(isInsertPatient()){
-            try {
-                cameraView.stop();
-            }catch(Exception e){
-                Log.e(TAG,"ERROR~~~"+e);
-            }
-
-            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
-            startActivity(intent);
-
-            mVrecInterface.startRecord();
-        }else{
-            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
-        }
-
-    }
+//    @OnClick(R.id.btn_launch_videoApp)
+//    public void launchVideoApp(View view) {
+//        if(isInsertPatient()){
+//            try {
+//                cameraView.stop();
+//            }catch(Exception e){
+//                Log.e(TAG,"ERROR~~~"+e);
+//            }
+//            Intent intent = new Intent(getActivity(), LaunchVrecordActivity.class);
+//            startActivity(intent);
+//            mVrecInterface.startRecord();
+//        }else{
+//            Toast.makeText(getActivity(),getString(R.string.p_insert_patient),Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     @OnClick(R.id.button_patient)
     public void onSearchPatient(View veiw){
-        //로그아웃 후에는 로그인 화면부터 나와야 함.
         FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
         PatientDialogFragment patientDialogFragment = PatientDialogFragment.newInstance();
         changelogTx.add(patientDialogFragment, "환자검색");

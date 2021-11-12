@@ -95,6 +95,7 @@ public class LoginDialogFragment extends DialogFragment {
                             dismiss();
                             SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
                             SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
+                            SmartFiPreference.setHospitalId(getActivity(),usernameTextView.getText().toString());
                             Log.i(TAG,"responseString:::"+response);
                             try{
                                 JSONObject obj = response;

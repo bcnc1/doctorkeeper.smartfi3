@@ -45,7 +45,7 @@ import static com.doctorkeeper.smartfi.network.BlabAPI.getActivity;
 public class PictureIntentService extends IntentService {
 
     private static final String TAG = "PictureIntentService";
-    private static final String EXTRA_PICTURE_ID = "com.doctorkeeper.drcamlink.services.extra.picture.id";
+    private static final String EXTRA_PICTURE_ID = "com.doctorkeeper.smartfi.services.extra.picture.id";
 
     private static String mAcccessToken = null;
     private static String mPatientId = null;
@@ -120,20 +120,12 @@ public class PictureIntentService extends IntentService {
     }
 
     private void uploadPicture(final String path) {
-//        final String filePath = pm.getFullpath();
-//        final Long photoModelId = pm.getId();
 
-//        if(pm.getMode() == 0 || pm.getMode() == 1){
-            mMediaType = "pictures";
-//        }else if(pm.getMode() == 2){
-//            mMediaType = "videos";
-//        }
+        mMediaType = "pictures";
 
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-
-//                pm.setThumbUploading(1);
 
                 File file  = new File(path);
                 byte[] bytes = null;
@@ -152,13 +144,6 @@ public class PictureIntentService extends IntentService {
                 }
                 Log.i(TAG,"uploadImage => Read Bitmap");
 
-//                String cameraKind="";
-//                if(pm.getMode() == 0 ){
-//                    cameraKind = "Phone";
-//                }else if(pm.getMode() == 1){
-//                    cameraKind = "DSLR";
-//                }
-
                 BlabAPI.uploadImage(path, bytes, new JsonHttpResponseHandler(){
                     @Override
                     public void onStart() {
@@ -168,7 +153,7 @@ public class PictureIntentService extends IntentService {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);
                         Log.d(TAG, "Success:" + statusCode + response);
-                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

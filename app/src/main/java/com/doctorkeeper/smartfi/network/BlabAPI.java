@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -47,7 +48,6 @@ public class BlabAPI {
     private static final String TAG = BlabAPI.class.getSimpleName();
     private static String mAcccessToken = null;
     private static AsyncHttpClient client = new AsyncHttpClient();
-//    private static SyncHttpClient client2 = new SyncHttpClient();
 
     // Instantiate the cache
     private static Cache mCache;
@@ -72,6 +72,7 @@ public class BlabAPI {
     public static Boolean shootingImageDisplayExtraOption = false;
 
     public static boolean isCameraOn = false;
+    public static HashMap<String,String> selectedDoctor;
 
     public static boolean isListViewOnPhoneCamera = true;
 
@@ -340,10 +341,6 @@ public class BlabAPI {
         Log.d(TAG, "mActivity = "+mActivity+" mContext = "+mContext);
     }
 
-    public static void storeObject(final String container,final String cameraKind, final JsonHttpResponseHandler responseHandler) {
-        FilesClient smartFiClient = new FilesClient("ab", "1234"); //계정명(병원명==컨테이너명), 패스워드
-    }
-
     public static void ktStoreObject(final String filePath, final String cameraKind, final  String fileName, final JsonHttpResponseHandler responseHandler) {
         mAcccessToken = getAccessToken(); //token
         mPatientId = getPatientId(); // 환자명
@@ -447,8 +444,8 @@ public class BlabAPI {
     }
 
     public static void uploadImage(final String path, byte[] image, JsonHttpResponseHandler handler){
-
-        String url = "http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_8c4583d1-b030-4cc2-8e65-7e747563dbeb/";
+        String url = Constants.Storage.BASE_URL;
+//        String url = "http://ssproxy.ucloudbiz.olleh.com/v1/AUTH_8c4583d1-b030-4cc2-8e65-7e747563dbeb/";
         String doctorId = SmartFiPreference.getDoctorId(getContext());
         String[] files = path.split("/");
         String fileName = files[files.length-1];
@@ -479,12 +476,11 @@ public class BlabAPI {
                 handler.onFailure(response.code(), null, response.toString(), null);
             }else{
                 handler.onSuccess(response.code(), null, "");
-                //구현완료
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            public void run() {
-//                                Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getActivity(),"이미지 저장 완료!",Toast.LENGTH_SHORT).show();
+                        }
+                    });
             }
         } catch (IOException e) {
             e.printStackTrace();
