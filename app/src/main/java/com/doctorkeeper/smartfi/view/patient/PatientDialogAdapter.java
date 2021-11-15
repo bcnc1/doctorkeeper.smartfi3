@@ -77,7 +77,7 @@ public class PatientDialogAdapter extends BaseAdapter {
             }
             patient_name.setText(name);
 
-            String chartNumber = patientInfo.get("chartNumber");
+            String chartNumber = patientInfo.get("chrtNo");
 
             if(chartNumber.equals("null")){
                 chartNumber = "";

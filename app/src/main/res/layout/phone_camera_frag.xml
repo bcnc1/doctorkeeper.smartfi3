@@ -95,13 +95,13 @@
 
         <TextView
             android:id="@+id/patient_name"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/button_patient"
             android:layout_alignParentEnd="true"
-            android:layout_gravity="right"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_gravity="center|right"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="0dp"
             android:text=""
             android:textAlignment="center"
             android:textColor="@color/white"

@@ -485,30 +485,22 @@ public class BlabAPI {
     }
 
     public static void getPatientList(String name, String chartNo, JsonHttpResponseHandler handler){
-        String url = "http://211.252.85.83:3100/api/v1/patient/search";
+        String url = "http://211.252.85.83:3100/api/v1/patient/search?";
         StringEntity jsonEntity = null;
         String hospitalId = SmartFiPreference.getHospitalId(getContext());
+        String token = SmartFiPreference.getSfToken(getContext());
 
-        JSONObject jsonParams = new JSONObject();
-        try {
-            jsonParams.put("id", hospitalId);
-            jsonParams.put("name", name);
-            jsonParams.put("chno", chartNo);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            log.w(TAG,e+"");
+        RequestParams params = new RequestParams();
+        params.put("id", hospitalId);
+        if(!name.isEmpty()) {
+            params.put("name", name);
+        }
+        if(!chartNo.isEmpty()) {
+            params.put("chno", chartNo);
         }
 
-        try {
-            jsonEntity = new StringEntity(jsonParams.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            log.w(TAG,e+"");
-        }
-
-        client.addHeader("Accept", "application/json");
-        client.addHeader("Content-Type", "application/json");
-        
-        client.get(getContext(), url, jsonEntity, "application/json",handler);
+        log.w(TAG,params.toString());
+        client.addHeader("X-Auth-Token", token);
+        client.get(getContext(), url, params,handler);
     }
 }

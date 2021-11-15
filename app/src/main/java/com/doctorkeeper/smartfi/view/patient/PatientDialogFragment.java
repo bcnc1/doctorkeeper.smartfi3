@@ -29,6 +29,7 @@ import com.doctorkeeper.smartfi.view.log_in.LoginDialogFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -130,7 +131,7 @@ public class PatientDialogFragment extends DialogFragment {
 //                SmartFiPreference.setPatientId(getActivity(), patientInfo.get("categoryId"));
 //                SmartFiPreference.setSfPatientCustNo(getActivity(),patientInfo.get("custNo"));
                 SmartFiPreference.setSfPatientName(getActivity(), name);
-                SmartFiPreference.setPatientChart(getActivity(),patientInfo.get("chartNumber"));
+                SmartFiPreference.setPatientChart(getActivity(),patientInfo.get("chrtNo"));
 
 //                SmartFiPreference.setSfPatientCustNo(getActivity(), patientInfo.get("custNo"));
 //                SmartFiPreference.setPatientChart(getActivity(),patientInfo.get("chartNumber"));
@@ -167,15 +168,30 @@ public class PatientDialogFragment extends DialogFragment {
 
         BlabAPI.getPatientList(searchName, searchChart, new JsonHttpResponseHandler(){
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
+                patient_list_progressBar.setVisibility(View.INVISIBLE);
                 Log.v(TAG,response.toString());
+                for(int i=0;i<response.length();i++){
+                    HashMap<String,String> h = new HashMap<>();
+                    try {
+                        JSONObject j = response.getJSONObject(i);
+                        h.put("name", j.getString("name").trim());
+                        h.put("chrtNo", j.getString("chrtNo").trim());
+                        patientInfoList.add(h);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                adapter.setItems(patientInfoList);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Log.v(TAG,responseString);
+                patient_list_progressBar.setVisibility(View.INVISIBLE);
                 Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
