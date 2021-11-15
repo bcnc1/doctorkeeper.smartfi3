@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.models.PhotoModel;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.ptp.Camera;
 import com.doctorkeeper.smartfi.ptp.PtpConstants;
 import com.doctorkeeper.smartfi.ptp.model.LiveViewData;
@@ -51,6 +52,7 @@ import com.doctorkeeper.smartfi.ptp.model.ObjectInfo;
 import com.doctorkeeper.smartfi.services.PhotoModelService;
 import com.doctorkeeper.smartfi.services.PictureIntentService;
 import com.doctorkeeper.smartfi.util.DisplayUtil;
+import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import com.doctorkeeper.smartfi.view.SessionActivity;
 import com.doctorkeeper.smartfi.view.SessionFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
@@ -101,7 +103,7 @@ public class GalleryFragment extends SessionFragment
     private Bitmap currentBitmap;
     private final String TAG = GalleryFragment.class.getSimpleName();
 
-    private ArrayList<PhotoModel> photoModelLists;
+//    private ArrayList<PhotoModel> photoModelLists;
 
     private ArrayList<Integer> selectedObjectHandles;
     private int selectedImageNumber;
@@ -235,7 +237,7 @@ public class GalleryFragment extends SessionFragment
         storageSpinner.setEnabled(enabled);
         galleryView.setEnabled(enabled);
         orderCheckbox.setEnabled(enabled);
-        photoModelLists = PhotoModelService.findImageListOld();
+//        photoModelLists = PhotoModelService.findImageListOld();
 
         numberOfSendPhoto=0;
         progressBarPortionSum=0;
@@ -423,15 +425,15 @@ public class GalleryFragment extends SessionFragment
                         holder.image1.setImageBitmap(thumbnail);  //썸네일
 
                         Boolean uploadCheck=false;
-                        for(int d = 0 ;d < photoModelLists.size();d++){
-                            PhotoModel p = photoModelLists.get(d);
-
-                            if(objectInfo.filename.equals(p.getRawfileName())){
-//                                Log.w(TAG,"업로드 상태 체크 :");
-                                uploadCheck = p.getUploaded();
-                                break;
-                            }
-                        }
+//                        for(int d = 0 ;d < photoModelLists.size();d++){
+//                            PhotoModel p = photoModelLists.get(d);
+//
+//                            if(objectInfo.filename.equals(p.getRawfileName())){
+////                                Log.w(TAG,"업로드 상태 체크 :");
+//                                uploadCheck = p.getUploaded();
+//                                break;
+//                            }
+//                        }
 
                         if (!"".equals(objectInfo.captureDate)) {
                             try {
@@ -603,17 +605,23 @@ public class GalleryFragment extends SessionFragment
 //        Log.e(TAG,"retrieveImage+++Done"+currentObjectInfo);
         //삭제 예정
        //sendPhoto(currentObjectInfo, currentBitmap);
+//        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+//        mFileName = DEVICE + "_" + timeStamp+".jpg";
+
+        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        mFileName = DEVICE + "_" + timeStamp+".jpg";
+        mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
+
         mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
         String path = DisplayUtil.storeDslrImage(mFile.toString(),
                 getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, currentBitmap, thumb);
 
         if(path != null){
-            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(getActivity(), mFile.toString(),path, mFileName, currentObjectInfo, 1);
-            Long id = photoModel.getId();
+//            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(getActivity(), mFile.toString(),path, mFileName, currentObjectInfo, 1);
+//            Long id = photoModel.getId();
             Messenger messenger = new Messenger(msgHandler);
-            PictureIntentService.startUploadPicture(getActivity(), id, messenger);
+            PictureIntentService.startUploadPicture(getActivity(), path);
             numberOfUploaded++;
             multi_image_uploading_progressbar.setProgress(numberOfUploaded);
 

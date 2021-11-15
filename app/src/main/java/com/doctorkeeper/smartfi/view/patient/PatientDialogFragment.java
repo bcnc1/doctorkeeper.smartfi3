@@ -34,6 +34,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
+
 
 public class PatientDialogFragment extends DialogFragment {
 
@@ -150,19 +152,35 @@ public class PatientDialogFragment extends DialogFragment {
 
         ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
 
-        HashMap<String, String> patientInfo = new HashMap<>();
-        patientInfo.put("name", "kelly");
-        patientInfo.put("chartNumber", "1001");
-        patientInfoList.add(patientInfo);
+//        HashMap<String, String> patientInfo = new HashMap<>();
+//        patientInfo.put("name", "kelly");
+//        patientInfo.put("chartNumber", "1001");
+//        patientInfoList.add(patientInfo);
+//
+//        HashMap<String, String> patientInfo1 = new HashMap<>();
+//        patientInfo1.put("name", "lucy");
+//        patientInfo1.put("chartNumber", "1002");
+//        patientInfoList.add(patientInfo1);
+//
+//        adapter.setItems(patientInfoList);
+//        adapter.notifyDataSetChanged();
 
-        HashMap<String, String> patientInfo1 = new HashMap<>();
-        patientInfo1.put("name", "lucy");
-        patientInfo1.put("chartNumber", "1002");
-        patientInfoList.add(patientInfo1);
+        BlabAPI.getPatientList(searchName, searchChart, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Log.v(TAG,response.toString());
+            }
 
-        adapter.setItems(patientInfoList);
-        adapter.notifyDataSetChanged();
-
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.v(TAG,responseString);
+                Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+        });
 //        MadamfiveAPI.searchPatient(searchName, searchChart, new JsonHttpResponseHandler() {
 //            @Override
 //            public void onStart() {

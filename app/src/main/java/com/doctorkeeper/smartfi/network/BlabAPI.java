@@ -78,30 +78,17 @@ public class BlabAPI {
     public static boolean isListViewOnPhoneCamera = true;
 
 
-    /**
-     * 토큰을 가져온다
-     * curl -i -H'X-Auth-New-Token:true' -H'x-storage-user:doctorkeeper:abc' -H'x-storage-pass: abc1234' https://ssproxy.ucloudbiz.olleh.com/auth/v1.0 -XGET
-     * @return
-     */
     public static String getAccessToken() {
         //mAcccessToken = read_mAcccessToken();
         mAcccessToken = "AUTH_tke22f9541a14840efb828d660658c780d";
         return mAcccessToken;
     }
 
-    /**
-     * 병원id를 가져온다
-     * @return
-     */
     public static String getHospitalId() {
         mHospitalId = "abc";
         return mHospitalId;
     }
 
-    /**
-     * 환자id를 가져온다
-     * @return
-     */
     public static String getPatientId() {
         mPatientId = "kimcy";
         return mPatientId;
@@ -379,9 +366,6 @@ public class BlabAPI {
 //                        });
                     }
 
-
-                      //추후구현
-//
                     countDownTimer.cancel();
                     countDownTimer.start();
 
@@ -411,7 +395,7 @@ public class BlabAPI {
 
     public static void loginDoctorKeeper(Context con, String id, String pw, JsonHttpResponseHandler responseHandler){
 
-        String url = "http://211.252.85.83:3000/api/v1/user/login";
+        String url = "http://211.252.85.83:3100/api/v1/user/login";
         StringEntity jsonEntity = null;
 
         JSONObject jsonParams = new JSONObject();
@@ -498,5 +482,33 @@ public class BlabAPI {
         client.addHeader("X-Auth-Token", token);
         client.get(con, urlTarget, handler);
 
+    }
+
+    public static void getPatientList(String name, String chartNo, JsonHttpResponseHandler handler){
+        String url = "http://211.252.85.83:3100/api/v1/patient/search";
+        StringEntity jsonEntity = null;
+        String hospitalId = SmartFiPreference.getHospitalId(getContext());
+
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("id", hospitalId);
+            jsonParams.put("name", name);
+            jsonParams.put("chno", chartNo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+
+        try {
+            jsonEntity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        
+        client.get(getContext(), url, jsonEntity, "application/json",handler);
     }
 }

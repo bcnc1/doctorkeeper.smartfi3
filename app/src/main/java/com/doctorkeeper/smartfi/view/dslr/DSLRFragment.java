@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doctorkeeper.smartfi.R;
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
 import com.doctorkeeper.smartfi.models.PhotoModel;
 import com.doctorkeeper.smartfi.ptp.Camera;
@@ -47,6 +48,7 @@ import com.doctorkeeper.smartfi.ptp.model.ObjectInfo;
 import com.doctorkeeper.smartfi.services.PhotoModelService;
 import com.doctorkeeper.smartfi.services.PictureIntentService;
 import com.doctorkeeper.smartfi.util.DisplayUtil;
+import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import com.doctorkeeper.smartfi.view.SessionActivity;
 import com.doctorkeeper.smartfi.view.SessionFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
@@ -238,7 +240,7 @@ public class DSLRFragment extends SessionFragment implements
     public void cameraStopped(Camera camera) {
         enableUi(false);
 //        galleryAdapter.setItems(null);
-        MadamfiveAPI.isCameraOn = false;
+        BlabAPI.isCameraOn = false;
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance(), null);
         ft.addToBackStack(null);
@@ -393,9 +395,12 @@ public class DSLRFragment extends SessionFragment implements
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
 //        Log.d(TAG, "sendPhoto");
         currentObjectHandle = 0;
+//        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        mFileName = DEVICE + "_" + timeStamp+".jpg";
-
+        mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
+//        mFileName = DEVICE + "_" + timeStamp+".jpg";
         mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
         //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
@@ -405,7 +410,7 @@ public class DSLRFragment extends SessionFragment implements
         if(path != null){
 //            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
 //            Long id = photoModel.getId();
-//            PictureIntentService.startUploadPicture(getActivity(), id);
+            PictureIntentService.startUploadPicture(getActivity(), path);
         }else{
             Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
         }
