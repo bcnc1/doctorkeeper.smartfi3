@@ -397,7 +397,7 @@ public class BlabAPI {
 
         String url = "http://211.252.85.83:3100/api/v1/user/login";
         StringEntity jsonEntity = null;
-
+        StringEntity jsonEntityUTF8 = null;
         JSONObject jsonParams = new JSONObject();
         try {
             jsonParams.put("id", id);
@@ -407,16 +407,12 @@ public class BlabAPI {
             log.w(TAG,e+"");
         }
 
-        try {
-            jsonEntity = new StringEntity(jsonParams.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            log.w(TAG,e+"");
-        }
+        //            jsonEntity = new StringEntity(jsonParams.toString());
+        jsonEntityUTF8 = new StringEntity(jsonParams.toString(), org.apache.http.protocol.HTTP.UTF_8);
 
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
-        client.post(con, url, jsonEntity, "application/json",responseHandler);
+        client.post(con, url, jsonEntityUTF8, "application/json",responseHandler);
 
     }
 

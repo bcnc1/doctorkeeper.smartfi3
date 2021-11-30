@@ -166,7 +166,15 @@ public class PatientDialogFragment extends DialogFragment {
 //        adapter.setItems(patientInfoList);
 //        adapter.notifyDataSetChanged();
 
+        if (searchChart == null || searchChart.length() == 0 && searchName == null || searchName.length() == 0) {
+            Toast.makeText(getActivity(), "이름 또는 차트번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
+            patient_list_progressBar.setVisibility(View.INVISIBLE);
+            return;
+
+        }
+
         BlabAPI.getPatientList(searchName, searchChart, new JsonHttpResponseHandler(){
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
