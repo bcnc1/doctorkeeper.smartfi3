@@ -157,7 +157,7 @@ public class PhoneCameraFragment extends BaseFragment {
             Log.w(TAG,"usbOffReciever === "+intent);
             btnDslr.setVisibility(View.INVISIBLE);
             btnSDCard.setVisibility(View.INVISIBLE);
-            BlabAPI.isCameraOn = true;
+            BlabAPI.isCameraOn = false;
         }
     };
 
