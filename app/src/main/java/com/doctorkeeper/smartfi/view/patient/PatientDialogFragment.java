@@ -184,7 +184,7 @@ public class PatientDialogFragment extends DialogFragment {
                 Log.i(TAG, "response.length(): " + response.length());
                 Log.i(TAG, "patientInsertExtraOption:  " + patientInsertExtraOption);
                 if (patientInsertExtraOption == true && response.length() == 0) {
-//                        addPatientInfo(searchName, searchChart);
+                    addPatientInfo(searchName, searchChart);
                     patient_list_progressBar.setVisibility(View.INVISIBLE);
                     Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
@@ -217,71 +217,6 @@ public class PatientDialogFragment extends DialogFragment {
                 toast.show();
             }
         });
-//        MadamfiveAPI.searchPatient(searchName, searchChart, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onStart() {
-//                Log.i(TAG, "onStart:");
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-//                patient_list_progressBar.setVisibility(View.INVISIBLE);
-//
-//                try {
-//                    JSONObject response = new JSONObject(responseString);
-//                    JSONArray patientArray = response.getJSONArray("categories");
-//
-//                    if (patientInsertExtraOption == true && patientArray.length() == 0) {
-//                        addPatientInfo(searchName, searchChart);
-//                    } else {
-//                        ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
-//                        for (int i = 0; i < patientArray.length(); i++) {
-//                            JSONObject patientObject = patientArray.getJSONObject(i);
-//                            Log.i(TAG, "Inside patientObject : " + patientObject.toString());
-//                            HashMap<String, String> patientInfo = new HashMap<>();
-//                            if(patientSearchDisplayExtraOption) {
-//
-//                                patientInfo.put("name", patientObject.getString("name").trim());
-//                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
-//                                patientInfo.put("categoryId", patientObject.getString("id"));
-//                                patientInfo.put("customerNumber", patientObject.getString("description"));
-//                                try {
-//                                    JSONObject userData = patientObject.getJSONObject("userData");
-//                                    patientInfo.put("birthDate", userData.getString("birthDate"));
-//                                }catch(Exception e){
-//                                }
-//                            }else{
-//                                patientInfo.put("name", patientObject.getString("name").trim());
-//                                patientInfo.put("chartNumber", patientObject.getString("parentId"));
-//                                patientInfo.put("categoryId", patientObject.getString("id"));
-//                                patientInfo.put("customerNumber", patientObject.getString("description"));
-//                            }
-////                            Log.i(TAG, "Inside HashMap : " + patientInfo.toString());
-//                            patientInfoList.add(patientInfo);
-//                        }
-////                        Log.i(TAG, "list received! === length:" + patientInfoList.size());
-//                        adapter.setItems(patientInfoList);
-//                        adapter.notifyDataSetChanged();
-//                    }
-//
-//                } catch (Exception e) {
-//                }
-//
-//                if (statusCode == 400) {
-//                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
-//                    toast.setGravity(Gravity.CENTER, 0, 0);
-//                    toast.show();
-//                } else {
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-//                // If the response is JSONObject instead of expected JSONArray
-//                Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-//            }
-//        });
 
     }
 
@@ -290,37 +225,39 @@ public class PatientDialogFragment extends DialogFragment {
         builder.setTitle("스마트파이");
         builder.setMessage("해당 환자가 없습니다. 추가하시겠습니까?");
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            final String name = nameTextView.getText().toString();
+            final String chartNumber = chartNumberTextView.getText().toString();
 
+            if (name == null || name.length() == 0) {
+                Toast.makeText(getActivity(), "이름을 입력해 주세요", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+
+            if (chartNumber == null || chartNumber.length() == 0) {
+                Toast.makeText(getActivity(), "차트번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+
+            BlabAPI.insertPatient(BlabAPI.getContext(), name, chartNumber,  new JsonHttpResponseHandler(){
+
+            });
+
+
+            MadamfiveAPI.insertPatient(name, chartNumber, new JsonHttpResponseHandler() {
             @Override
-            public void onClick(final DialogInterface dialog, int which) {
-                final String name = nameTextView.getText().toString();
-                final String chartNumber = chartNumberTextView.getText().toString();
-
-                if (name == null || name.length() == 0) {
-                    Toast.makeText(getActivity(), "이름을 입력해 주세요", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    return;
-                }
-
-                if (chartNumber == null || chartNumber.length() == 0) {
-                    Toast.makeText(getActivity(), "차트번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    return;
-                }
-
-                MadamfiveAPI.insertPatient(name, chartNumber, new JsonHttpResponseHandler() {
-                @Override
-                public void onStart() {
-//                    Log.i(TAG, "onStart:");
-                }
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                    Log.i(TAG, "HTTPa:" + statusCode + responseString);
-                    if (statusCode == 200) {
-                        try {
-                            JSONObject response = new JSONObject(responseString);
-                            JSONObject patientObject = response.getJSONObject("category");
+            public void onStart() {
+                    Log.i(TAG, "onStart: Insert Patient");
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.i(TAG, "HTTPa:" + statusCode + responseString);
+                if (statusCode == 200) {
+                    try {
+                        JSONObject response = new JSONObject(responseString);
+                        JSONObject patientObject = response.getJSONObject("category");
 
 //                            HashMap<String, String> patientInfo = new HashMap<>();
 //                            patientInfo.put("name", patientObject.getString("name"));
@@ -328,34 +265,35 @@ public class PatientDialogFragment extends DialogFragment {
 //                            patientInfo.put("categoryId", patientObject.getString("id"));
 //                            selectedPatientInfo = patientInfo;
 
-                            SmartFiPreference.setPatientId(getActivity(), patientObject.getString("id"));
-                            SmartFiPreference.setSfPatientName(getActivity(), patientObject.getString("name"));
-                            SmartFiPreference.setPatientChart(getActivity(),patientObject.getString("parentId"));
-                            SmartFiPreference.setSfPatientCustNo(getActivity(),patientObject.getString("description"));
 
-                            Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
-                            dismiss();
-                            dialog.dismiss();
 
-                            FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
-                            ft.commit();
+//                        SmartFiPreference.setPatientId(getActivity(), patientObject.getString("id"));
+//                        SmartFiPreference.setSfPatientName(getActivity(), patientObject.getString("name"));
+//                        SmartFiPreference.setPatientChart(getActivity(),patientObject.getString("parentId"));
+//                        SmartFiPreference.setSfPatientCustNo(getActivity(),patientObject.getString("description"));
 
-                        } catch (Exception e) {
-                        }
+                        Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
+                        dismiss();
+                        dialog.dismiss();
+
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
+                        ft.commit();
+
+                    } catch (Exception e) {
                     }
                 }
-
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-                    dialog.dismiss();
-                }
-            });
-
-
             }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+                dialog.dismiss();
+            }
+        });
+
+
         });
 
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {

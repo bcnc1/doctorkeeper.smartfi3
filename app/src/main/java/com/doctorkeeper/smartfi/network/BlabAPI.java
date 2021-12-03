@@ -499,4 +499,29 @@ public class BlabAPI {
         client.addHeader("X-Auth-Token", token);
         client.get(getContext(), url, params,handler);
     }
+
+    public static void insertPatient(Context con, String name, String chno, JsonHttpResponseHandler responseHandler){
+        String hospitalId = SmartFiPreference.getHospitalId(getContext());
+        String token = SmartFiPreference.getSfToken(getContext());
+        String url = "http://211.252.85.83:3000/api/v1/patient/create";
+        StringEntity jsonEntityUTF8;
+        JSONObject jsonParams = new JSONObject();
+        String UserId = SmartFiPreference.getHospitalId(getContext());
+        String accessToken = SmartFiPreference.getSfToken(getContext());
+        try {
+            jsonParams.put("id", UserId);
+            jsonParams.put("name", name);
+            jsonParams.put("chno", chno);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+        jsonEntityUTF8 = new StringEntity(jsonParams.toString(), org.apache.http.protocol.HTTP.UTF_8);
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.post(con, url, jsonEntityUTF8, "application/json",responseHandler);
+
+    }
+
 }

@@ -76,7 +76,7 @@ public class LoginDialogFragment extends DialogFragment {
                 BlabAPI.loginDoctorKeeper(BlabAPI.getContext(), usernameTextView.getText().toString(), passwordTextView.getText().toString(), new JsonHttpResponseHandler(){
                     @Override
                     public void onStart() {
-                        Log.i(TAG, "onStart:");
+                        Log.i(TAG, "onStart:" + BlabAPI.getContext());
                     }
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, String responseString) {
