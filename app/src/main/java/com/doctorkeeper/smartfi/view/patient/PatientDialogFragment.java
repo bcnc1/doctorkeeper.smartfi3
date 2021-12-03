@@ -46,7 +46,7 @@ public class PatientDialogFragment extends DialogFragment {
     private ListView patientListView;
 
     private ProgressBar patient_list_progressBar;
-    private boolean patientInsertExtraOption = false;
+    private boolean patientInsertExtraOption = true;
     private boolean patientSearchDisplayExtraOption = false;
     private String name;
     private String chartNumber;
@@ -90,7 +90,7 @@ public class PatientDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-
+                Log.v(TAG,"클릭");
                 if(MadamfiveAPI.getNetworkStatus(getActivity())){
                     patient_list_progressBar.setVisibility(View.VISIBLE);
 
@@ -177,9 +177,21 @@ public class PatientDialogFragment extends DialogFragment {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+
                 super.onSuccess(statusCode, headers, response);
+
+                Log.i(TAG, "statusCode: " + statusCode);
+                Log.i(TAG, "response.length(): " + response.length());
+                Log.i(TAG, "patientInsertExtraOption:  " + patientInsertExtraOption);
+                if (patientInsertExtraOption == true && response.length() == 0) {
+//                        addPatientInfo(searchName, searchChart);
+                    patient_list_progressBar.setVisibility(View.INVISIBLE);
+                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+
                 patient_list_progressBar.setVisibility(View.INVISIBLE);
-                Log.v(TAG,response.toString());
                 for(int i=0;i<response.length();i++){
                     HashMap<String,String> h = new HashMap<>();
                     try {
@@ -200,7 +212,7 @@ public class PatientDialogFragment extends DialogFragment {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 Log.v(TAG,responseString);
                 patient_list_progressBar.setVisibility(View.INVISIBLE);
-                Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getActivity(), "no Patient", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
