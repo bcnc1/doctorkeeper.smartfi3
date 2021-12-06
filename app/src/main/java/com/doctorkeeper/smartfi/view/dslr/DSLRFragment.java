@@ -55,6 +55,8 @@ import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
 import com.doctorkeeper.smartfi.view.sdcard.StorageAdapter;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -396,23 +398,25 @@ public class DSLRFragment extends SessionFragment implements
 //        Log.d(TAG, "sendPhoto");
         currentObjectHandle = 0;
 //        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
-        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
-//        mFileName = DEVICE + "_" + timeStamp+".jpg";
-        mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
-        //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
-        String path = DisplayUtil.storeDslrImage(mFile.toString(),
-                getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
+        try {
+            String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+            mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
+            mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+            //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+            String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
-        if(path != null){
-//            PhotoModel photoModel = PhotoModelService.addPhotoModel(getActivity(), mFile.toString(),path, mFileName, 1);
-//            Long id = photoModel.getId();
+            if(path != null){
             PictureIntentService.startUploadPicture(getActivity(), path);
-        }else{
-            Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+            }else{
+                Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
     }

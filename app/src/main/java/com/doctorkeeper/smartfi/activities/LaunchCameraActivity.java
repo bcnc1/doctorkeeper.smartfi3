@@ -74,7 +74,9 @@ public class LaunchCameraActivity extends Activity {
             String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
             mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
             mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-
+            Log.i(TAG, "Environment.getExternalStorageState()) = "+Environment.getExternalStorageState());
+            Log.i(TAG, "File.separator = "+File.separator);
+            Log.i(TAG, "mFileName = "+mFileName);
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
