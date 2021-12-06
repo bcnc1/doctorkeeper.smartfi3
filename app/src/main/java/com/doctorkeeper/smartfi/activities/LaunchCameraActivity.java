@@ -30,6 +30,8 @@ import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -64,14 +66,42 @@ public class LaunchCameraActivity extends Activity {
 
         this.imageView = (ImageView) this.findViewById(R.id.imageviewForCameraApp);
 
-        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
-        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+        try {
+            String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+            mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
+            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
 
-        mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(this,
+                            "com.doctorkeeper.smartfi",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
 //        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
 //        mFileName = DEVICE + "_" + timeStamp+".jpg";
-        mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+
 //        imageToUploadUri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID, mFile);
 //        Log.i(TAG, "imageToUploadUri = "+imageToUploadUri);
 
@@ -79,26 +109,7 @@ public class LaunchCameraActivity extends Activity {
 //        cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageToUploadUri );
 //        startActivityForResult(cameraIntent, CAMERA_REQUEST);
 
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
 
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.doctorkeeper.smartfi",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
         orientationListener = new OrientationListener(BlabAPI.getContext());
         orientationListener.enable();
     }

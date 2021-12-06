@@ -18,6 +18,7 @@ package com.doctorkeeper.smartfi.view.phonelist;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.view.BaseFragment;
 import com.doctorkeeper.smartfi.view.log_in.LoginDialogFragment;
+import com.doctorkeeper.smartfi.view.options.OptionsDialogFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
 
 import butterknife.BindView;
@@ -44,6 +46,9 @@ public class PhoneListFragment extends BaseFragment {
 
     @BindView(R.id.btn_logout)
     Button logoutBtn;
+
+    @BindView(R.id.btn_options)
+    Button optionsBtn;
 
 //    @BindView(R.id.btn_options)
 //    Button optionsBtn;
@@ -107,5 +112,15 @@ public class PhoneListFragment extends BaseFragment {
         changelogTx.commit();
     }
 
+    @OnClick(R.id.btn_options)
+    public void optionsBtnClicked(){
+
+//        MadamfiveAPI.deletePhotoModelList();
+        Log.i(TAG, "btn_options clicked");
+//        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+//        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
+//        changelogTx.add(opt, "Options");
+//        changelogTx.commit();
+    }
 
 }

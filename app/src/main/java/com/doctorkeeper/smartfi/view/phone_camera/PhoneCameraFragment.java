@@ -53,6 +53,8 @@ import com.wonderkiln.camerakit.CameraView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -205,12 +207,22 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.w(TAG,"onImage");
                 mSound.release();
                 byte[] picture = cameraKitImage.getJpeg();
-                String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
-                String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
-                String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+                String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+                String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+                String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
 
-                mFileName = tnhHospitalId+"_"+tnhPatientId+"_"+timeStamp+".jpg";
-                savePhotoNUpload(picture, "phone", mFileName);
+                try {
+                    String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                    String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+                    mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
+//                    Log.w(TAG,encodedPatientName);
+                    savePhotoNUpload(picture, "phone", mFileName);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+
             }
             @Override
             public void onVideo(CameraKitVideo cameraKitVideo) {
