@@ -66,6 +66,13 @@ public class LoginDialogFragment extends DialogFragment {
         usernameTextView = (TextView) view.findViewById(R.id.input_email);
         passwordTextView = (TextView) view.findViewById(R.id.input_password);
 
+        String spId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String spPwd = SmartFiPreference.getSfDoctorPw(BlabAPI.getActivity());
+
+        if(!spId.isEmpty()){
+            usernameTextView.setText(spId);
+            passwordTextView.setText(spPwd);
+        }
         final Button loginButton = (Button)view.findViewById(R.id.btn_login);
 
         loginButton.setOnClickListener(new OnClickListener() {

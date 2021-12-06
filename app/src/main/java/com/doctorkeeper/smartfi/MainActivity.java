@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,10 +54,16 @@ import com.doctorkeeper.smartfi.view.SessionView;
 import com.doctorkeeper.smartfi.view.WebViewDialogFragment;
 import com.doctorkeeper.smartfi.view.log_in.LoginDialogFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
 
 import java.io.File;
 
+import cz.msebera.android.httpclient.Header;
+
 import static com.doctorkeeper.smartfi.Constants.Invoke.VIDEO_RECORD;
+import static com.doctorkeeper.smartfi.network.BlabAPI.getActivity;
 
 
 public class MainActivity extends SessionActivity implements CameraListener, PhoneCameraFragment.VrecordInterface {
@@ -112,7 +119,7 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (AppConfig.LOG) {
-            Log.i(TAG, "onCreate");
+            Log.i(TAG, "MainActivity onCreate");
         }
 
         mCon = this;
@@ -158,12 +165,39 @@ public class MainActivity extends SessionActivity implements CameraListener, Pho
             showLoginDialog();
         }else {
             Log.w(TAG,"자동로그인");
+            BlabAPI.loginDoctorKeeper(BlabAPI.getContext(), SmartFiPreference.getDoctorId(this), SmartFiPreference.getSfDoctorPw(this), new JsonHttpResponseHandler(){
+                @Override
+                public void onStart() {
+                    Log.i(TAG, "onStart:" + BlabAPI.getContext());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    Log.i(TAG, "HTTPa:" + statusCode + responseString);
+                }
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+                    if(statusCode == 400) {
+                        Log.i(TAG, "auto login id/pw not matched.");
+                    }else{
+                        Log.i(TAG,"responseString:::"+response);
+                        try{
+                            JSONObject obj = response;
+                            SmartFiPreference.setSfToken(getActivity(),obj.getString("token"));
+                            Log.i(TAG,"token:::"+obj.getString("token"));
+                        }catch(Exception e){
+                            Log.d(TAG,e.toString());
+                        }
+                    }
+                }
+            });
         }
 
         countDownTimer = new MyCountDownTimer(startTime, interval);
         countDownTimer.start();
 
-        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(BlabAPI.getActivity());
+        fixedLandscapeExtraOption = SmartFiPreference.getSfDisplayLandscapeOpt(getActivity());
         if(fixedLandscapeExtraOption){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         }

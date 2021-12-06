@@ -14,6 +14,10 @@ public class Constants {
         public static final String BASE_URL = "http://api.doctorkeeper.com:7818";
     }
 
+    public static final class bcnc{
+        public static final String BASE_URL = "http://211.252.85.83:3100";
+    }
+
     public static final class Upload{
         public static final String FILE_UPLOAD_SUCCESS = "file.upload.success";
         public static final String FILE_UPLOAD_FAIL = "file.upload.fail";

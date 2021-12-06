@@ -394,8 +394,8 @@ public class BlabAPI {
     }
 
     public static void loginDoctorKeeper(Context con, String id, String pw, JsonHttpResponseHandler responseHandler){
-
-        String url = "http://211.252.85.83:3100/api/v1/user/login";
+//        String url = "http://211.252.85.83:3100/api/v1/user/login";
+        String url = Constants.bcnc.BASE_URL + "/api/v1/user/login";
         StringEntity jsonEntity = null;
         StringEntity jsonEntityUTF8 = null;
         JSONObject jsonParams = new JSONObject();
@@ -432,7 +432,6 @@ public class BlabAPI {
             public void run() {
                 File f = new File(path);
                 String content_type = getMimeType(path);
-
                 OkHttpClient client = new OkHttpClient();
                 RequestBody file_body = RequestBody.create(MediaType.parse(content_type), f);
 
@@ -481,7 +480,8 @@ public class BlabAPI {
     }
 
     public static void getPatientList(String name, String chartNo, JsonHttpResponseHandler handler){
-        String url = "http://211.252.85.83:3100/api/v1/patient/search?";
+//        String url = "http://211.252.85.83:3100/api/v1/user/login";
+        String url = Constants.bcnc.BASE_URL + "/api/v1/patient/search?";
         StringEntity jsonEntity = null;
         String hospitalId = SmartFiPreference.getHospitalId(getContext());
         String token = SmartFiPreference.getSfToken(getContext());
@@ -501,15 +501,14 @@ public class BlabAPI {
     }
 
     public static void insertPatient(Context con, String name, String chno, JsonHttpResponseHandler responseHandler){
+        log.i(TAG, "insertPatient:::" + name + ":::" + chno);
         String hospitalId = SmartFiPreference.getHospitalId(getContext());
         String token = SmartFiPreference.getSfToken(getContext());
         String url = "http://211.252.85.83:3000/api/v1/patient/create";
         StringEntity jsonEntityUTF8;
         JSONObject jsonParams = new JSONObject();
-        String UserId = SmartFiPreference.getHospitalId(getContext());
-        String accessToken = SmartFiPreference.getSfToken(getContext());
         try {
-            jsonParams.put("id", UserId);
+            jsonParams.put("id", hospitalId);
             jsonParams.put("name", name);
             jsonParams.put("chno", chno);
         } catch (JSONException e) {
@@ -520,6 +519,7 @@ public class BlabAPI {
 
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", token);
         client.post(con, url, jsonEntityUTF8, "application/json",responseHandler);
 
     }
