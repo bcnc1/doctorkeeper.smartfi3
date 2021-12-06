@@ -231,76 +231,11 @@ public class PatientDialogFragment extends DialogFragment {
             final String chartNumber = chartNumberTextView.getText().toString();
             Log.i(TAG, "Patient name : " + name);
             Log.i(TAG, "Patient chartNumber : " + chartNumber);
-            BlabAPI.insertPatient(BlabAPI.getContext(), name, chartNumber,  new JsonHttpResponseHandler(){
-                @Override
-                public void onStart() {
-                    Log.i(TAG, "onStart: Insert Patient");
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    Log.i(TAG, "HTTPa:" + statusCode + responseString);
-                    if (statusCode == 200) {
-                        try {
-                            SmartFiPreference.setSfPatientName(getActivity(), name);
-                            SmartFiPreference.setPatientChart(getActivity(),chartNumber);
-                            Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
-                            dismiss();
-                            dialog.dismiss();
-
-                            FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
-                            ft.commit();
-
-                        } catch (Exception e) {
-                        }
-                    }
-                }
-
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                    // If the response is JSONObject instead of expected JSONArray
-//                    SmartFiPreference.setSfPatientName(getActivity(), name);
-//                    SmartFiPreference.setPatientChart(getActivity(),chartNumber);
-//                    Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
-//
-//                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                    ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
-//                    ft.commit();
-//                    Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-//                    dialog.dismiss();
-//                }
-            });
-
-
             BlabAPI.insertPatient(BlabAPI.getContext(), name, chartNumber, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                     Log.i(TAG, "onStart: Insert Patient");
             }
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.i(TAG, "HTTPa:" + statusCode + responseString);
-                if (statusCode == 202) {
-                    Toast.makeText(getActivity(), "차트번호 중복", Toast.LENGTH_SHORT).show();
-                }
-                if (statusCode == 200) {
-                    try {
-                        JSONObject response = new JSONObject(responseString);
-                        SmartFiPreference.setSfPatientName(getActivity(), name);
-                        SmartFiPreference.setPatientChart(getActivity(),chartNumber);
-                        Toast.makeText(getActivity(), name + "님이 선택되었습니다", Toast.LENGTH_SHORT).show();
-                        dismiss();
-                        dialog.dismiss();
-
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
-                        ft.commit();
-
-                    } catch (Exception e) {
-                    }
-                }
-            }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray

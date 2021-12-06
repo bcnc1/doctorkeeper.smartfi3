@@ -68,8 +68,8 @@ public class LoginDialogFragment extends DialogFragment {
 
         String spId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
         String spPwd = SmartFiPreference.getSfDoctorPw(BlabAPI.getActivity());
-
-        if(!spId.isEmpty()){
+        Log.i(TAG, "spId:" + spId);
+        if(!spId.isEmpty() && spId != "undefined"){
             usernameTextView.setText(spId);
             passwordTextView.setText(spPwd);
         }
