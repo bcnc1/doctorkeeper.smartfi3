@@ -15,6 +15,7 @@
  */
 package com.doctorkeeper.smartfi.view.dslr;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
@@ -401,24 +402,44 @@ public class DSLRFragment extends SessionFragment implements
         String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
         String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+        String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
+        String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
 
-        try {
-            String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
-            mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
-            mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-            //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
-            String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+        if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
+            try {
+                String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
+                mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+".jpg";
+                mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
+                //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+                String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
-            if(path != null){
-            PictureIntentService.startUploadPicture(getActivity(), path);
-            }else{
-                Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+                if(path != null){
+                    PictureIntentService.startUploadPicture(getActivity(), path);
+                }else{
+                    Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        } else {
+            try {
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                mFileName = HospitalId + "_" + encodedPatientName + "_" + PatientId + "_" + timeStamp + ".jpg";
+                mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
+                //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+                String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, bitmap, thumb);
 
+                if (path != null) {
+                    PictureIntentService.startUploadPicture(getActivity(), path);
+                } else {
+                    Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

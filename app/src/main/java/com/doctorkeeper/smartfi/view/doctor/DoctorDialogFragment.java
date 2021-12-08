@@ -1,7 +1,10 @@
 package com.doctorkeeper.smartfi.view.doctor;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -17,6 +20,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+
+import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.network.MadamfiveAPI;
@@ -25,20 +31,27 @@ import com.doctorkeeper.smartfi.view.log_in.LoginDialogFragment;
 import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
+
 import static com.doctorkeeper.smartfi.network.MadamfiveAPI.selectedDoctor;
+import static com.loopj.android.http.AsyncHttpClient.log;
 
 public class DoctorDialogFragment extends DialogFragment {
 
     private final String TAG = DoctorDialogFragment.class.getSimpleName();
     private DoctorDialogAdapter adapter;
     private ListView doctorListView;
-
+    private String doctorName;
+    private String doctorNumber;
     private ProgressBar doctor_list_progressBar;
+    private TextView nameTextView;
+    private TextView chartNumberTextView;
 
     public static DoctorDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -49,23 +62,28 @@ public class DoctorDialogFragment extends DialogFragment {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ArrayList<HashMap<String, String>> DoctorInfoList = new ArrayList<HashMap<String, String>>();
+//        if (BlabAPI.getAccessToken() == null) {
+//            showLoginDialog();
+//        }
 
-        if (MadamfiveAPI.getAccessToken() == null) {
+        String token = SmartFiPreference.getSfToken(getContext());
+        Log.i(TAG, "token: " + token);
+        if (token == null) {
             showLoginDialog();
         }
-        if (MadamfiveAPI.getBoardId() == null) {
-            showLoginDialog();
-        }
+//        if (MadamfiveAPI.getBoardId() == null) {
+//            showLoginDialog();
+//        }
 
         getDialog().setTitle("의사 검색");
         final View view = inflater.inflate(R.layout.activity_search_doctor, container, false);
 
         DoctorDialogFragment.this.getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        final TextView nameTextView;
-        final TextView chartNumberTextView;
 
         nameTextView = (TextView) view.findViewById(R.id.search_doctorname);
         chartNumberTextView = (TextView) view.findViewById(R.id.search_doctorNumber);
@@ -83,81 +101,69 @@ public class DoctorDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
 
+                Log.i(TAG, "onClick");
                 doctor_list_progressBar.setVisibility(View.VISIBLE);
 
                 String keyword = "";
-                final String name = nameTextView.getText().toString();
-                final String chartNumber = chartNumberTextView.getText().toString();
-
+                doctorName = nameTextView.getText().toString();
+                doctorNumber = chartNumberTextView.getText().toString();
+                Log.i(TAG, "name : " + doctorName);
+                Log.i(TAG, "chartNumber : " + doctorNumber);
+                if ((doctorName == null || doctorName.length() == 0)) {
+                    Toast toast = Toast.makeText(getActivity(), "의사명을 입력해주세요", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, -100);
+                    toast.show();
+                    doctor_list_progressBar.setVisibility(View.INVISIBLE);
+                    return;
+                }
                 nameTextView.clearFocus();
                 chartNumberTextView.clearFocus();
 
-                MadamfiveAPI.searchDoctor(new JsonHttpResponseHandler() {
+                BlabAPI.getDoctorList(doctorName, doctorNumber, new JsonHttpResponseHandler() {
                     @Override
                     public void onStart() {
                         Log.i(TAG, "onStart:");
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                        Log.i(TAG, "HTTPa:" + statusCode + responseString);
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         doctor_list_progressBar.setVisibility(View.INVISIBLE);
-
-                        try {
-                            JSONObject response = new JSONObject(responseString);
-                            JSONArray patientArray = response.getJSONArray("posts");
-
-                            if (patientArray.length() == 0) {
-
-                                Toast toast = Toast.makeText(getActivity(), "해당 의사가 없습니다", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, -100);
-                                toast.show();
-
-                            } else {
-
-                                ArrayList<HashMap<String, String>> doctorInfoList = new ArrayList<HashMap<String, String>>();
-                                Log.i(TAG, "Doctorlist received! === length:" + patientArray.length());
-
-                                for (int i = 0; i < patientArray.length(); i++) {
-                                    JSONObject patientObject = patientArray.getJSONObject(i);
-                                    HashMap<String, String> doctorInfo = new HashMap<>();
-                                    doctorInfo.put("name", patientObject.getString("title").trim());
-                                    doctorInfo.put("doctorNumber", patientObject.getString("content"));
-
-                                    if (name != null && name.length() != 0) {
-                                        if(doctorInfo.get("name").contains(name)){
-                                            doctorInfoList.add(doctorInfo);
-                                            Log.i(TAG, "Inside HashMap : " + doctorInfo.toString());
-                                        }
-                                    }else if (chartNumber != null && chartNumber.length() != 0) {
-                                        if(doctorInfo.get("doctorNumber").contains(chartNumber)){
-                                            doctorInfoList.add(doctorInfo);
-                                        }
-                                    }else {
-                                        doctorInfoList.add(doctorInfo);
-                                    }
-                                }
-                                adapter.setItems(doctorInfoList);
-                                adapter.notifyDataSetChanged();
-                            }
-
-                        } catch (Exception e) {
-                        }
-
-                        if (statusCode == 400) {
-                            Toast toast = Toast.makeText(getActivity(), "해당 의사가 없습니다", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                        } else {
-                        }
-
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         // If the response is JSONObject instead of expected JSONArray
                         Log.i(TAG, "HTTPb:" + statusCode + response.toString());
                     }
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+
+                        // If the response is JSONObject instead of expected JSONArray
+                        Log.i(TAG, "HTTPc:" + statusCode + response.toString());
+                        Log.i(TAG, "statusCode: " + statusCode);
+                        Log.i(TAG, "response.length(): " + response.length());
+
+                        if (PhoneCameraFragment.doctorSelectExtraOption && response.length() == 0) {
+                        addDoctorInfo(doctorName, doctorNumber);
+                        doctor_list_progressBar.setVisibility(View.INVISIBLE);
+//                        Toast toast = Toast.makeText(getActivity(), "해당 의사가 없습니다", Toast.LENGTH_LONG);
+//                        toast.setGravity(Gravity.CENTER, 0, 0);
+//                        toast.show();
+                        }
+
+                        for(int i=0;i<response.length();i++){
+                            HashMap<String,String> h = new HashMap<>();
+                            try {
+                                JSONObject j = response.getJSONObject(i);
+                                h.put("name", j.getString("name").trim());
+                                h.put("doctorNumber", j.getString("licenseNo").trim());
+                                DoctorInfoList.add(h);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        adapter.setItems(DoctorInfoList);
+                        adapter.notifyDataSetChanged();
+
+                        doctor_list_progressBar.setVisibility(View.INVISIBLE);
+                    }
+
                 });
             }
         });
@@ -187,6 +193,76 @@ public class DoctorDialogFragment extends DialogFragment {
 
         return view;
     }
+
+
+    private void addDoctorInfo(String inputName, String inputNumber) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("스마트파이");
+        builder.setMessage("해당 의사가 없습니다. 추가하시겠습니까?");
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+
+
+            if (doctorName == null || doctorName.length() == 0) {
+                Toast.makeText(getActivity(), "의사이름을 입력해 주세요", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+
+            if (doctorNumber == null || doctorNumber.length() == 0) {
+                Toast.makeText(getActivity(), "의사번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+            final String doctorName = nameTextView.getText().toString();
+            final String doctorNumber = chartNumberTextView.getText().toString();
+            Log.i(TAG, "Doctor name : " + doctorName);
+            Log.i(TAG, "Doctor number : " + doctorNumber);
+            BlabAPI.insertDoctor(BlabAPI.getContext(), doctorName, doctorNumber, new JsonHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    Log.i(TAG, "onStart: Insert Patient");
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i(TAG, "HTTPb:" + statusCode + response.toString());
+                    if (statusCode == 202) {
+                        Toast.makeText(getActivity(), "의사번호 중복", Toast.LENGTH_SHORT).show();
+                    }
+                    if (statusCode == 200) {
+                        try {
+                            Toast.makeText(getActivity(), "진료의사 : " + doctorName, Toast.LENGTH_SHORT).show();
+                            SmartFiPreference.setSfDoctorName(getActivity(), doctorName);
+                            SmartFiPreference.setSfDoctorNumber(getActivity(),doctorNumber);
+                            dismiss();
+                            dialog.dismiss();
+
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            ft.replace(R.id.fragment_container, PhoneCameraFragment.newInstance());
+                            ft.commit();
+
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            });
+
+
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 
     public void onResume() {
         super.onResume();

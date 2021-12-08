@@ -1,5 +1,6 @@
 package com.doctorkeeper.smartfi.view.phone_camera;
 
+import android.annotation.SuppressLint;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -94,7 +95,7 @@ public class PhoneCameraFragment extends BaseFragment {
     private MediaActionSound mSound;
     private int android_ver = android.os.Build.VERSION.SDK_INT;
 
-    private Boolean doctorSelectExtraOption;
+    public static Boolean doctorSelectExtraOption;
     private Boolean shootingImageDisplayExtraOption;
     private Boolean fixedPortraitExtraOption;
     private Boolean fixedLandscapeExtraOption;
@@ -210,17 +211,35 @@ public class PhoneCameraFragment extends BaseFragment {
                 String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
                 String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
                 String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
+                String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
+                String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
 
-                try {
-                    String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
-                    String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-                    mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
+                @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+                Log.w(TAG,"onImage DoctorName : " + DoctorName);
+                Log.w(TAG,"onImage DoctorNumber : " + DoctorNumber);
+                Log.w(TAG,"doctorSelectExtraOption DoctorNumber : " + doctorSelectExtraOption);
+                if (doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
+                    try {
+                        String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                        String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
+                        mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+".jpg";
+                        savePhotoNUpload(picture, "phone", mFileName);
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                        mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
 //                    Log.w(TAG,encodedPatientName);
-                    savePhotoNUpload(picture, "phone", mFileName);
+                        savePhotoNUpload(picture, "phone", mFileName);
 
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
+
 
 
             }

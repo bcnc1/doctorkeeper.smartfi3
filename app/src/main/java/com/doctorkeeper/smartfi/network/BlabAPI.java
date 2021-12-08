@@ -10,6 +10,12 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.doctorkeeper.smartfi.util.SSLConnect;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -28,7 +34,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.client.ResponseHandler;
@@ -480,7 +488,6 @@ public class BlabAPI {
     }
 
     public static void getPatientList(String name, String chartNo, JsonHttpResponseHandler handler){
-//        String url = "http://211.252.85.83:3100/api/v1/user/login";
         String url = Constants.bcnc.BASE_URL + "/api/v1/patient/search?";
         StringEntity jsonEntity = null;
         String hospitalId = SmartFiPreference.getHospitalId(getContext());
@@ -504,13 +511,57 @@ public class BlabAPI {
         log.i(TAG, "insertPatient:::" + name + ":::" + chno);
         String hospitalId = SmartFiPreference.getHospitalId(getContext());
         String token = SmartFiPreference.getSfToken(getContext());
-        String url = "http://211.252.85.83:3000/api/v1/patient/create";
+        String url = Constants.bcnc.BASE_URL + "/api/v1/patient/create";
         StringEntity jsonEntityUTF8;
         JSONObject jsonParams = new JSONObject();
         try {
             jsonParams.put("id", hospitalId);
             jsonParams.put("name", name);
             jsonParams.put("chno", chno);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.w(TAG,e+"");
+        }
+        jsonEntityUTF8 = new StringEntity(jsonParams.toString(), org.apache.http.protocol.HTTP.UTF_8);
+
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-Type", "application/json");
+        client.addHeader("X-Auth-Token", token);
+        client.post(con, url, jsonEntityUTF8, "application/json",responseHandler);
+
+    }
+
+    public static void getDoctorList(String name, String dno, JsonHttpResponseHandler handler){
+        String url = Constants.bcnc.BASE_URL + "/api/v1/doctor/search?";
+        StringEntity jsonEntity = null;
+        String hospitalId = SmartFiPreference.getHospitalId(getContext());
+        String token = SmartFiPreference.getSfToken(getContext());
+
+        RequestParams params = new RequestParams();
+        params.put("id", hospitalId);
+        if(!name.isEmpty()) {
+            params.put("name", name);
+        }
+        if(!dno.isEmpty()) {
+            params.put("dno", dno);
+        }
+
+        log.w(TAG,params.toString());
+        client.addHeader("X-Auth-Token", token);
+        client.get(getContext(), url, params,handler);
+    }
+
+    public static void insertDoctor(Context con, String name, String dno, JsonHttpResponseHandler responseHandler){
+        log.i(TAG, "insertPatient:::" + name + ":::" + dno);
+        String hospitalId = SmartFiPreference.getHospitalId(getContext());
+        String token = SmartFiPreference.getSfToken(getContext());
+        String url = Constants.bcnc.BASE_URL + "/api/v1/doctor/create";
+        StringEntity jsonEntityUTF8;
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("id", hospitalId);
+            jsonParams.put("name", name);
+            jsonParams.put("dno", dno);
         } catch (JSONException e) {
             e.printStackTrace();
             log.w(TAG,e+"");

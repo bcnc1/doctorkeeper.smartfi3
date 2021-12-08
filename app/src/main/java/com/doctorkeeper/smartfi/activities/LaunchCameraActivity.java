@@ -1,5 +1,6 @@
 package com.doctorkeeper.smartfi.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.doctorkeeper.smartfi.network.BlabAPI;
 import com.doctorkeeper.smartfi.services.PhotoModelService;
 import com.doctorkeeper.smartfi.services.PictureIntentService;
 import com.doctorkeeper.smartfi.util.SmartFiPreference;
+import com.doctorkeeper.smartfi.view.phone_camera.PhoneCameraFragment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,35 +71,69 @@ public class LaunchCameraActivity extends Activity {
         String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
         String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        try {
-            String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
-            mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+"_";
-            mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Ensure that there's a camera activity to handle the intent
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
+        String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
+        String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
+        if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
+            try {
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
+                mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+"_";
+                mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
 
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(this,
+                                "com.doctorkeeper.smartfi",
+                                photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    }
                 }
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    Uri photoURI = FileProvider.getUriForFile(this,
-                            "com.doctorkeeper.smartfi",
-                            photoFile);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
 
+        else {
+            try {
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                mFileName = HospitalId + "_" + encodedPatientName + "_" + PatientId + "_" + timeStamp + "_";
+                mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(this,
+                                "com.doctorkeeper.smartfi",
+                                photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
 //        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
 //        mFileName = DEVICE + "_" + timeStamp+".jpg";
 

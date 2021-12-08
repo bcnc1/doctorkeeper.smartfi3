@@ -19,11 +19,13 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.view.BaseFragment;
@@ -117,10 +119,13 @@ public class PhoneListFragment extends BaseFragment {
 
 //        MadamfiveAPI.deletePhotoModelList();
         Log.i(TAG, "btn_options clicked");
-//        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
-//        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
-//        changelogTx.add(opt, "Options");
-//        changelogTx.commit();
+//        Toast toast = Toast.makeText(getActivity(), "옵션버튼 클릭", Toast.LENGTH_LONG);
+//        toast.setGravity(Gravity.CENTER, 0, 0);
+//        toast.show();
+        FragmentTransaction changelogTx = getFragmentManager().beginTransaction();
+        OptionsDialogFragment opt = OptionsDialogFragment.newInstance();
+        changelogTx.add(opt, "Options");
+        changelogTx.commit();
     }
 
 }

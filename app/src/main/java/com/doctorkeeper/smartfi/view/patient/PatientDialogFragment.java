@@ -170,7 +170,7 @@ public class PatientDialogFragment extends DialogFragment {
                 Log.i(TAG, "statusCode: " + statusCode);
                 Log.i(TAG, "response.length(): " + response.length());
                 Log.i(TAG, "patientInsertExtraOption:  " + patientInsertExtraOption);
-                if (patientInsertExtraOption == true && response.length() == 0) {
+                if (patientInsertExtraOption && response.length() == 0) {
                     addPatientInfo(searchName, searchChart);
                     patient_list_progressBar.setVisibility(View.INVISIBLE);
 //                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
