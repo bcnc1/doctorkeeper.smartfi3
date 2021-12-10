@@ -77,8 +77,10 @@ public class LaunchCameraActivity extends Activity {
         if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
             try {
                 String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
+                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber,"UTF-8");
                 String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
-                mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+"_";
+                mFileName = HospitalId+"_"+encodedPatientName+"_"+encodedPatientId+"_"+encodedDoctorName+"_"+encodedDoctorNumber+"_"+timeStamp+"_";
                 mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Ensure that there's a camera activity to handle the intent

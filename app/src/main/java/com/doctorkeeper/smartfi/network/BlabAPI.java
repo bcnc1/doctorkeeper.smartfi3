@@ -438,7 +438,10 @@ public class BlabAPI {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                log.i(TAG,"path:::"+path);
+
                 File f = new File(path);
+                log.i(TAG,"f:::"+f);
                 String content_type = getMimeType(path);
                 OkHttpClient client = new OkHttpClient();
                 RequestBody file_body = RequestBody.create(MediaType.parse(content_type), f);

@@ -408,9 +408,11 @@ public class DSLRFragment extends SessionFragment implements
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
+                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber,"UTF-8");
                 String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
-                mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+".jpg";
+                mFileName = HospitalId+"_"+encodedPatientName+"_"+encodedPatientId+"_"+encodedDoctorName+"_"+encodedDoctorNumber+"_"+timeStamp+".jpg";
                 mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
                 //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                 String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);

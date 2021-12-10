@@ -220,9 +220,11 @@ public class PhoneCameraFragment extends BaseFragment {
                 Log.w(TAG,"doctorSelectExtraOption DoctorNumber : " + doctorSelectExtraOption);
                 if (doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
                     try {
-                        String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
+                        String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
+                        String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
+                        String encodedDoctorNumber = URLEncoder.encode(DoctorNumber,"UTF-8");
                         String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
-                        mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+encodedDoctorName+"_"+DoctorNumber+"_"+timeStamp+".jpg";
+                        mFileName = HospitalId+"_"+encodedPatientName+"_"+encodedPatientId+"_"+encodedDoctorName+"_"+encodedDoctorNumber+"_"+timeStamp+".jpg";
                         savePhotoNUpload(picture, "phone", mFileName);
 
                     } catch (UnsupportedEncodingException e) {
