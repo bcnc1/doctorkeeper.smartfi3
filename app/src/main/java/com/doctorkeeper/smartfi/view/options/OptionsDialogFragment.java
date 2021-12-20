@@ -95,31 +95,30 @@ public class OptionsDialogFragment extends DialogFragment {
             }
         });
 
-//        /// Option 2
-//        switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
-//        switch_options_patient_insert_activate.setChecked(false);
-//
-//        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(MadamfiveAPI.getActivity());
-//
-//        Log.w(TAG,"patientInsertExtraOption = "+patientInsertExtraOption);
-//        if(patientInsertExtraOption){
-//            switch_options_patient_insert_activate.setChecked(true);
-//        }
-//
-//        switch_options_patient_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                if(patientInsertExtraOption){
-//                    patientInsertExtraOption = false;
-//                    switch_options_patient_insert_activate.setChecked(false);
-//                    SmartFiPreference.setSfInsertPatientOpt(MadamfiveAPI.getActivity(),patientInsertExtraOption);
-//                }else {
-//                    patientInsertExtraOption = true;
-//                    switch_options_patient_insert_activate.setChecked(true);
-//                    SmartFiPreference.setSfInsertPatientOpt(MadamfiveAPI.getActivity(),patientInsertExtraOption);
-//                }
-//            }
-//        });
+        /// Option 2
+        switch_options_patient_insert_activate = (Switch) view.findViewById(R.id.switch_options_patient_insert_activate);
+        switch_options_patient_insert_activate.setChecked(false);
+
+        patientInsertExtraOption = SmartFiPreference.getSfInsertPatientOpt(getActivity());
+
+        Log.w(TAG,"patientInsertExtraOption = "+patientInsertExtraOption);
+        if(patientInsertExtraOption){
+            switch_options_patient_insert_activate.setChecked(true);
+        }
+
+        switch_options_patient_insert_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(patientInsertExtraOption){
+                    patientInsertExtraOption = false;
+                    switch_options_patient_insert_activate.setChecked(false);
+                }else {
+                    patientInsertExtraOption = true;
+                    switch_options_patient_insert_activate.setChecked(true);
+                }
+                SmartFiPreference.setSfInsertPatientOpt(getActivity(),patientInsertExtraOption);
+            }
+        });
 
         /// Option 3 : Doctor Info
         switch_options_doctor_insert_activate = (Switch) view.findViewById(R.id.switch_options_doctor_insert_activate);

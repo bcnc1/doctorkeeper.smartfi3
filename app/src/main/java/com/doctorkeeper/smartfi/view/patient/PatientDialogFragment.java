@@ -46,7 +46,7 @@ public class PatientDialogFragment extends DialogFragment {
     private ListView patientListView;
 
     private ProgressBar patient_list_progressBar;
-    private boolean patientInsertExtraOption = true;
+    private boolean patientInsertExtraOption = false;
     private boolean patientSearchDisplayExtraOption = false;
     private String name;
     private String chartNumber;
@@ -153,7 +153,7 @@ public class PatientDialogFragment extends DialogFragment {
 
         ArrayList<HashMap<String, String>> patientInfoList = new ArrayList<HashMap<String, String>>();
 
-        if (searchChart == null || searchChart.length() == 0 && searchName == null || searchName.length() == 0) {
+        if (searchChart.length() == 0 && searchName.length() == 0) {
             Toast.makeText(getActivity(), "이름 또는 차트번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
             patient_list_progressBar.setVisibility(View.INVISIBLE);
             return;
@@ -176,6 +176,11 @@ public class PatientDialogFragment extends DialogFragment {
 //                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
 //                    toast.setGravity(Gravity.CENTER, 0, 0);
 //                    toast.show();
+                } else if (!patientInsertExtraOption && response.length() == 0) {
+                    Toast toast = Toast.makeText(getActivity(), "해당 환자가 없습니다", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                    patient_list_progressBar.setVisibility(View.INVISIBLE);
                 }
 
                 patient_list_progressBar.setVisibility(View.INVISIBLE);
