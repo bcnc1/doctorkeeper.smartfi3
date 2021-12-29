@@ -233,7 +233,8 @@ public class PhoneCameraFragment extends BaseFragment {
                 } else {
                     try {
                         String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8");
-                        mFileName = HospitalId+"_"+encodedPatientName+"_"+PatientId+"_"+timeStamp+".jpg";
+                        String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
+                        mFileName = HospitalId+"_"+encodedPatientName+"_"+encodedPatientId+"_"+timeStamp+".jpg";
 //                    Log.w(TAG,encodedPatientName);
                         savePhotoNUpload(picture, "phone", mFileName);
 
