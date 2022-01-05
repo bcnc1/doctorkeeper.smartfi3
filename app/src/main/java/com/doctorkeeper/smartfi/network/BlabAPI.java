@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.view.Gravity;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -435,43 +438,58 @@ public class BlabAPI {
         log.i(TAG,"url:::"+url);
         log.i(TAG,"doctorId:::"+doctorId+"token:::"+token);
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                log.i(TAG,"path:::"+path);
+        Thread t = new Thread(() -> {
+            log.i(TAG,"path:::"+path);
 
-                File f = new File(path);
-                log.i(TAG,"f:::"+f);
-                String content_type = getMimeType(path);
-                OkHttpClient client = new OkHttpClient();
-                RequestBody file_body = RequestBody.create(MediaType.parse(content_type), f);
+            // Extract file name
+            String filename=path.substring(path.lastIndexOf("/")+1);
+            Log.v(TAG,"filename : " + filename);
 
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url(urlTarget)
-                        .put(file_body)
-                        .addHeader("X-Auth-Token", token)
-                        .build();
+            File f = new File(path);
+            log.i(TAG,"f:::"+f);
+            String content_type = getMimeType(path);
+            OkHttpClient client = new OkHttpClient();
+            RequestBody file_body = RequestBody.create(MediaType.parse(content_type), f);
 
-                try {
-                    okhttp3.Response response = client.newCall(request).execute();
-                    log.w(TAG, response.toString());
-                    //response.body()
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(urlTarget)
+                    .put(file_body)
+                    .addHeader("X-Auth-Token", token)
+                    .build();
 
-                    if (!response.isSuccessful()) {
-                        // throw new IOException("Error : "+response);
-                        handler.onFailure(response.code(), null, response.toString(), null);
-                    } else {
-                        handler.onSuccess(response.code(), null, "");
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getActivity(), "이미지 저장 완료!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    log.w(TAG, e.toString());
+            try {
+                okhttp3.Response response = client.newCall(request).execute();
+                log.w(TAG, response.toString());
+                //response.body()
+
+                if (!response.isSuccessful()) {
+                    Toast toast = Toast.makeText(mActivity.getBaseContext(), "이미지 업로드 실패..", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                    // throw new IOException("Error : "+response);
+                    handler.onFailure(response.code(), null, response.toString(), null);
+                } else {
+                    handler.onSuccess(response.code(), null, "");
+                    getActivity().runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(mActivity.getBaseContext(), "이미지 업로드 성공!", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+
+                        String CheckFolderPath = mContext.getExternalFilesDir(null).getAbsolutePath() + "/uploadCheck";
+
+                        // write empty file
+                        Log.v(TAG,"check name : "+ CheckFolderPath + "/" + filename);
+                        try {
+                            FileOutputStream fos = new FileOutputStream(CheckFolderPath + "/" + filename, true);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                    });
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.w(TAG, e.toString());
             }
         });
         t.start();

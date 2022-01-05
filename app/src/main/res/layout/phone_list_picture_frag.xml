@@ -34,9 +34,10 @@
           android:layout_gravity="left"
           android:layout_marginLeft="10dp"
           android:layout_marginTop="10dp"
-          android:background="@android:color/transparent"
+          android:background="@drawable/button_background"
           android:text="업로드"
-          android:textColor="@color/primary_darker"
+          android:textStyle="bold"
+          android:textColor="#1d95d4"
           android:textSize="15sp"
           android:visibility="visible" />
 
@@ -47,9 +48,10 @@
           android:layout_gravity="right"
           android:layout_marginTop="10dp"
           android:layout_marginRight="10dp"
-          android:background="@android:color/transparent"
-          android:text="←사진리스트로"
-          android:textColor="@color/primary_darker"
+          android:background="@drawable/button_background"
+          android:text="사진리스트"
+          android:textStyle="bold"
+          android:textColor="#1d95d4"
           android:textSize="15sp"
           android:visibility="visible" />
 
