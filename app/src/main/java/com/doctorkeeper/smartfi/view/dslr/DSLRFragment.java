@@ -428,15 +428,17 @@ public class DSLRFragment extends SessionFragment implements
         } else {
             try {
                 String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
-                mFileName = HospitalId + "_" + encodedPatientName + "_" + PatientId + "_" + timeStamp + ".jpg";
+                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
+                mFileName = HospitalId + "_" + encodedPatientName + "_" + encodedPatientId + "_" + timeStamp + ".jpg";
                 mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                 String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, bitmap, thumb);
 
                 if (path != null) {
-                    PictureIntentService.startUploadPicture(getActivity(), path);
+                    PictureIntentService.startUploadPicture(getActivity(), mFile.toString());
                 } else {
-                    Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
+                    Log.i(TAG, "mFile:" + R.string.make_error_thumbnail);
+//                    Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

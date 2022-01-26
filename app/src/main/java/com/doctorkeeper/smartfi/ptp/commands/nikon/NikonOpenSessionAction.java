@@ -44,7 +44,7 @@ public class NikonOpenSessionAction implements PtpAction {
 
                 SetDevicePropValueCommand c;
                 String deviceInfo = camera.getDeviceInfo();
-                if(deviceInfo.contains("Nikon")&&(deviceInfo.contains("D5300")||deviceInfo.contains("D5500")||deviceInfo.contains("D5600")||deviceInfo.contains("D5100")||deviceInfo.contains("D5200")||deviceInfo.contains("D610")||deviceInfo.contains("D810")||deviceInfo.contains("D800")||deviceInfo.contains("D700")||deviceInfo.contains("D7200"))) {
+                if(deviceInfo.contains("Nikon")&&(deviceInfo.contains("D5300")||deviceInfo.contains("D5500")||deviceInfo.contains("D5600")||deviceInfo.contains("D5100")||deviceInfo.contains("D5200")||deviceInfo.contains("D610")||deviceInfo.contains("D810")||deviceInfo.contains("D800")||deviceInfo.contains("D700")||deviceInfo.contains("D7200")||deviceInfo.contains("D7100"))) {
                     c = new SetDevicePropValueCommand(camera, Property.NikonRecordingMedia, 2, Datatype.uint8);
 //                } else if ( deviceInfo.contains("Nikon")&&(deviceInfo.contains("D3000"))) {
 //                    c = new SetDevicePropValueCommand(camera, Property.NikonRecordingMedia, 3,Datatype.uint8);
