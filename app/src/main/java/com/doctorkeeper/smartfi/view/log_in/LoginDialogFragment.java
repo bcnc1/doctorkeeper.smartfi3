@@ -36,6 +36,7 @@ import com.doctorkeeper.smartfi.R;
 import com.doctorkeeper.smartfi.util.SmartFiPreference;
 import com.doctorkeeper.smartfi.view.patient.PatientDialogFragment;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -93,27 +94,37 @@ public class LoginDialogFragment extends DialogFragment {
                     public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
                         // If the response is JSONObject instead of expected JSONArray
                         Log.i(TAG, "HTTPb:" + statusCode + response.toString());
-                        if(statusCode == 400) {
-                            Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            loginButton.setEnabled(true);
-                        }else{
-                            dismiss();
-                            SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
-                            SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
-                            SmartFiPreference.setHospitalId(getActivity(),usernameTextView.getText().toString());
-                            Log.i(TAG,"responseString:::"+response);
-                            try{
-                                JSONObject obj = response;
-                                SmartFiPreference.setSfToken(getActivity(),obj.getString("token"));
-                                Log.i(TAG,"token:::"+obj.getString("token"));
-                            }catch(Exception e){
-                                Log.d(TAG,e.toString());
+
+                        try {
+                            if(Integer.parseInt(response.getString("code")) != 200) {
+                                Log.i(TAG, " login failed ");
+                                Toast toast = Toast.makeText(getActivity(), "아이디 또는 비밀번호를 확인해 주세요", Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                                loginButton.setEnabled(true);
+                            }else{
+                                dismiss();
+                                SmartFiPreference.setDoctorId(getActivity(),usernameTextView.getText().toString());
+                                SmartFiPreference.setSfDoctorPw(getActivity(),passwordTextView.getText().toString());
+                                SmartFiPreference.setHospitalId(getActivity(),usernameTextView.getText().toString());
+                                Log.i(TAG,"responseString:::"+response);
+                                try{
+                                    JSONObject obj = response;
+                                    SmartFiPreference.setSfToken(getActivity(),obj.getString("token"));
+                                    Log.i(TAG,"token:::"+obj.getString("token"));
+                                }catch(Exception e){
+                                    Log.d(TAG,e.toString());
+                                }
+                                loginButton.setEnabled(true);
+                                startSelectPatient();
                             }
-                            loginButton.setEnabled(true);
-                            startSelectPatient();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
+
+
                     }
                 });
             }
