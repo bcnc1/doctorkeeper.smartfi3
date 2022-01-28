@@ -76,10 +76,10 @@ public class LaunchCameraActivity extends Activity {
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
-                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8");
-                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber,"UTF-8");
-                String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8");
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
+                String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
+                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber, "UTF-8").replace("+", "%20");
+                String encodedDoctorName = URLEncoder.encode(DoctorName, "UTF-8").replace("+", "%20");
                 mFileName = HospitalId+"_"+encodedPatientName+"_"+encodedPatientId+"_"+encodedDoctorName+"_"+encodedDoctorNumber+"_"+timeStamp+"_";
                 mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -109,8 +109,10 @@ public class LaunchCameraActivity extends Activity {
 
         else {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8");
-                mFileName = HospitalId + "_" + encodedPatientName + "_" + PatientId + "_" + timeStamp + "_";
+                String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
+                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
+                Log.i(TAG, "encodedPatientName = "+encodedPatientName);
+                mFileName = HospitalId + "_" + encodedPatientName + "_" + encodedPatientId + "_" + timeStamp + "_";
                 mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Ensure that there's a camera activity to handle the intent
