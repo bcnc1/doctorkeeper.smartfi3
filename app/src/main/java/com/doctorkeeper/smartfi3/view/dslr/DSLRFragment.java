@@ -397,7 +397,6 @@ public class DSLRFragment extends SessionFragment implements
     private void sendPhoto(int objectHandle, ObjectInfo info, Bitmap thumb, Bitmap bitmap) {
 //        Log.d(TAG, "sendPhoto");
         currentObjectHandle = 0;
-//        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
         String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
         String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
