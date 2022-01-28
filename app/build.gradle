@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.doctorkeeper.smartfi"
+        applicationId 'com.doctorkeeper.smartfi3'
         minSdkVersion 19
         targetSdkVersion 30
     }

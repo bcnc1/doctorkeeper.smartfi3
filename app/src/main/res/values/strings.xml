@@ -16,8 +16,8 @@
 <resources>
 
     <!-- App specific, need to be overridden -->
-    <string name="app_name">SmartFi-2022</string>
-    <string name="launcher_label">SmartFi 2022</string>
+    <string name="app_name">SmartFi-3</string>
+    <string name="launcher_label">SmartFi 3</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 
