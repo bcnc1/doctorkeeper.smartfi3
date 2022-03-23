@@ -210,18 +210,11 @@ public class PhoneCameraFragment extends BaseFragment {
                 String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
                 String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
                 String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
-
+                String Separator = Constants.Storage.SPLITER;
                 @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-                Log.w(TAG,"onImage DoctorName : " + DoctorName);
-                Log.w(TAG,"onImage DoctorNumber : " + DoctorNumber);
-                Log.w(TAG,"doctorSelectExtraOption DoctorNumber : " + doctorSelectExtraOption);
                 if (doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
                     try {
-                        String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
-                        String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
-                        String encodedDoctorNumber = URLEncoder.encode(DoctorNumber, "UTF-8").replace("+", "%20");
-                        String encodedDoctorName = URLEncoder.encode(DoctorName, "UTF-8").replace("+", "%20");
-                        mFileName = HospitalId+Constants.Storage.SPLITER+encodedPatientName+Constants.Storage.SPLITER+encodedPatientId+Constants.Storage.SPLITER+encodedDoctorName+Constants.Storage.SPLITER+encodedDoctorNumber+Constants.Storage.SPLITER+timeStamp+".jpg";
+                        mFileName = URLEncoder.encode(HospitalId + Separator + PatientName + Separator + PatientId + Separator + DoctorName + Separator + DoctorNumber + Separator + timeStamp + ".jpg", "UTF-8").replace("+", "%20");
                         savePhotoNUpload(picture, "phone", mFileName);
 
                     } catch (UnsupportedEncodingException e) {
@@ -229,9 +222,8 @@ public class PhoneCameraFragment extends BaseFragment {
                     }
                 } else {
                     try {
-                        String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
-                        String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
-                        mFileName = HospitalId+Constants.Storage.SPLITER+encodedPatientName+ Constants.Storage.SPLITER+encodedPatientId+Constants.Storage.SPLITER+timeStamp+".jpg";
+
+                        mFileName = URLEncoder.encode(HospitalId + Separator + PatientName + Separator + PatientId + Separator + timeStamp + ".jpg", "UTF-8").replace("+", "%20");
 //                    Log.w(TAG,encodedPatientName);
                         savePhotoNUpload(picture, "phone", mFileName);
 

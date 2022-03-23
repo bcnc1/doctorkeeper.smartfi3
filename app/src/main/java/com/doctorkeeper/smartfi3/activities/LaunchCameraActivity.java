@@ -70,16 +70,14 @@ public class LaunchCameraActivity extends Activity {
         String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
         String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
         String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
+        String Separator = Constants.Storage.SPLITER;
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
-                String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
-                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber, "UTF-8").replace("+", "%20");
-                String encodedDoctorName = URLEncoder.encode(DoctorName, "UTF-8").replace("+", "%20");
-                mFileName = HospitalId+Constants.Storage.SPLITER+encodedPatientName+Constants.Storage.SPLITER+encodedPatientId+Constants.Storage.SPLITER+encodedDoctorName+Constants.Storage.SPLITER+encodedDoctorNumber+ Constants.Storage.SPLITER+timeStamp+Constants.Storage.SPLITER;
+                mFileName = URLEncoder.encode(HospitalId+Separator+PatientName+Separator+PatientId+Separator+DoctorName+Separator+DoctorNumber+Separator+timeStamp, "UTF-8").replace("+", "%20");
                 mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Log.i(TAG, "LCA = "+mFileName);
                 // Ensure that there's a camera activity to handle the intent
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     // Create the File where the photo should go
@@ -106,11 +104,9 @@ public class LaunchCameraActivity extends Activity {
 
         else {
             try {
-                String encodedPatientId = URLEncoder.encode(PatientId, "UTF-8").replace("+", "%20");
-                String encodedPatientName = URLEncoder.encode(PatientName, "UTF-8").replace("+", "%20");
-                Log.i(TAG, "encodedPatientName = "+encodedPatientName);
-                mFileName = HospitalId + Constants.Storage.SPLITER + encodedPatientName + Constants.Storage.SPLITER + encodedPatientId + Constants.Storage.SPLITER + timeStamp + Constants.Storage.SPLITER;
+                mFileName = URLEncoder.encode(HospitalId + Separator + PatientName + Separator + PatientId + Separator + timeStamp, "UTF-8").replace("+", "%20");
                 mFile = new File(mCon.getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
+                Log.i(TAG, "LCA = "+mFileName);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Ensure that there's a camera activity to handle the intent
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -125,7 +121,7 @@ public class LaunchCameraActivity extends Activity {
                     // Continue only if the File was successfully created
                     if (photoFile != null) {
                         Uri photoURI = FileProvider.getUriForFile(this,
-                                "com.doctorkeeper.smartfi",
+                                "com.doctorkeeper.smartfi3",
                                 photoFile);
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);

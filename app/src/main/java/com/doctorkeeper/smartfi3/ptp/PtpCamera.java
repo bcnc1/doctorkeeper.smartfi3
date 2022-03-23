@@ -18,6 +18,7 @@ package com.doctorkeeper.smartfi3.ptp;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -568,7 +569,11 @@ public abstract class PtpCamera implements Camera {
                 }
 
                 if (action != null) {
-                    action.exec(this);
+                    try {
+                        action.exec(this);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             r3.close();

@@ -23,6 +23,8 @@ import com.doctorkeeper.smartfi3.ptp.PtpCamera;
 import com.doctorkeeper.smartfi3.ptp.PtpCamera.IO;
 import com.doctorkeeper.smartfi3.ptp.PtpConstants.Response;
 
+import java.io.UnsupportedEncodingException;
+
 public class RetrieveImageAction implements PtpAction {
     private final String TAG = RetrieveImageAction.class.getSimpleName();
 
@@ -39,7 +41,7 @@ public class RetrieveImageAction implements PtpAction {
     }
 
     @Override
-    public void exec(IO io) {
+    public void exec(IO io) throws UnsupportedEncodingException {
         Log.i(TAG, "sampleSize:"+sampleSize);
         GetObjectCommand getObject = new GetObjectCommand(camera, objectHandle, sampleSize);
         io.handleCommand(getObject);

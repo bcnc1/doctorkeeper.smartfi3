@@ -16,6 +16,7 @@
 package com.doctorkeeper.smartfi3.ptp;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import android.graphics.Bitmap;
@@ -113,7 +114,7 @@ public interface Camera {
     }
 
     public interface RetrieveImageListener {
-        void onImageRetrieved(int objectHandle, Bitmap image);
+        void onImageRetrieved(int objectHandle, Bitmap image) throws UnsupportedEncodingException;
     }
 
     void setWorkerListener(WorkerListener listener);

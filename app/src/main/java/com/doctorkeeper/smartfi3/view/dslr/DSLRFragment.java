@@ -402,21 +402,17 @@ public class DSLRFragment extends SessionFragment implements
         String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
         String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
         String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
-
+        String Separator = Constants.Storage.SPLITER;
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
         if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8").replace("+", "%20");
-                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8").replace("+", "%20");
-                String encodedDoctorNumber = URLEncoder.encode(DoctorNumber,"UTF-8").replace("+", "%20");
-                String encodedDoctorName = URLEncoder.encode(DoctorName,"UTF-8").replace("+", "%20");
-                mFileName = HospitalId+Constants.Storage.SPLITER+encodedPatientName+Constants.Storage.SPLITER+encodedPatientId+Constants.Storage.SPLITER+encodedDoctorName+ Constants.Storage.SPLITER+encodedDoctorNumber+Constants.Storage.SPLITER+timeStamp+".jpg";
+                mFileName = URLEncoder.encode(HospitalId+Separator+PatientName+Separator+PatientId+Separator+DoctorName+Separator+DoctorNumber+Separator+timeStamp+".jpg", "UTF-8").replace("+", "%20");
                 mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
                 //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                 String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, bitmap, thumb);
 
                 if(path != null){
-                    PictureIntentService.startUploadPicture(getActivity(), path);
+                    PictureIntentService.startUploadPicture(getActivity(), mFile.toString());
                 }else{
                     Toast.makeText(getActivity(), R.string.make_error_thumbnail, Toast.LENGTH_SHORT);
                 }
@@ -425,9 +421,7 @@ public class DSLRFragment extends SessionFragment implements
             }
         } else {
             try {
-                String encodedPatientName = URLEncoder.encode(PatientName,"UTF-8").replace("+", "%20");
-                String encodedPatientId = URLEncoder.encode(PatientId,"UTF-8").replace("+", "%20");
-                mFileName = HospitalId + Constants.Storage.SPLITER + encodedPatientName + Constants.Storage.SPLITER + encodedPatientId + Constants.Storage.SPLITER + timeStamp + ".jpg";
+                mFileName = URLEncoder.encode(HospitalId+Separator+PatientName+Separator+PatientId+Separator+timeStamp+".jpg", "UTF-8").replace("+", "%20");
                 mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
                 //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
                 String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, bitmap, thumb);

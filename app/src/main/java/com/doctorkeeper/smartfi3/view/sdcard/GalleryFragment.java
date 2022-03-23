@@ -58,6 +58,8 @@ import com.doctorkeeper.smartfi3.view.phone_camera.PhoneCameraFragment;
 import com.doctorkeeper.smartfi3.view.sdcard.GalleryAdapter.ViewHolder;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -591,7 +593,7 @@ public class GalleryFragment extends SessionFragment
      * @param image
      */
     @Override
-    public void onImageRetrieved(int objectHandle, Bitmap image) {
+    public void onImageRetrieved(int objectHandle, Bitmap image) throws UnsupportedEncodingException {
 //        Log.w(TAG,"onImageRetrieved, 카메라로부터 이미지 받음");
         Camera camera = camera();
         if (camera == null) {
@@ -607,20 +609,27 @@ public class GalleryFragment extends SessionFragment
 //        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
 //        mFileName = DEVICE + "_" + timeStamp+".jpg";
 
-        String tnhHospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
-        String tnhPatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String HospitalId = SmartFiPreference.getHospitalId(BlabAPI.getActivity());
+        String PatientId = SmartFiPreference.getPatientChart(BlabAPI.getActivity());
+        String PatientName = SmartFiPreference.getSfPatientName(BlabAPI.getActivity());
+        String DoctorName = SmartFiPreference.getSfDoctorName(BlabAPI.getActivity());
+        String DoctorNumber = SmartFiPreference.getSfDoctorNumber(BlabAPI.getActivity());
+        String Separator = Constants.Storage.SPLITER;
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS").format(new Date());
-        mFileName = tnhHospitalId+ Constants.Storage.SPLITER+tnhPatientId+Constants.Storage.SPLITER+timeStamp+".jpg";
-
-        mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState())  + File.separator + mFileName);
-        String path = DisplayUtil.storeDslrImage(mFile.toString(),
-                getActivity().getExternalFilesDir(Environment.getExternalStorageState()),mFileName, currentBitmap, thumb);
+        if (PhoneCameraFragment.doctorSelectExtraOption && DoctorName != null && DoctorName.length() != 0) {
+            mFileName = URLEncoder.encode(HospitalId+Separator+PatientName+Separator+PatientId+Separator+DoctorName+Separator+DoctorNumber+Separator+timeStamp+".jpg", "UTF-8").replace("+", "%20");
+        } else {
+            mFileName = URLEncoder.encode(HospitalId + Separator + PatientName + Separator + PatientId + Separator + timeStamp + ".jpg","UTF-8").replace("+", "%20");
+        }
+        mFile = new File(getActivity().getExternalFilesDir(Environment.getExternalStorageState()) + File.separator + mFileName);
+        //썸네일 만들고 db에 해당 정보 저장하고 업로드 매니저 호출
+        String path = DisplayUtil.storeDslrImage(mFile.toString(), getActivity().getExternalFilesDir(Environment.getExternalStorageState()), mFileName, currentBitmap, thumb);
 
         if(path != null){
 //            PhotoModel photoModel = PhotoModelService.addPhotoModelWithRawName(getActivity(), mFile.toString(),path, mFileName, currentObjectInfo, 1);
 //            Long id = photoModel.getId();
             Messenger messenger = new Messenger(msgHandler);
-            PictureIntentService.startUploadPicture(getActivity(), path);
+            PictureIntentService.startUploadPicture(getActivity(), mFile.toString());
             numberOfUploaded++;
             multi_image_uploading_progressbar.setProgress(numberOfUploaded);
 

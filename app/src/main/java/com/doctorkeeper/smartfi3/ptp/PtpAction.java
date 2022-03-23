@@ -15,6 +15,8 @@
  */
 package com.doctorkeeper.smartfi3.ptp;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * {@code PtpActions} execute one or more {@code Command}s against the actual
  * hardware.
@@ -27,7 +29,7 @@ package com.doctorkeeper.smartfi3.ptp;
  */
 public interface PtpAction {
 
-    void exec(PtpCamera.IO io);
+    void exec(PtpCamera.IO io) throws UnsupportedEncodingException;
 
     /**
      * Reset an already used action so it can be re-used.
