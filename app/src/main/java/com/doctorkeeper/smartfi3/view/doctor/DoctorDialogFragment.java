@@ -195,7 +195,7 @@ public class DoctorDialogFragment extends DialogFragment {
 
     private void addDoctorInfo(String inputName, String inputNumber) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("스마트파이");
+        builder.setTitle("Photo Keeper");
         builder.setMessage("해당 의사가 없습니다. 추가하시겠습니까?");
 
         builder.setPositiveButton("YES", (dialog, which) -> {
