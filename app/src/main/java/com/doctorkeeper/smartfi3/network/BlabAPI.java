@@ -486,9 +486,10 @@ public class BlabAPI {
     public static void getImageLists(Context con, JsonHttpResponseHandler handler) {
         String url = Constants.Storage.BASE_URL;
         String hostipalId = SmartFiPreference.getHospitalId(getContext());
-        final String urlTarget = url + hostipalId + "/?limit=1000&format=json";
+//        final String urlTarget = url + hostipalId + "/?limit=1000&format=json";
+        final String urlTarget = "http://211.252.85.83:3100/api/v1/web/files/" + hostipalId + "?limit=20";
         String token = SmartFiPreference.getSfToken(getContext());
-        log.i(TAG, "url:::" + urlTarget);
+        log.i(TAG, "cloud img url:::" + urlTarget);
 
         client.addHeader("X-Auth-Token", token);
         client.get(con, urlTarget, handler);
